@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 簡易CMS - テンプレートベースのWebサイト編集システム
 
-## Getting Started
+AIによるテキスト生成機能を備えた、テンプレートベースのWebサイト編集システムです。
 
-First, run the development server:
+## 機能
+
+- ドラッグ＆ドロップでセクションの追加・入れ替え
+- リッチテキストエディタによる編集
+- AIによるテキスト生成
+- 画像アップロード・管理機能
+- モバイルフレンドリーなレスポンシブデザイン
+
+## 技術スタック
+
+- Next.js 15 (App Router)
+- TypeScript
+- Tailwind CSS
+- Supabase (ストレージ、データベース)
+- OpenAI API (テキスト生成)
+
+## 環境設定
+
+### 1. Supabaseプロジェクトの設定
+
+1. [Supabase](https://supabase.com/)でアカウントを作成し、新しいプロジェクトを作成
+2. SQLエディタで`supabase_setup.sql`の内容を実行
+3. ストレージの設定を確認（`cms-images`バケットが作成されていること）
+4. プロジェクトのURLとAnon Keyをコピー
+
+### 2. OpenAI APIキーの取得
+
+1. [OpenAI](https://platform.openai.com/)でアカウントを作成
+2. APIキーを生成
+
+### 3. 環境変数の設定
+
+`.env.local`ファイルをプロジェクトルートに作成し、以下の内容を設定:
+
+```
+NEXT_PUBLIC_SUPABASE_URL=https://あなたのプロジェクトID.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=あなたのSupabaseのAnon Key
+OPENAI_API_KEY=あなたのOpenAI APIキー
+```
+
+## 開発サーバーの起動
 
 ```bash
 npm run dev
-# or
+# または
 yarn dev
-# or
+# または
 pnpm dev
-# or
+# または
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+[http://localhost:3000](http://localhost:3000)にアクセスして動作確認できます。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 使い方
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. トップページ右上の「エディタを開く」をクリック
+2. サイドバーからセクションの追加・編集
+3. ヘッダーやフッターの編集
+4. AIテキスト生成や画像アップロード機能を活用
+5. 「保存」ボタンでサイトを更新
 
-## Learn More
+## デプロイ
 
-To learn more about Next.js, take a look at the following resources:
+[Vercel](https://vercel.com/)を使ったデプロイがおすすめです。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. GitHubリポジトリにプロジェクトをプッシュ
+2. Vercelでプロジェクトを作成し、環境変数を設定
+3. デプロイ完了

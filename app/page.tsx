@@ -1,103 +1,85 @@
-import Image from "next/image";
+import { PageRenderer } from "@/components/PageRenderer";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { supabase } from "@/lib/supabase";
+import { Page } from "@/types";
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+// Supabaseからデータを取得するためにサーバーコンポーネントに変更
+export default async function Home() {
+	// ページデータ取得
+	let pageData: Page | null = null;
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+	try {
+		// Supabaseからデータを取得
+		if (
+			process.env.NEXT_PUBLIC_SUPABASE_URL &&
+			process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+		) {
+			const { data, error } = await supabase
+				.from("pages")
+				.select("content")
+				.eq("id", "main") // 単一ページなのでidは固定
+				.single();
+
+			if (!error && data) {
+				pageData = data.content as Page;
+			}
+		}
+
+		// データがない場合はAPIから取得
+		if (!pageData) {
+			const response = await fetch(
+				`${
+					process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+				}/api/page`,
+				{ cache: "no-store" }
+			);
+			if (response.ok) {
+				pageData = await response.json();
+			}
+		}
+	} catch (error) {
+		console.error("ページデータの取得に失敗しました", error);
+	}
+
+	// データが取得できなかった場合のデフォルト表示
+	if (!pageData) {
+		return (
+			<div className="flex flex-col items-center justify-center min-h-screen p-8">
+				<h1 className="text-2xl font-bold mb-4">
+					データの読み込みに失敗しました
+				</h1>
+				<p className="mb-8">ページデータが取得できませんでした。</p>
+				<Button asChild>
+					<Link href="/editor">エディタを開く</Link>
+				</Button>
+			</div>
+		);
+	}
+
+	// ヘッダーにエディタを開くボタンを追加
+	const modifiedHeader = {
+		html: pageData.header.html
+			.replace(
+				'<div class="container mx-auto px-4 py-4 flex justify-between items-center">',
+				`<div class="container mx-auto px-4 py-4 flex justify-between items-center">
+				<div class="flex items-center gap-4">`
+			)
+			.replace(
+				"</nav>",
+				`</nav>
+			<div class="flex items-center">
+				<a href="/editor" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground shadow h-10 px-4 py-2 ml-4">エディタを開く</a>
+			</div>`
+			),
+	};
+
+	const modifiedPageData = {
+		...pageData,
+		header: modifiedHeader,
+	};
+
+	// 直接PageRendererを返す
+	return <PageRenderer page={modifiedPageData} />;
 }
+ 
