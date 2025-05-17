@@ -30,8 +30,8 @@ export async function uploadAndOptimizeImage(
 			const imageId = `local-image-${uuidv4()}`;
 			imageStore.set(imageId, dataUrl);
 
-			// 実際のURLのような形式を返す
-			return `/_local/images/${imageId}`;
+			// 直接APIルートを指すURLを返す
+			return `/api/images/_local/${imageId}`;
 		}
 
 		// 以下、Supabaseストレージを使用する場合の処理
@@ -76,6 +76,15 @@ export function getLocalImage(imageId: string): string | null {
 }
 
 /**
+ * ローカル画像を削除
+ * @param imageId 画像ID
+ * @returns 成功したかどうか
+ */
+export function deleteLocalImage(imageId: string): boolean {
+	return imageStore.delete(imageId);
+}
+
+/**
  * すべてのローカル画像を取得
  * @returns 画像情報の配列
  */
@@ -84,7 +93,7 @@ export function getAllLocalImages(): { name: string; url: string }[] {
 	imageStore.forEach((dataUrl, id) => {
 		images.push({
 			name: id,
-			url: `/_local/images/${id}`,
+			url: `/api/images/_local/${id}`,
 		});
 	});
 	return images;

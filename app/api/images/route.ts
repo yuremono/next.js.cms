@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
-import { getAllLocalImages } from "@/lib/imageUtils";
+import { getAllLocalImages, deleteLocalImage } from "@/lib/imageUtils";
 
 // 画像管理API - 画像一覧を取得
 export async function GET() {
@@ -66,11 +66,21 @@ export async function DELETE(req: NextRequest) {
 			);
 		}
 
+		// ローカルの画像を削除する場合
+		if (filename.startsWith("local-image-")) {
+			const success = deleteLocalImage(filename);
+			if (success) {
+				return NextResponse.json({ success: true });
+			} else {
+				return NextResponse.json(
+					{ error: "ローカル画像の削除に失敗しました" },
+					{ status: 500 }
+				);
+			}
+		}
+
 		// 環境変数が設定されていなければエラーを返す
-		if (
-			!process.env.NEXT_PUBLIC_SUPABASE_URL ||
-			!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-		) {
+		if (!isSupabaseConfigured) {
 			return NextResponse.json(
 				{ error: "ストレージが設定されていません" },
 				{ status: 500 }
