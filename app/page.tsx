@@ -102,6 +102,8 @@ const DEFAULT_PAGE_DATA: Page = {
 };
 
 // サーバーコンポーネント
+export const revalidate = 0; // 常に最新データを取得
+
 export default async function Home() {
 	// ページデータ取得
 	let pageData: Page | null = null;
