@@ -1,7 +1,15 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Section } from "@/types";
-import { ChevronUp, ChevronDown, Trash2 } from "lucide-react";
+import {
+	ChevronUp,
+	ChevronDown,
+	Trash2,
+	ImageIcon,
+	LayoutIcon,
+	CreditCard,
+	FormInput,
+} from "lucide-react";
 
 interface SortableSectionsProps {
 	sections: Section[];
@@ -40,6 +48,22 @@ export function SortableSections({
 		}
 	};
 
+	// セクションタイプに応じたアイコンを取得
+	const getSectionIcon = (section: Section) => {
+		switch (section.layout) {
+			case "mainVisual":
+				return <ImageIcon className="h-6 w-6 text-blue-500 mr-2" />;
+			case "imgText":
+				return <LayoutIcon className="h-6 w-6 text-green-500 mr-2" />;
+			case "cards":
+				return <CreditCard className="h-6 w-6 text-yellow-500 mr-2" />;
+			case "form":
+				return <FormInput className="h-6 w-6 text-purple-500 mr-2" />;
+			default:
+				return null;
+		}
+	};
+
 	return (
 		<div className="space-y-2">
 			{sections.map((section, index) => (
@@ -54,7 +78,10 @@ export function SortableSections({
 				>
 					<div className="flex items-center justify-between">
 						<div className="flex items-center">
-							<span>{getSectionTitle(section)}</span>
+							{getSectionIcon(section)}
+							<span className="text-base">
+								{getSectionTitle(section)}
+							</span>
 						</div>
 						<div className="flex items-center space-x-1">
 							<Button
