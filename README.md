@@ -1,6 +1,30 @@
 # 簡易CMS - テンプレートベースのWebサイト編集システム
 
-AIによるテキスト生成機能を備えた、テンプレートベースのWebサイト編集システムです。
+## 概要
+このプロジェクトは、テンプレートを用いて簡単に編集できるWebサイトを提供する簡易CMSです。Next.js、TypeScript、TailwindCSS、Supabase、OpenAI APIなどの技術を活用しています。
+
+## セットアップ手順
+1. リポジトリをクローン
+   ```bash
+   git clone https://github.com/yuremono/next.js.cms.git
+   cd next.js.cms
+   ```
+2. 依存パッケージのインストール
+   ```bash
+   npm install
+   ```
+3. 環境変数の設定
+   `.env.local`ファイルをプロジェクトルートに作成し、以下の内容を設定してください。
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=https://あなたのプロジェクトID.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=あなたのSupabaseのAnon Key
+   OPENAI_API_KEY=あなたのOpenAI APIキー
+   ```
+4. 開発サーバーの起動
+   ```bash
+   npm run dev
+   ```
+   http://localhost:3000 にアクセスして動作確認できます。
 
 ## 機能
 
@@ -63,6 +87,44 @@ bun dev
 3. ヘッダーやフッターの編集
 4. AIテキスト生成や画像アップロード機能を活用
 5. 「保存」ボタンでサイトを更新
+
+## 開発ルール
+- コミットメッセージは明確に記述してください。
+- 新機能や大きな修正は、`main`ブランチとは別のブランチで作業し、Pull Requestを経由してマージしてください。
+- コードレビューを徹底し、品質を維持してください。
+
+## 不明な項目
+- デプロイ手順
+- テスト方法
+- コントリビューションガイドライン
+
+## データベース構造
+
+このプロジェクトでは、Supabaseを使用して以下のデータ構造を管理しています：
+
+### ページテーブル (pages)
+- **id**: UUID (プライマリキー)
+- **title**: 文字列 (ページのタイトル)
+- **slug**: 文字列 (URLスラッグ)
+- **created_at**: タイムスタンプ
+- **updated_at**: タイムスタンプ
+- **content**: JSON (ページの全コンテンツ)
+- **meta_description**: 文字列 (SEO用メタ説明)
+- **status**: 文字列 (公開状態: draft, published)
+
+### セクションテンプレート (section_templates)
+- **id**: UUID (プライマリキー)
+- **name**: 文字列 (テンプレート名)
+- **category**: 文字列 (カテゴリ)
+- **template**: JSON (テンプレートの構造)
+- **created_at**: タイムスタンプ
+
+### イメージ (images)
+- **id**: UUID (プライマリキー)
+- **url**: 文字列 (画像のURL)
+- **filename**: 文字列 (ファイル名)
+- **size**: 数値 (ファイルサイズ)
+- **uploaded_at**: タイムスタンプ
 
 ## デプロイ
 
