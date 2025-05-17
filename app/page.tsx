@@ -109,6 +109,8 @@ export default async function Home() {
 	console.log("環境変数状態:", {
 		supabaseConfigured: isSupabaseConfigured,
 		nodeEnv: process.env.NODE_ENV,
+		buildTime: new Date().toISOString(), // デプロイ確認用
+		version: "1.0.1", // バージョン追加
 	});
 
 	try {
