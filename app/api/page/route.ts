@@ -116,11 +116,26 @@ header a:hover {
 
 // ページデータ取得
 export async function GET() {
+	// レスポンスヘッダーを設定
+	const headers = {
+		"Cache-Control": "no-store, max-age=0",
+		"Access-Control-Allow-Origin": "*",
+		"Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+		"Access-Control-Allow-Headers": "Content-Type",
+	};
+
+	// 環境変数の状態をログ出力（デバッグ用）
+	console.log("環境変数設定状態:", {
+		supabaseConfigured: isSupabaseConfigured,
+		nodeEnv: process.env.NODE_ENV,
+		appUrl: process.env.NEXT_PUBLIC_APP_URL || "未設定",
+	});
+
 	try {
 		// Supabaseが設定されていない場合はデフォルトデータを返す
 		if (!isSupabaseConfigured) {
 			console.log("Supabase設定がないため、デフォルトデータを返します");
-			return NextResponse.json(DEFAULT_PAGE_DATA);
+			return NextResponse.json(DEFAULT_PAGE_DATA, { headers });
 		}
 
 		// 1. ページ本体
@@ -131,7 +146,7 @@ export async function GET() {
 			.single();
 
 		if (pageError || !page) {
-			return NextResponse.json(DEFAULT_PAGE_DATA);
+			return NextResponse.json(DEFAULT_PAGE_DATA, { headers });
 		}
 
 		// 2. セクション一覧
@@ -142,7 +157,7 @@ export async function GET() {
 			.order("position", { ascending: true });
 
 		if (secError) {
-			return NextResponse.json(DEFAULT_PAGE_DATA);
+			return NextResponse.json(DEFAULT_PAGE_DATA, { headers });
 		}
 
 		// 3. 各セクションの詳細をtypeごとに取得・組み立て
@@ -219,17 +234,20 @@ export async function GET() {
 		}
 
 		// 4. 組み立てて返す
-		return NextResponse.json({
-			header: { html: page.header_html },
-			footer: { html: page.footer_html },
-			customCSS: page.custom_css,
-			sections: sectionResults,
-		});
+		return NextResponse.json(
+			{
+				header: { html: page.header_html },
+				footer: { html: page.footer_html },
+				customCSS: page.custom_css,
+				sections: sectionResults,
+			},
+			{ headers }
+		);
 	} catch (error) {
 		console.error("ページ取得エラー:", error);
 		return NextResponse.json(
 			{ error: "ページデータの取得に失敗しました" },
-			{ status: 500 }
+			{ status: 500, headers }
 		);
 	}
 }

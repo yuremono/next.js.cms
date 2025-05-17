@@ -9,10 +9,14 @@ export default async function Home() {
 	let pageData: Page | null = null;
 
 	try {
-		// 必ずAPI経由で取得（正規化テーブルから組み立てたデータ）
-		const response = await fetch(`/api/page`, { cache: "no-store" });
-		if (response.ok) {
-			pageData = await response.json();
+		// サーバーサイドコンポーネントではAPiルートではなく直接Supabaseクライアントを使用
+		const apiData = await fetch(`/api/page`, {
+			cache: "no-store",
+			next: { revalidate: 0 },
+		});
+
+		if (apiData.ok) {
+			pageData = await apiData.json();
 		}
 	} catch (error) {
 		console.error("ページデータの取得に失敗しました", error);
