@@ -1,16 +1,9 @@
 {
-        "name": "cms0505",
         "buildCommand": "DISABLE_ESLINT_PLUGIN=true NEXT_DISABLE_ESLINT=true NEXT_DISABLE_TYPECHECK=true NODE_OPTIONS='--require ./next-env.js' next build --no-lint --no-mangling",
         "outputDirectory": ".next",
         "devCommand": "npm run dev",
         "installCommand": "npm install --legacy-peer-deps --force",
         "framework": "nextjs",
-        "builds": [
-                {
-                        "src": "package.json",
-                        "use": "@vercel/next"
-                }
-        ],
         "env": {
                 "NODE_ENV": "production",
                 "NEXT_TELEMETRY_DISABLED": "1",
