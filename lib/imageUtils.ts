@@ -1,5 +1,8 @@
-import { supabase } from "./supabase";
+import { supabase, isSupabaseConfigured } from "./supabase";
 import { v4 as uuidv4 } from "uuid";
+
+// 内部的にDataURLを保存するためのMap（本番環境用）
+const imageStore = new Map<string, string>();
 
 /**
  * 画像ファイルを最適化してSupabaseストレージにアップロードする
@@ -14,16 +17,21 @@ export async function uploadAndOptimizeImage(
 ): Promise<string | null> {
 	try {
 		// 環境変数が設定されていない場合はDataURIを使用
-		if (
-			!process.env.NEXT_PUBLIC_SUPABASE_URL ||
-			!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-		) {
-			return new Promise((resolve, reject) => {
+		if (!isSupabaseConfigured) {
+			// DataURLを生成
+			const dataUrl = await new Promise<string>((resolve, reject) => {
 				const reader = new FileReader();
 				reader.onload = () => resolve(reader.result as string);
 				reader.onerror = reject;
 				reader.readAsDataURL(file);
 			});
+
+			// 一意のIDを生成してイメージマップに保存
+			const imageId = `local-image-${uuidv4()}`;
+			imageStore.set(imageId, dataUrl);
+
+			// 実際のURLのような形式を返す
+			return `/_local/images/${imageId}`;
 		}
 
 		// 以下、Supabaseストレージを使用する場合の処理
@@ -56,4 +64,28 @@ export async function uploadAndOptimizeImage(
 		console.error("画像処理エラー:", error);
 		return null;
 	}
+}
+
+/**
+ * ローカルに保存されている画像データを取得
+ * @param imageId 画像ID
+ * @returns データURL
+ */
+export function getLocalImage(imageId: string): string | null {
+	return imageStore.get(imageId) || null;
+}
+
+/**
+ * すべてのローカル画像を取得
+ * @returns 画像情報の配列
+ */
+export function getAllLocalImages(): { name: string; url: string }[] {
+	const images: { name: string; url: string }[] = [];
+	imageStore.forEach((dataUrl, id) => {
+		images.push({
+			name: id,
+			url: `/_local/images/${id}`,
+		});
+	});
+	return images;
 }

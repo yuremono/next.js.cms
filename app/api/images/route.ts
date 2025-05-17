@@ -1,15 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { getAllLocalImages } from "@/lib/imageUtils";
 
 // 画像管理API - 画像一覧を取得
 export async function GET() {
 	try {
-		// 環境変数が設定されていなければ空配列を返す
-		if (
-			!process.env.NEXT_PUBLIC_SUPABASE_URL ||
-			!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-		) {
-			return NextResponse.json({ images: [] });
+		// 環境変数が設定されていなければローカル画像ストアを返す
+		if (!isSupabaseConfigured) {
+			const localImages = getAllLocalImages();
+			return NextResponse.json({
+				images: localImages.map((img) => ({
+					...img,
+					size: 0,
+					created: new Date().toISOString(),
+				})),
+			});
 		}
 
 		// Supabaseストレージから画像一覧を取得
