@@ -29,9 +29,12 @@ export async function uploadAndOptimizeImage(
 			// 一意のIDを生成してイメージマップに保存
 			const imageId = `local-image-${uuidv4()}`;
 			imageStore.set(imageId, dataUrl);
+			
+			console.log("Local image stored with ID:", imageId);
 
-			// 直接APIルートを指すURLを返す
-			return `/api/images/_local/${imageId}`;
+			// 直接APIルートを指すURLを返す - 絶対パスを使用
+			const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
+			return `${baseUrl}/api/images/_local/${imageId}`;
 		}
 
 		// 以下、Supabaseストレージを使用する場合の処理
@@ -90,10 +93,12 @@ export function deleteLocalImage(imageId: string): boolean {
  */
 export function getAllLocalImages(): { name: string; url: string }[] {
 	const images: { name: string; url: string }[] = [];
+	const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
+
 	imageStore.forEach((dataUrl, id) => {
 		images.push({
 			name: id,
-			url: `/api/images/_local/${id}`,
+			url: `${baseUrl}/api/images/_local/${id}`,
 		});
 	});
 	return images;

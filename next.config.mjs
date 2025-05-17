@@ -7,6 +7,8 @@ const nextConfig = {
 				hostname: "**",
 			},
 		],
+		domains: ["localhost", "next-js-cms.vercel.app", "vercel.app"],
+		unoptimized: process.env.NODE_ENV === "production",
 	},
 	typescript: {
 		// TypeScriptエラーを完全に無視

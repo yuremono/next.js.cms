@@ -93,6 +93,10 @@ export function ImageUpload({
 						alt="Uploaded image"
 						fill
 						className="object-cover rounded-lg"
+						unoptimized={
+							imageUrl.includes("_local") ||
+							imageUrl.startsWith("data:")
+						}
 					/>
 					<Button
 						variant="destructive"

@@ -157,6 +157,9 @@ export function ImageGalleryModal({
 											className="h-full w-full rounded object-cover"
 											width={400}
 											height={400}
+											unoptimized={image.url.includes(
+												"_local"
+											)}
 										/>
 
 										{/* オーバーレイとボタン */}
