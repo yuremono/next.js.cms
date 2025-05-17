@@ -14,7 +14,7 @@
       "name": "あああ",
       "image": "https://dvcaumqooopebexajsdw.supabase.co/storage/v1/object/public/cms-images/images/1afe237d-eec7-49b5-b161-8a0cebb66246.jpg",
       "html": "<h1>メインタイトル</h1><p>サブタイトル：ここにテキストを入力</p>",
-      "id": "section-1747450349357-on507fb"
+      "id": "section-1747452983598-yka1fpm"
     },
     {
       "layout": "mainVisual",
@@ -23,7 +23,7 @@
       "name": "メインビジュアル2",
       "image": "https://dvcaumqooopebexajsdw.supabase.co/storage/v1/object/public/cms-images/images/d374b311-63c8-4019-8b3c-4c9bf2a5b068.jpg",
       "html": "<h1>メインタイトル</h1><p>サブタイトル：ここにテキストを入力</p>",
-      "id": "section-1747450349357-1ww83dz"
+      "id": "section-1747452983598-9qlpyje"
     },
     {
       "layout": "imgText",
@@ -32,7 +32,7 @@
       "name": "ががが",
       "image": "https://dvcaumqooopebexajsdw.supabase.co/storage/v1/object/public/cms-images/images/a11bcd50-51a8-40b9-a6f2-4455dbb2d5d0.jpg",
       "html": "<h2>セクションタイトル</h2><p>ここにテキストを入力します。</p>",
-      "id": "section-1747450349357-troe6u6"
+      "id": "section-1747452983598-a65b035"
     },
     {
       "layout": "cards",
@@ -53,7 +53,7 @@
           "html": "<h3 class=\"text-xl font-semibold mb-2\">レスポンシブ</h3><p>PC・タブレット・スマートフォンなど、あらゆる画面サイズに対応しています。</p>"
         }
       ],
-      "id": "section-1747450349357-kz6rc62"
+      "id": "section-1747452983598-eebbiog"
     },
     {
       "layout": "form",
@@ -62,7 +62,7 @@
       "name": "",
       "html": "<h2 class=\"text-2xl font-semibold text-center mb-6\">お問い合わせ</h2><p class=\"text-center mb-8\">製品に関するご質問やご要望がございましたら、下記フォームよりお気軽にお問い合わせください。</p>",
       "endpoint": "/api/contact",
-      "id": "section-1747450349357-947rd7i"
+      "id": "section-1747452983598-vi4cqka"
     }
   ]
 }
