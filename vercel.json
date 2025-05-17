@@ -1,4 +1,5 @@
 {
+        "name": "next-js-cms-yuremono",
         "buildCommand": "DISABLE_ESLINT_PLUGIN=true NEXT_DISABLE_ESLINT=true NEXT_DISABLE_TYPECHECK=true NODE_OPTIONS='--require ./next-env.js' next build --no-lint --no-mangling",
         "outputDirectory": ".next",
         "devCommand": "npm run dev",
