@@ -8,33 +8,34 @@
   "customCSS": "/* カスタムCSSの例 */\n/* ヘッダーのスタイルをカスタマイズ */\n/*\nheader {\n  background-color: #f8f9fa;\n  border-bottom: 1px solid #e9ecef;\n}\n\nheader a {\n  color: #343a40;\n}\n\nheader a:hover {\n  color: #007bff;\n  text-decoration: none;\n}\n*/",
   "sections": [
     {
+      "id": "section-242",
       "layout": "mainVisual",
       "class": "hero-section",
       "bgImage": "",
       "name": "あああ",
-      "image": "https://dvcaumqooopebexajsdw.supabase.co/storage/v1/object/public/cms-images/images/1afe237d-eec7-49b5-b161-8a0cebb66246.jpg",
-      "html": "<h1>メインタイトル</h1><p>サブタイトル：ここにテキストを入力</p>",
-      "id": "section-1747450349357-on507fb"
+      "image": "https://dvcaumqooopebexajsdw.supabase.co/storage/v1/object/public/cms-images/images/6e2a8a6e-e372-4e02-b59f-619e244a86f2.jpg",
+      "html": "<h1>メインタイトル</h1><p>サブタイトル：ここにテキストを入力</p>"
     },
     {
+      "id": "section-243",
       "layout": "mainVisual",
       "class": "hero-section",
       "bgImage": "",
       "name": "メインビジュアル2",
-      "image": "https://dvcaumqooopebexajsdw.supabase.co/storage/v1/object/public/cms-images/images/d374b311-63c8-4019-8b3c-4c9bf2a5b068.jpg",
-      "html": "<h1>メインタイトル</h1><p>サブタイトル：ここにテキストを入力</p>",
-      "id": "section-1747450349357-1ww83dz"
+      "image": "https://dvcaumqooopebexajsdw.supabase.co/storage/v1/object/public/cms-images/images/a3de58f3-48ad-4827-a91d-605950a60dad.png",
+      "html": "<h1>メインタイトル</h1><p>サブタイトル：ここにテキストを入力</p>"
     },
     {
+      "id": "section-244",
       "layout": "imgText",
       "class": "img-text-section",
       "bgImage": "",
       "name": "ががが",
       "image": "https://dvcaumqooopebexajsdw.supabase.co/storage/v1/object/public/cms-images/images/a11bcd50-51a8-40b9-a6f2-4455dbb2d5d0.jpg",
-      "html": "<h2>セクションタイトル</h2><p>ここにテキストを入力します。</p>",
-      "id": "section-1747450349357-troe6u6"
+      "html": "<h2>セクションタイトル</h2><p>ここにテキストを入力します。</p>"
     },
     {
+      "id": "section-245",
       "layout": "cards",
       "class": "cards-section bg-gray-50",
       "bgImage": "",
@@ -52,17 +53,16 @@
           "image": "",
           "html": "<h3 class=\"text-xl font-semibold mb-2\">レスポンシブ</h3><p>PC・タブレット・スマートフォンなど、あらゆる画面サイズに対応しています。</p>"
         }
-      ],
-      "id": "section-1747450349357-kz6rc62"
+      ]
     },
     {
+      "id": "section-246",
       "layout": "form",
       "class": "form-section",
       "bgImage": "",
       "name": "",
       "html": "<h2 class=\"text-2xl font-semibold text-center mb-6\">お問い合わせ</h2><p class=\"text-center mb-8\">製品に関するご質問やご要望がございましたら、下記フォームよりお気軽にお問い合わせください。</p>",
-      "endpoint": "/api/contact",
-      "id": "section-1747450349357-947rd7i"
+      "endpoint": "/api/contact"
     }
   ]
 }
