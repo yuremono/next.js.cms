@@ -79,7 +79,7 @@ export function SortableSections({
 					<div className="flex items-center justify-between">
 						<div className="flex items-center">
 							{getSectionIcon(section)}
-							<span className="text-base">
+							<span className="text-sm">
 								{getSectionTitle(section)}
 							</span>
 						</div>
