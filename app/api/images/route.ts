@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 
 // 画像管理API - 画像一覧を取得
-export async function GET(req: NextRequest) {
+export async function GET() {
 	try {
 		// 環境変数が設定されていなければ空配列を返す
 		if (

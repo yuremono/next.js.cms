@@ -1,68 +1,44 @@
 {
   "header": {
-    "html": "<header class=\"bg-white shadow-sm\">\n  <div class=\"container mx-auto px-4 py-4 flex justify-between items-center\">\n    <div class=\"logo\">\n      <a href=\"/\" class=\"text-xl font-bold\">サイト名</a>\n    </div>\n    <nav>\n      <ul class=\"flex space-x-6\">\n        <li><a href=\"#\" class=\"hover:text-primary\">ホーム</a></li>\n        <li><a href=\"#\" class=\"hover:text-primary\">会社概要</a></li>\n        <li><a href=\"#\" class=\"hover:text-primary\">サービス</a></li>\n        <li><a href=\"#\" class=\"hover:text-primary\">お問い合わせ</a></li>\n      </ul>\n    </nav>\n  </div>\n</header>"
+"html": "<header class=\"bg-white shadow-sm\">\n  <div class=\" mx-auto px-4 py-4 flex justify-between items-center\">\n    <div class=\"logo\">\n      <a href=\"/\" class=\"text-xl font-bold\">サイト名</a>\n    </div>\n    <nav>\n      <ul class=\"flex space-x-6\">\n        <li><a href=\"#\" class=\"hover:text-primary\">ホーム</a></li>\n        <li><a href=\"#\" class=\"hover:text-primary\">会社概要</a></li>\n        <li><a href=\"#\" class=\"hover:text-primary\">サービス</a></li>\n        <li><a href=\"#\" class=\"hover:text-primary\">お問い合わせ</a></li>\n      </ul>\n    </nav>\n  </div>\n</header>"
   },
   "footer": {
     "html": "<footer class=\"bg-gray-800 text-white\">\n  <div class=\"container mx-auto px-4 py-8\">\n    <div class=\"grid grid-cols-1 md:grid-cols-3 gap-8\">\n      <div>\n        <h3 class=\"text-lg font-semibold mb-4\">会社名</h3>\n        <p>〒123-4567<br />東京都○○区△△ 1-2-3</p>\n        <p>TEL: 03-1234-5678</p>\n      </div>\n      <div>\n        <h3 class=\"text-lg font-semibold mb-4\">リンク</h3>\n        <ul class=\"space-y-2\">\n          <li><a href=\"#\" class=\"hover:underline\">ホーム</a></li>\n          <li><a href=\"#\" class=\"hover:underline\">会社概要</a></li>\n          <li><a href=\"#\" class=\"hover:underline\">サービス</a></li>\n          <li><a href=\"#\" class=\"hover:underline\">お問い合わせ</a></li>\n        </ul>\n      </div>\n      <div>\n        <h3 class=\"text-lg font-semibold mb-4\">SNS</h3>\n        <div class=\"flex space-x-4\">\n          <a href=\"#\" class=\"hover:text-primary\">Twitter</a>\n          <a href=\"#\" class=\"hover:text-primary\">Facebook</a>\n          <a href=\"#\" class=\"hover:text-primary\">Instagram</a>\n        </div>\n      </div>\n    </div>\n    <div class=\"border-t border-gray-700 mt-8 pt-4 text-center\">\n      <p>© 2024 会社名. All rights reserved.</p>\n    </div>\n  </div>\n</footer>"
-  },
-  "customCSS": "/* カスタムCSSの例 */\n/* ヘッダーのスタイルをカスタマイズ */\n/*\nheader {\n  background-color: #f8f9fa;\n  border-bottom: 1px solid #e9ecef;\n}\n\nheader a {\n  color: #343a40;\n}\n\nheader a:hover {\n  color: #007bff;\n  text-decoration: none;\n}\n*/",
+},
   "sections": [
     {
+"id": "section-1684123456-abc123",
       "layout": "mainVisual",
       "class": "hero-section",
-      "bgImage": "",
-      "name": "あああ",
-      "image": "https://dvcaumqooopebexajsdw.supabase.co/storage/v1/object/public/cms-images/images/1afe237d-eec7-49b5-b161-8a0cebb66246.jpg",
-      "html": "<h1>メインタイトル</h1><p>サブタイトル：ここにテキストを入力</p>",
-      "id": "section-1747428169611-42dz44n"
+"html": "<h1>CMSデモサイト</h1><p>バックアップと復元機能のデモンストレーション</p>",
+"image": ""
     },
     {
-      "layout": "mainVisual",
-      "class": "hero-section",
-      "bgImage": "",
-      "name": "メインビジュアル2",
-      "image": "https://dvcaumqooopebexajsdw.supabase.co/storage/v1/object/public/cms-images/images/d374b311-63c8-4019-8b3c-4c9bf2a5b068.jpg",
-      "html": "<h1>メインタイトル</h1><p>サブタイトル：ここにテキストを入力</p>",
-      "id": "section-1747428169611-ppwod63"
-    },
-    {
+"id": "section-1684123457-def456",
       "layout": "imgText",
       "class": "img-text-section",
-      "bgImage": "",
-      "name": "ががが",
-      "image": "https://dvcaumqooopebexajsdw.supabase.co/storage/v1/object/public/cms-images/images/a11bcd50-51a8-40b9-a6f2-4455dbb2d5d0.jpg",
-      "html": "<h2>セクションタイトル</h2><p>ここにテキストを入力します。</p>",
-      "id": "section-1747428169611-1f6qjom"
+"html": "<h2>GitHub連携によるバックアップ</h2><p>CMSの編集内容はGitHubリポジトリにバックアップされます。バックアップは日時付きのブランチとして保存され、いつでも復元できます。</p>",
+"image": ""
     },
     {
+"id": "section-1684123458-ghi789",
       "layout": "cards",
-      "class": "cards-section bg-gray-50",
-      "bgImage": "",
-      "name": "かーず",
+"class": "cards-section",
       "cards": [
         {
-          "image": "https://dvcaumqooopebexajsdw.supabase.co/storage/v1/object/public/cms-images/images/d374b311-63c8-4019-8b3c-4c9bf2a5b068.jpg",
-          "html": "<h3 class=\"text-xl font-semibold mb-2\">簡単操作</h3><p>直感的なインターフェースで、専門知識がなくても簡単にWebサイトを編集できます。</p>"
+        "html": "<h3>簡単バックアップ</h3><p>ワンクリックでバックアップを作成できます。</p>",
+        "image": ""
         },
         {
-          "image": "",
-          "html": "<h3 class=\"text-xl font-semibold mb-2\">AI機能</h3><p>OpenAI連携でプロフェッショナルなテキストを自動生成できます。</p>"
+        "html": "<h3>バージョン管理</h3><p>過去のバージョンを日時で管理できます。</p>",
+        "image": ""
         },
         {
-          "image": "",
-          "html": "<h3 class=\"text-xl font-semibold mb-2\">レスポンシブ</h3><p>PC・タブレット・スマートフォンなど、あらゆる画面サイズに対応しています。</p>"
-        }
-      ],
-      "id": "section-1747428169611-ugeb43f"
-    },
-    {
-      "layout": "form",
-      "class": "form-section",
-      "bgImage": "",
-      "name": "",
-      "html": "<h2 class=\"text-2xl font-semibold text-center mb-6\">お問い合わせ</h2><p class=\"text-center mb-8\">製品に関するご質問やご要望がございましたら、下記フォームよりお気軽にお問い合わせください。</p>",
-      "endpoint": "/api/contact",
-      "id": "section-1747428169611-p4ph417"
-    }
-  ]
+        "html": "<h3>簡単復元</h3><p>必要なときにバックアップから復元できます。</p>",
+        "image": ""
+}
+]
+}
+],
+"customCSS": ".hero-section {\n  background-color: #f0f8ff;\n  padding: 4rem 0;\n}\n\n.img-text-section {\n  padding: 3rem 0;\n  background-color: #ffffff;\n}\n\n.cards-section {\n  padding: 3rem 0;\n  background-color: #f5f5f5;\n}"
 }

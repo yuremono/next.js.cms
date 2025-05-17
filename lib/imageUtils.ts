@@ -37,7 +37,7 @@ export async function uploadAndOptimizeImage(
 		// 実際のプロジェクトでは画像処理ライブラリを使用する
 
 		// Supabaseストレージにアップロード
-		const { data, error } = await supabase.storage
+		const { error } = await supabase.storage
 			.from("cms-images") // バケット名
 			.upload(filePath, file);
 

@@ -10,18 +10,21 @@ export interface BaseSection {
 	layout: string;
 	class: string;
 	bgImage?: string;
+	id: string;
 }
 
 export interface MainVisualSection extends BaseSection {
 	layout: "mainVisual";
 	image?: string;
 	html: string;
+	name?: string;
 }
 
 export interface ImgTextSection extends BaseSection {
 	layout: "imgText";
 	image?: string;
 	html: string;
+	name?: string;
 }
 
 export interface Card {
@@ -32,12 +35,14 @@ export interface Card {
 export interface CardsSection extends BaseSection {
 	layout: "cards";
 	cards: Card[];
+	name?: string;
 }
 
 export interface FormSection extends BaseSection {
 	layout: "form";
 	html: string;
 	endpoint: string;
+	name?: string;
 }
 
 export type Section =
@@ -51,5 +56,18 @@ export interface Page {
 	footer: Footer;
 	sections: Section[];
 	customCSS?: string;
+}
+
+export function isSection(obj: any): obj is Section {
+	return (
+		obj &&
+		typeof obj === "object" &&
+		typeof obj.layout === "string" &&
+		typeof obj.class === "string" &&
+		(obj.layout === "mainVisual" ||
+			obj.layout === "imgText" ||
+			obj.layout === "cards" ||
+			obj.layout === "form")
+	);
 }
  

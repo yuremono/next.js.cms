@@ -9,7 +9,6 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { EnhancedTextarea } from "../ui/enhanced-textarea";
 import { RichTextEditor } from "../ui/editor";
-import { PageTemplate } from "@/types";
 
 const templateSchema = z.object({
 	title: z.string().min(1, "必須項目です"),
@@ -29,7 +28,7 @@ const templateSchema = z.object({
 type TemplateFormValues = z.infer<typeof templateSchema>;
 
 interface TemplateFormProps {
-	initialData?: PageTemplate;
+	initialData?: TemplateFormValues;
 	onSubmit: (data: TemplateFormValues) => void;
 	isSubmitting?: boolean;
 }

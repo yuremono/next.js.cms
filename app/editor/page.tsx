@@ -10,20 +10,27 @@ import { HeaderEditor } from "@/components/sections/HeaderEditor";
 import { FooterEditor } from "@/components/sections/FooterEditor";
 import { SortableSections } from "@/components/SortableSections";
 import { SectionSelector } from "@/components/SectionSelector";
-import { SectionEditorRenderer } from "@/components/SectionEditorRenderer";
+import { SectionEditorRenderer } from "@/components/editor/SectionEditorRenderer";
 import { PageRenderer } from "@/components/PageRenderer";
 import { Save, Plus, Eye, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { TextGenerator } from "@/components/TextGenerator";
-import { ImageGallery } from "@/components/ImageGallery";
-import { CSSEditor } from "@/components/sections/CSSEditor";
+import { TextGenerator } from "@/components/sections/TextGenerator";
+import { ImageGallery } from "@/components/images/ImageGallery";
+import { CSSEditor } from "@/components/editor/CSSEditor";
+import { GitHubPanel } from "@/components/github/GitHubPanel";
 
 // デフォルトのセクションを作成する関数
 const createDefaultSection = (type: string): Section => {
+	// 一意のIDを生成
+	const id = `section-${Date.now()}-${Math.random()
+		.toString(36)
+		.substring(2, 9)}`;
+
 	switch (type) {
 		case "mainVisual":
 			return {
+				id,
 				layout: "mainVisual",
 				class: "hero-section",
 				html: "<h1>メインタイトル</h1><p>サブタイトル：ここにテキストを入力</p>",
@@ -31,6 +38,7 @@ const createDefaultSection = (type: string): Section => {
 			};
 		case "imgText":
 			return {
+				id,
 				layout: "imgText",
 				class: "img-text-section",
 				html: "<h2>セクションタイトル</h2><p>ここにテキストを入力します。</p>",
@@ -38,6 +46,7 @@ const createDefaultSection = (type: string): Section => {
 			};
 		case "cards":
 			return {
+				id,
 				layout: "cards",
 				class: "cards-section",
 				cards: [
@@ -49,6 +58,7 @@ const createDefaultSection = (type: string): Section => {
 			};
 		case "form":
 			return {
+				id,
 				layout: "form",
 				class: "form-section",
 				html: "<h2>お問い合わせ</h2><p>以下のフォームよりお問い合わせください。</p>",
@@ -140,15 +150,80 @@ export default function EditorPage() {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const response = await fetch("/api/page");
-				if (response.ok) {
-					const data = await response.json();
-					setPage(data);
+				// 復元されたデータがあるか確認
+				const restoredData = localStorage.getItem("restoredPageData");
+
+				if (restoredData) {
+					// 復元データがある場合はそれを使用
+					try {
+						const parsedData = JSON.parse(restoredData);
+
+						// 既存のセクションにIDがなければ追加
+						if (
+							parsedData.sections &&
+							Array.isArray(parsedData.sections)
+						) {
+							parsedData.sections = parsedData.sections.map(
+								(section: Section) => {
+									if (!section.id) {
+										return {
+											...section,
+											id: `section-${Date.now()}-${Math.random()
+												.toString(36)
+												.substring(2, 9)}`,
+										};
+									}
+									return section;
+								}
+							);
+						}
+
+						setPage(parsedData);
+						localStorage.removeItem("restoredPageData"); // 使用後は削除
+						toast.success(
+							"バックアップから復元されたデータを読み込みました"
+						);
+					} catch (error) {
+						console.error("復元データの解析に失敗しました", error);
+						toast.error("復元データの読み込みに失敗しました");
+						// APIからデータを取得する
+						await fetchFromAPI();
+					}
+				} else {
+					// 復元データがない場合はAPIからデータを取得
+					await fetchFromAPI();
 				}
 			} catch (error) {
 				console.error("ページデータの取得に失敗しました", error);
 			} finally {
 				setIsLoading(false);
+			}
+		};
+
+		// APIからデータを取得する関数
+		const fetchFromAPI = async () => {
+			const response = await fetch("/api/page");
+			if (response.ok) {
+				const data = await response.json();
+
+				// 既存のセクションにIDがなければ追加
+				if (data.sections && Array.isArray(data.sections)) {
+					data.sections = data.sections.map((section: Section) => {
+						if (!section.id) {
+							return {
+								...section,
+								id: `section-${Date.now()}-${Math.random()
+									.toString(36)
+									.substring(2, 9)}`,
+							};
+						}
+						return section;
+					});
+				}
+
+				setPage(data);
+			} else {
+				throw new Error("APIからのデータ取得に失敗しました");
 			}
 		};
 
@@ -303,6 +378,8 @@ export default function EditorPage() {
 						onUpdate={updateCustomCSS}
 					/>
 				);
+			case "github":
+				return <GitHubPanel page={page} />;
 			case "ai-generator":
 				return (
 					<div className="space-y-6">
@@ -453,6 +530,9 @@ export default function EditorPage() {
 									</TabsTrigger>
 									<TabsTrigger value="image-gallery">
 										画像
+									</TabsTrigger>
+									<TabsTrigger value="github">
+										バックアップ
 									</TabsTrigger>
 									<TabsTrigger value="sections">
 										セクション

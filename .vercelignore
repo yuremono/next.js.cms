@@ -1,0 +1,28 @@
+# Vercel
+.vercel
+
+# deleted or moved files
+app/admin
+app/dev
+app/admin/**/*
+app/dev/**/*
+components/TiptapEditor.tsx
+components/ui/lexical-editor.tsx
+components/sections/CSSEditor.tsx
+components/page/PageRenderer.tsx
+components/pageBuilder/PageRenderer.tsx
+
+# dependencies
+node_modules
+.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# misc
+.DS_Store 

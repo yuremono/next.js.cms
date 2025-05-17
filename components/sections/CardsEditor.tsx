@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { RichTextEditor } from "../ui/editor";
-import { ImageUpload } from "../ImageUpload";
-import { BackgroundImageUpload } from "../BackgroundImageUpload";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import { Card as UICard } from "../ui/card";
-import { Button } from "../ui/button";
+import { useState } from "react";
+import { RichTextEditor } from "@/components/ui/editor";
+import { ImageUpload } from "@/components/images/ImageUpload";
+import { BackgroundImageUpload } from "@/components/images/BackgroundImageUpload";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+// import { Textarea } from "@/components/ui/textarea";
+import { Card as UICard } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { CardsSection, Card } from "@/types";
 import { Plus, Trash, MoveUp, MoveDown } from "lucide-react";
 
@@ -17,38 +18,26 @@ interface CardsEditorProps {
 }
 
 export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
+	// 内部的に管理するのはアクティブなカードインデックスのみとする
 	const [activeCardIndex, setActiveCardIndex] = useState<number | null>(
 		section.cards.length > 0 ? 0 : null
 	);
-	const [className, setClassName] = useState(section.class);
-	const [backgroundImage, setBackgroundImage] = useState<string | null>(
-		section.bgImage || null
-	);
-	const [cards, setCards] = useState<Card[]>(section.cards);
-
-	// セクション全体を更新
-	const updateSection = () => {
-		onUpdate({
-			...section,
-			class: className,
-			bgImage: backgroundImage || undefined,
-			cards: cards,
-		});
-	};
-
-	// 値が変更されたらセクションを更新
-	useEffect(() => {
-		updateSection();
-	}, [className, backgroundImage, cards]);
 
 	// カードの更新を処理
-	const updateCard = (index: number, key: keyof Card, value: any) => {
-		const updatedCards = [...cards];
+	const updateCard = (
+		index: number,
+		key: keyof Card,
+		value: string | null
+	) => {
+		const updatedCards = [...section.cards];
 		updatedCards[index] = {
 			...updatedCards[index],
-			[key]: value,
+			[key]: value || undefined,
 		};
-		setCards(updatedCards);
+		onUpdate({
+			...section,
+			cards: updatedCards,
+		});
 	};
 
 	// 新しいカードを追加
@@ -57,16 +46,21 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
 			image: "",
 			html: "<h3>新しいカード</h3><p>ここにカードの内容を入力してください。</p>",
 		};
-		const updatedCards = [...cards, newCard];
-		setCards(updatedCards);
+		const updatedCards = [...section.cards, newCard];
+		onUpdate({
+			...section,
+			cards: updatedCards,
+		});
 		setActiveCardIndex(updatedCards.length - 1);
 	};
 
 	// カードを削除
 	const removeCard = (index: number) => {
-		const updatedCards = cards.filter((_, i) => i !== index);
-		setCards(updatedCards);
-
+		const updatedCards = section.cards.filter((_, i) => i !== index);
+		onUpdate({
+			...section,
+			cards: updatedCards,
+		});
 		if (activeCardIndex === index) {
 			setActiveCardIndex(updatedCards.length > 0 ? 0 : null);
 		} else if (activeCardIndex !== null && index < activeCardIndex) {
@@ -77,25 +71,55 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
 	// カードを上に移動
 	const moveCardUp = (index: number) => {
 		if (index <= 0) return;
-		const updatedCards = [...cards];
+		const updatedCards = [...section.cards];
 		[updatedCards[index - 1], updatedCards[index]] = [
 			updatedCards[index],
 			updatedCards[index - 1],
 		];
-		setCards(updatedCards);
+		onUpdate({
+			...section,
+			cards: updatedCards,
+		});
 		setActiveCardIndex(index - 1);
 	};
 
 	// カードを下に移動
 	const moveCardDown = (index: number) => {
-		if (index >= cards.length - 1) return;
-		const updatedCards = [...cards];
+		if (index >= section.cards.length - 1) return;
+		const updatedCards = [...section.cards];
 		[updatedCards[index], updatedCards[index + 1]] = [
 			updatedCards[index + 1],
 			updatedCards[index],
 		];
-		setCards(updatedCards);
+		onUpdate({
+			...section,
+			cards: updatedCards,
+		});
 		setActiveCardIndex(index + 1);
+	};
+
+	// クラス名の変更
+	const handleClassNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		onUpdate({
+			...section,
+			class: e.target.value,
+		});
+	};
+
+	// 背景画像の変更
+	const handleBgImageChange = (img: string | null) => {
+		onUpdate({
+			...section,
+			bgImage: img || undefined,
+		});
+	};
+
+	// セクション名の変更
+	const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		onUpdate({
+			...section,
+			name: e.target.value,
+		});
 	};
 
 	return (
@@ -104,36 +128,41 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
 				<h3 className="text-lg font-medium mb-4">
 					カードセクション設定
 				</h3>
-
 				<div className="space-y-4">
+					<div className="space-y-2">
+						<Label htmlFor="cards-name">セクション名</Label>
+						<Input
+							id="cards-name"
+							value={section.name || ""}
+							onChange={handleNameChange}
+							placeholder="例: カード"
+						/>
+					</div>
 					<div className="space-y-2">
 						<Label htmlFor="cards-class">クラス名</Label>
 						<Input
 							id="cards-class"
-							value={className}
-							onChange={(e) => setClassName(e.target.value)}
+							value={section.class}
+							onChange={handleClassNameChange}
 							placeholder="例: cards-section py-8"
 						/>
 					</div>
-
 					<BackgroundImageUpload
-						initialImage={backgroundImage || undefined}
-						onImageChange={setBackgroundImage}
+						initialImage={section.bgImage}
+						onImageChange={handleBgImageChange}
 						label="背景画像"
 					/>
-
 					<div className="border-t pt-4 mt-4">
 						<div className="flex justify-between items-center mb-4">
 							<h4 className="text-md font-medium">
-								カード ({cards.length})
+								カード ({section.cards.length})
 							</h4>
 							<Button size="sm" onClick={addCard}>
 								<Plus className="h-4 w-4 mr-1" />
 								カードを追加
 							</Button>
 						</div>
-
-						{cards.length === 0 ? (
+						{section.cards.length === 0 ? (
 							<div className="text-center p-8 border border-dashed rounded">
 								<p className="text-gray-500 mb-4">
 									カードがありません
@@ -148,7 +177,7 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
 								{/* カードリスト */}
 								<div className="md:col-span-3">
 									<div className="space-y-2">
-										{cards.map((card, index) => (
+										{section.cards.map((card, index) => (
 											<div
 												key={index}
 												className={`p-2 border rounded flex justify-between cursor-pointer ${
@@ -186,7 +215,9 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
 														}}
 														disabled={
 															index ===
-															cards.length - 1
+															section.cards
+																.length -
+																1
 														}
 													>
 														<MoveDown className="h-3 w-3" />
@@ -207,7 +238,6 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
 										))}
 									</div>
 								</div>
-
 								{/* カード編集 */}
 								{activeCardIndex !== null && (
 									<div className="md:col-span-9">
@@ -219,8 +249,9 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
 											<div className="space-y-4">
 												<ImageUpload
 													initialImage={
-														cards[activeCardIndex]
-															.image
+														section.cards[
+															activeCardIndex
+														].image
 													}
 													onImageChange={(url) =>
 														updateCard(
@@ -231,12 +262,11 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
 													}
 													label="カード画像"
 												/>
-
 												<div className="space-y-2">
 													<Label>カード内容</Label>
 													<RichTextEditor
 														content={
-															cards[
+															section.cards[
 																activeCardIndex
 															].html
 														}

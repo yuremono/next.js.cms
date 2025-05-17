@@ -1,67 +1,15 @@
-"use client";
+// 'use client' を削除
+// useEffect, useState, isMounted判定を削除
+// propsで受け取ったpageデータのみで描画
 
 import { Page, Section } from "@/types";
-import { sanitizeHtml } from "@/lib/sanitize";
-import { useEffect, useState } from "react";
+import Image from "next/image";
 
 interface PageRendererProps {
 	page: Page;
 }
 
 export function PageRenderer({ page }: PageRendererProps) {
-	const [isMounted, setIsMounted] = useState(false);
-
-	// コンポーネントがマウントされた後に処理を行う
-	useEffect(() => {
-		setIsMounted(true);
-
-		// カスタムCSSをhead要素に適用する
-		if (page.customCSS) {
-			// 既存のカスタムCSSスタイル要素を削除
-			const existingStyle = document.getElementById("custom-css");
-			if (existingStyle) {
-				existingStyle.remove();
-			}
-
-			// 新しいスタイル要素を作成して追加
-			const style = document.createElement("style");
-			style.id = "custom-css";
-			style.textContent = page.customCSS;
-			document.head.appendChild(style);
-		}
-
-		// コンポーネントがアンマウントされたときにスタイル要素を削除
-		return () => {
-			const style = document.getElementById("custom-css");
-			if (style) {
-				style.remove();
-			}
-		};
-	}, [page.customCSS]);
-
-	// サーバーサイドレンダリングと初期マウント時のずれを防ぐため
-	// マウント前は単純なスケルトンUIを表示
-	if (!isMounted) {
-		return (
-			<div className="min-h-screen bg-background">
-				<header className="bg-white shadow-sm p-4">
-					<div className="container mx-auto"></div>
-				</header>
-				<main className="min-h-screen">
-					<div className="container mx-auto p-4">
-						<div className="animate-pulse bg-gray-200 h-16 w-3/4 mb-4"></div>
-						<div className="animate-pulse bg-gray-200 h-8 w-1/2 mb-4"></div>
-						<div className="animate-pulse bg-gray-200 h-32 w-full mb-4"></div>
-					</div>
-				</main>
-				<footer className="bg-gray-800 text-white p-4">
-					<div className="container mx-auto"></div>
-				</footer>
-			</div>
-		);
-	}
-
-	// セクションに応じたレンダリング
 	const renderSection = (section: Section, index: number) => {
 		const sectionClass = section.class || "";
 		const bgStyle = section.bgImage
@@ -78,22 +26,25 @@ export function PageRenderer({ page }: PageRendererProps) {
 					>
 						<div className="container mx-auto px-4 py-12">
 							{section.image && (
-								<img
-									src={section.image}
-									alt="メインビジュアル"
-									className="max-w-full rounded-lg mb-6"
-								/>
+								<div className="relative w-full h-[500px]">
+									<Image
+										src={section.image}
+										alt="Main Visual"
+										fill
+										className="object-cover"
+										priority
+									/>
+								</div>
 							)}
 							<div
 								className="content"
 								dangerouslySetInnerHTML={{
-									__html: sanitizeHtml(section.html),
+									__html: section.html,
 								}}
 							/>
 						</div>
 					</section>
 				);
-
 			case "imgText":
 				return (
 					<section
@@ -102,13 +53,14 @@ export function PageRenderer({ page }: PageRendererProps) {
 						style={bgStyle}
 					>
 						<div className="container mx-auto px-4 py-12">
-							<div className="flex flex-col md:flex-row items-center gap-8">
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
 								{section.image && (
-									<div className="md:w-1/2">
-										<img
+									<div className="relative w-full h-[400px]">
+										<Image
 											src={section.image}
-											alt="セクション画像"
-											className="max-w-full rounded-lg"
+											alt="Section Image"
+											fill
+											className="object-cover rounded-lg"
 										/>
 									</div>
 								)}
@@ -120,7 +72,7 @@ export function PageRenderer({ page }: PageRendererProps) {
 									<div
 										className="content"
 										dangerouslySetInnerHTML={{
-											__html: sanitizeHtml(section.html),
+											__html: section.html,
 										}}
 									/>
 								</div>
@@ -128,7 +80,6 @@ export function PageRenderer({ page }: PageRendererProps) {
 						</div>
 					</section>
 				);
-
 			case "cards":
 				return (
 					<section
@@ -137,26 +88,27 @@ export function PageRenderer({ page }: PageRendererProps) {
 						style={bgStyle}
 					>
 						<div className="container mx-auto px-4 py-12">
-							<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-								{section.cards.map((card, cardIndex) => (
+							<div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+								{section.cards.map((card, idx) => (
 									<div
-										key={cardIndex}
-										className="card border rounded-lg overflow-hidden"
+										key={idx}
+										className="bg-white rounded-lg shadow-lg overflow-hidden"
 									>
 										{card.image && (
-											<img
-												src={card.image}
-												alt={`カード ${cardIndex + 1}`}
-												className="w-full h-48 object-cover"
-											/>
+											<div className="relative w-full h-[200px]">
+												<Image
+													src={card.image}
+													alt={`Card ${idx + 1}`}
+													fill
+													className="object-cover"
+												/>
+											</div>
 										)}
-										<div className="p-4">
+										<div className="p-6">
 											<div
 												className="content"
 												dangerouslySetInnerHTML={{
-													__html: sanitizeHtml(
-														card.html
-													),
+													__html: card.html,
 												}}
 											/>
 										</div>
@@ -166,7 +118,6 @@ export function PageRenderer({ page }: PageRendererProps) {
 						</div>
 					</section>
 				);
-
 			case "form":
 				return (
 					<section
@@ -178,7 +129,7 @@ export function PageRenderer({ page }: PageRendererProps) {
 							<div
 								className="content mb-8"
 								dangerouslySetInnerHTML={{
-									__html: sanitizeHtml(section.html),
+									__html: section.html,
 								}}
 							/>
 							<form
@@ -254,7 +205,6 @@ export function PageRenderer({ page }: PageRendererProps) {
 						</div>
 					</section>
 				);
-
 			default:
 				return (
 					<section key={index} className="unknown-section">
@@ -272,22 +222,16 @@ export function PageRenderer({ page }: PageRendererProps) {
 		<>
 			<header
 				className="header"
-				dangerouslySetInnerHTML={{
-					__html: sanitizeHtml(page.header.html),
-				}}
+				dangerouslySetInnerHTML={{ __html: page.header.html }}
 			/>
-
 			<main className="min-h-screen">
 				{page.sections.map((section, index) =>
 					renderSection(section, index)
 				)}
 			</main>
-
 			<footer
 				className="footer"
-				dangerouslySetInnerHTML={{
-					__html: sanitizeHtml(page.footer.html),
-				}}
+				dangerouslySetInnerHTML={{ __html: page.footer.html }}
 			/>
 		</>
 	);

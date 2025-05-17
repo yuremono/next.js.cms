@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { ImageIcon, Upload, X } from "lucide-react";
 import { uploadAndOptimizeImage } from "@/lib/imageUtils";
 import { ImageGalleryModal } from "./ImageGalleryModal";
+import Image from "next/image";
 
 interface BackgroundImageUploadProps {
 	initialImage?: string;
@@ -25,6 +26,13 @@ export function BackgroundImageUpload({
 	const [isUploading, setIsUploading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+
+	// 初期画像が変更されたら内部状態を更新
+	useEffect(() => {
+		if (initialImage !== imageUrl) {
+			setImageUrl(initialImage || null);
+		}
+	}, [initialImage, imageUrl]);
 
 	// 画像をアップロード
 	const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,7 +56,7 @@ export function BackgroundImageUpload({
 				setImageUrl(optimizedImageUrl);
 				onImageChange(optimizedImageUrl);
 			} else {
-				throw new Error("背景画像のアップロードに失敗しました");
+				throw new Error("画像のアップロードに失敗しました");
 			}
 		} catch (err) {
 			setError(
@@ -77,25 +85,32 @@ export function BackgroundImageUpload({
 		<div className="space-y-4">
 			<Label>{label}</Label>
 
-			{/* 背景画像プレビュー - スタイルを変更 */}
+			{/* 画像プレビュー */}
 			{imageUrl && (
-				<div className="relative mb-4">
-					<div
-						className="w-full h-32 rounded border bg-cover bg-center"
-						style={{ backgroundImage: `url(${imageUrl})` }}
-					/>
-					<Button
-						variant="destructive"
-						size="icon"
-						className="absolute top-2 right-2"
-						onClick={removeImage}
-					>
-						<X className="h-4 w-4" />
-					</Button>
+				<div className="relative">
+					<div className="relative h-[120px] w-full overflow-hidden rounded">
+						<Image
+							src={imageUrl}
+							alt="Background image"
+							fill
+							className="object-cover"
+							sizes="(max-width: 768px) 100vw, 768px"
+						/>
+						<div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent">
+							<Button
+								variant="destructive"
+								size="icon"
+								className="absolute bottom-2 right-2"
+								onClick={removeImage}
+							>
+								<X className="h-4 w-4" />
+							</Button>
+						</div>
+					</div>
 				</div>
 			)}
 
-			{/* 背景画像アップロード */}
+			{/* 画像アップロード */}
 			<div className="flex flex-wrap gap-2">
 				<Label
 					htmlFor="bg-image-upload"

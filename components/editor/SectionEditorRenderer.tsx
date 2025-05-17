@@ -1,10 +1,11 @@
 "use client";
 
-import { Section } from "@/types";
-import { MainVisualEditor } from "./sections/MainVisualEditor";
-import { ImgTextEditor } from "./sections/ImgTextEditor";
-import { CardsEditor } from "./sections/CardsEditor";
-import { FormEditor } from "./sections/FormEditor";
+import { Section, isSection } from "@/types";
+import { MainVisualEditor } from "@/components/sections/MainVisualEditor";
+import { ImgTextEditor } from "@/components/sections/ImgTextEditor";
+import { CardsEditor } from "@/components/sections/CardsEditor";
+import { FormEditor } from "@/components/sections/FormEditor";
+import { Alert } from "@/components/ui/alert";
 
 interface SectionEditorRendererProps {
 	section: Section;
@@ -15,7 +16,15 @@ export function SectionEditorRenderer({
 	section,
 	onUpdate,
 }: SectionEditorRendererProps) {
-	// セクションタイプに応じたコンポーネントを表示
+	// 型ガードで不正データを排除
+	if (!isSection(section)) {
+		return (
+			<Alert variant="destructive">
+				<p>不正なセクションデータです</p>
+			</Alert>
+		);
+	}
+	// セクションタイプに応じたエディタコンポーネントを表示
 	switch (section.layout) {
 		case "mainVisual":
 			return <MainVisualEditor section={section} onUpdate={onUpdate} />;
@@ -27,11 +36,12 @@ export function SectionEditorRenderer({
 			return <FormEditor section={section} onUpdate={onUpdate} />;
 		default:
 			return (
-				<div className="p-4 border rounded-md">
-					<p className="text-red-500">
-						未対応のセクションタイプです: {section.layout}
+				<Alert variant="destructive">
+					<p>
+						未知のセクションタイプです:{" "}
+						{(section as { layout?: string })?.layout ?? "不明"}
 					</p>
-				</div>
+				</Alert>
 			);
 	}
-}
+} 

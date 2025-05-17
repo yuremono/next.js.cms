@@ -2,7 +2,7 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./tabs";
 import { MonacoEditor } from "./monaco-editor";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface HeaderFooterEditorProps {
 	header: string;

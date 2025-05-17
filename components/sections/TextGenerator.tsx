@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "../ui/button";
-import { EnhancedTextarea } from "../ui/enhanced-textarea";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Card } from "../ui/card";
+import { Button } from "@/components/ui/button";
+import { EnhancedTextarea } from "@/components/ui/enhanced-textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card } from "@/components/ui/card";
 
 interface TextGeneratorProps {
 	onSelect: (text: string) => void;

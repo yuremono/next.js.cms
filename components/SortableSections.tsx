@@ -1,17 +1,7 @@
-"use client";
-
-import { useState } from "react";
-import { Card } from "./ui/card";
-import { Button } from "./ui/button";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Section } from "@/types";
-import {
-	Grip,
-	Trash2,
-	ChevronUp,
-	ChevronDown,
-	Eye,
-	EyeOff,
-} from "lucide-react";
+import { ChevronUp, ChevronDown, Trash2 } from "lucide-react";
 
 interface SortableSectionsProps {
 	sections: Section[];
@@ -30,6 +20,12 @@ export function SortableSections({
 }: SortableSectionsProps) {
 	// セクションタイプに応じて表示名を取得
 	const getSectionTitle = (section: Section) => {
+		// セクション名が設定されている場合はそれを表示
+		if (section.name) {
+			return section.name;
+		}
+
+		// セクション名が未設定の場合はデフォルト名を表示
 		switch (section.layout) {
 			case "mainVisual":
 				return "メインビジュアル";
@@ -58,7 +54,6 @@ export function SortableSections({
 				>
 					<div className="flex items-center justify-between">
 						<div className="flex items-center">
-							<Grip className="h-4 w-4 mr-2 text-gray-400" />
 							<span>{getSectionTitle(section)}</span>
 						</div>
 						<div className="flex items-center space-x-1">

@@ -1,7 +1,6 @@
 "use client";
 
 import { MonacoEditor } from "./monaco-editor";
-import { useState } from "react";
 
 interface EditorProps {
 	content: string;
@@ -10,12 +9,7 @@ interface EditorProps {
 	language?: string;
 }
 
-export function RichTextEditor({
-	content,
-	onChange,
-	placeholder = "ここにコンテンツを入力...",
-	language = "html",
-}: EditorProps) {
+export function RichTextEditor({ content, onChange, language = "html" }: EditorProps) {
 	return (
 		<MonacoEditor
 			content={content}

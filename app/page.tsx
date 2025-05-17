@@ -1,42 +1,23 @@
 import { PageRenderer } from "@/components/PageRenderer";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase";
 import { Page } from "@/types";
 
-// Supabaseからデータを取得するためにサーバーコンポーネントに変更
+// サーバーコンポーネント
 export default async function Home() {
 	// ページデータ取得
 	let pageData: Page | null = null;
 
 	try {
-		// Supabaseからデータを取得
-		if (
-			process.env.NEXT_PUBLIC_SUPABASE_URL &&
-			process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-		) {
-			const { data, error } = await supabase
-				.from("pages")
-				.select("content")
-				.eq("id", "main") // 単一ページなのでidは固定
-				.single();
-
-			if (!error && data) {
-				pageData = data.content as Page;
-			}
-		}
-
-		// データがない場合はAPIから取得
-		if (!pageData) {
-			const response = await fetch(
-				`${
-					process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-				}/api/page`,
-				{ cache: "no-store" }
-			);
-			if (response.ok) {
-				pageData = await response.json();
-			}
+		// 必ずAPI経由で取得（正規化テーブルから組み立てたデータ）
+		const response = await fetch(
+			`${
+				process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+			}/api/page`,
+			{ cache: "no-store" }
+		);
+		if (response.ok) {
+			pageData = await response.json();
 		}
 	} catch (error) {
 		console.error("ページデータの取得に失敗しました", error);
@@ -79,7 +60,6 @@ export default async function Home() {
 		header: modifiedHeader,
 	};
 
-	// 直接PageRendererを返す
 	return <PageRenderer page={modifiedPageData} />;
 }
  

@@ -1,12 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { RichTextEditor } from "../ui/editor";
-import { ImageUpload } from "../ImageUpload";
-import { BackgroundImageUpload } from "../BackgroundImageUpload";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import { Card } from "../ui/card";
+import { RichTextEditor } from "@/components/ui/editor";
+import { ImageUpload } from "@/components/images/ImageUpload";
+import { BackgroundImageUpload } from "@/components/images/BackgroundImageUpload";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
 import { ImgTextSection } from "@/types";
 
 interface ImgTextEditorProps {
@@ -15,64 +14,83 @@ interface ImgTextEditorProps {
 }
 
 export function ImgTextEditor({ section, onUpdate }: ImgTextEditorProps) {
-	const [html, setHtml] = useState(section.html);
-	const [mainImage, setMainImage] = useState<string | null>(
-		section.image || null
-	);
-	const [backgroundImage, setBackgroundImage] = useState<string | null>(
-		section.bgImage || null
-	);
-	const [className, setClassName] = useState(section.class);
+	// 直接propsからの値を使用し、内部状態を持たないようにする
 
-	// セクション全体を更新
-	const updateSection = () => {
+	const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		onUpdate({
 			...section,
-			html,
-			class: className,
-			image: mainImage || undefined,
-			bgImage: backgroundImage || undefined,
+			name: e.target.value,
 		});
 	};
 
-	// 値が変更されたらセクションを更新
-	useEffect(() => {
-		updateSection();
-	}, [html, className, mainImage, backgroundImage]);
+	const handleHtmlChange = (content: string) => {
+		onUpdate({
+			...section,
+			html: content,
+		});
+	};
+
+	const handleImageChange = (img: string | null) => {
+		onUpdate({
+			...section,
+			image: img || undefined,
+		});
+	};
+
+	const handleBgImageChange = (img: string | null) => {
+		onUpdate({
+			...section,
+			bgImage: img || undefined,
+		});
+	};
+
+	const handleClassNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		onUpdate({
+			...section,
+			class: e.target.value,
+		});
+	};
 
 	return (
 		<div className="space-y-6">
 			<Card className="p-4">
-				<h3 className="text-lg font-medium mb-4">画像テキスト設定</h3>
-
+				<h3 className="text-lg font-medium mb-4">
+					画像テキストセクション設定
+				</h3>
 				<div className="space-y-4">
 					<div className="space-y-2">
-						<Label htmlFor="img-text-class">クラス名</Label>
+						<Label htmlFor="imgtext-name">セクション名</Label>
 						<Input
-							id="img-text-class"
-							value={className}
-							onChange={(e) => setClassName(e.target.value)}
-							placeholder="例: img-text-section py-8"
+							id="imgtext-name"
+							value={section.name || ""}
+							onChange={handleNameChange}
+							placeholder="例: 画像とテキスト"
 						/>
 					</div>
-
+					<div className="space-y-2">
+						<Label htmlFor="imgtext-class">クラス名</Label>
+						<Input
+							id="imgtext-class"
+							value={section.class}
+							onChange={handleClassNameChange}
+							placeholder="例: img-text-section"
+						/>
+					</div>
 					<ImageUpload
-						initialImage={mainImage || undefined}
-						onImageChange={setMainImage}
-						label="セクション画像"
+						initialImage={section.image}
+						onImageChange={handleImageChange}
+						label="画像"
 					/>
-
 					<BackgroundImageUpload
-						initialImage={backgroundImage || undefined}
-						onImageChange={setBackgroundImage}
+						initialImage={section.bgImage}
+						onImageChange={handleBgImageChange}
 						label="背景画像"
 					/>
-
 					<div className="space-y-2">
 						<Label>コンテンツ</Label>
 						<RichTextEditor
-							content={html}
-							onChange={(content) => setHtml(content)}
+							content={section.html}
+							onChange={handleHtmlChange}
 							placeholder="ここにHTMLを入力..."
 						/>
 					</div>
