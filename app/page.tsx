@@ -10,12 +10,7 @@ export default async function Home() {
 
 	try {
 		// 必ずAPI経由で取得（正規化テーブルから組み立てたデータ）
-		const response = await fetch(
-			`${
-				process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-			}/api/page`,
-			{ cache: "no-store" }
-		);
+		const response = await fetch(`/api/page`, { cache: "no-store" });
 		if (response.ok) {
 			pageData = await response.json();
 		}

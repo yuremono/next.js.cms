@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { Page } from "@/types";
 
 const DEFAULT_PAGE_DATA: Page = {
@@ -117,6 +117,12 @@ header a:hover {
 // ページデータ取得
 export async function GET() {
 	try {
+		// Supabaseが設定されていない場合はデフォルトデータを返す
+		if (!isSupabaseConfigured) {
+			console.log("Supabase設定がないため、デフォルトデータを返します");
+			return NextResponse.json(DEFAULT_PAGE_DATA);
+		}
+
 		// 1. ページ本体
 		const { data: page, error: pageError } = await supabase
 			.from("pages")
