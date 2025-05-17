@@ -20,9 +20,5 @@
                 "NEXT_DISABLE_TYPECHECK": "true",
                 "DISABLE_ESLINT_PLUGIN": "true",
                 "DISABLE_TYPE_CHECKING": "true"
-        },
-        "engines": {
-                "node": "18.x",
-                "npm": "9.x"
         }
 }
