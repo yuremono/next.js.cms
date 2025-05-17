@@ -66,6 +66,59 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=あなたのSupabaseのAnon Key
 OPENAI_API_KEY=あなたのOpenAI APIキー
 ```
 
+## Supabaseの設定
+
+Supabaseを使用した画像ストレージを利用するには、以下の手順で設定を行ってください：
+
+1. [Supabase](https://supabase.com)にアカウント登録し、新しいプロジェクトを作成
+
+2. プロジェクト作成後、ストレージセクションで新しいバケットを作成：
+   - バケット名: `cms-images`
+   - 公開設定: `Public`
+
+3. Row Level Security (RLS)ポリシーを設定：
+   ```sql
+   -- 誰でも画像を閲覧可能にする
+   CREATE POLICY "Public Access" ON storage.objects
+   FOR SELECT USING (bucket_id = 'cms-images');
+
+   -- 認証済みユーザーのみ画像のアップロードを許可
+   CREATE POLICY "Auth Insert" ON storage.objects
+   FOR INSERT WITH CHECK (bucket_id = 'cms-images');
+
+   -- 認証済みユーザーのみ画像の削除を許可
+   CREATE POLICY "Auth Delete" ON storage.objects
+   FOR DELETE USING (bucket_id = 'cms-images');
+   ```
+
+4. 環境変数の設定：
+   - `.env.local`ファイルに以下の内容を追加：
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=あなたのSupabase URL
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=あなたのSupabase匿名キー
+   NEXT_PUBLIC_APP_URL=http://localhost:3000
+   ```
+   
+   - Vercelにデプロイする場合は、以下の環境変数を設定：
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=あなたのSupabase URL
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=あなたのSupabase匿名キー
+   NEXT_PUBLIC_APP_URL=あなたのVercelデプロイURL
+   ```
+
+5. 動作確認：
+   - 環境変数が正しく設定されていれば、画像アップロード時にSupabaseストレージを使用します
+   - 環境変数が設定されていない場合は、ローカル画像ストアを使用します
+
+## 開発環境と本番環境の違いについて
+
+本プロジェクトは以下の方法で開発環境と本番環境の差異を最小化しています：
+
+1. 環境変数を適切に設定し、開発環境と本番環境で一貫した動作を確保
+2. 画像ストレージにSupabaseを使用することで、永続的なストレージを実現
+3. Supabaseが設定されていない場合は、ローカル画像ストアを使用するフォールバックメカニズムを実装
+4. 絶対URLパスを使用して、開発環境と本番環境の両方で画像表示を正常に行えるように設計
+
 ## 開発サーバーの起動
 
 ```bash
