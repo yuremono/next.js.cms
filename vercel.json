@@ -1,5 +1,5 @@
 {
-        "name": "next-js-cms-yuremono",
+        "name": "next-js-cms",
         "buildCommand": "DISABLE_ESLINT_PLUGIN=true NEXT_DISABLE_ESLINT=true NEXT_DISABLE_TYPECHECK=true NODE_OPTIONS='--require ./next-env.js' next build --no-lint --no-mangling",
         "outputDirectory": ".next",
         "devCommand": "npm run dev",
@@ -21,6 +21,6 @@
                 "NEXT_DISABLE_TYPECHECK": "true",
                 "DISABLE_ESLINT_PLUGIN": "true",
                 "DISABLE_TYPE_CHECKING": "true",
-                "NEXT_PUBLIC_APP_URL": "https://next-js-cms-git-fix-deploy-latest-yuremono.vercel.app"
+                "NEXT_PUBLIC_APP_URL": "https://next-js-cms.vercel.app"
         }
 }
