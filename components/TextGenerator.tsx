@@ -28,7 +28,7 @@ export function TextGenerator({
 						</div>
 						<button
 							onClick={() => onSelect(generatedText)}
-							className="px-4 py-2 bg-blue-500 text-white rounded font-medium"
+							className="px-4 py-2 bg-blue-900 text-white rounded font-medium"
 						>
 							このテキストを使用
 						</button>

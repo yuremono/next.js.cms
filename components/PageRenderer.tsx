@@ -197,7 +197,7 @@ export function PageRenderer({ page }: PageRendererProps) {
 								</div>
 								<button
 									type="submit"
-									className="px-4 py-2 bg-blue-500 text-white rounded font-medium"
+									className="px-4 py-2 bg-blue-900 text-white rounded font-medium"
 								>
 									送信
 								</button>
