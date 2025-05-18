@@ -10,15 +10,102 @@ import { Input } from "@/components/ui/input";
 import { Card as UICard } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CardsSection, Card } from "@/types";
-import { Plus, Trash, MoveUp, MoveDown } from "lucide-react";
+import { Plus, Trash, GripVertical } from "lucide-react";
+
+import {
+	DndContext,
+	closestCenter,
+	KeyboardSensor,
+	PointerSensor,
+	useSensor,
+	useSensors,
+	DragEndEvent,
+} from "@dnd-kit/core";
+import {
+	SortableContext,
+	sortableKeyboardCoordinates,
+	useSortable,
+	verticalListSortingStrategy,
+	arrayMove,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface CardsEditorProps {
 	section: CardsSection;
 	onUpdate: (section: CardsSection) => void;
 }
 
+// ドラッグ可能なカードアイテムのコンポーネント
+const SortableCardItem = ({
+	index,
+	onSelect,
+	onDelete,
+	isActive,
+}: {
+	card: Card; // cardは使用されていませんが、型定義として残しておきます
+	index: number;
+	onSelect: () => void;
+	onDelete: () => void;
+	isActive: boolean;
+}) => {
+	const {
+		attributes,
+		listeners,
+		setNodeRef,
+		transform,
+		transition,
+		isDragging,
+	} = useSortable({
+		id: `card-${index}`,
+	});
+
+	const style = {
+		transform: CSS.Transform.toString(transform),
+		transition,
+		opacity: isDragging ? 0.5 : 1,
+	};
+
+	return (
+		<div
+			ref={setNodeRef}
+			style={style}
+			className={`p-2 border rounded flex justify-between items-center cursor-pointer ${
+				isActive
+					? "border-blue-500 bg-blue-50"
+					: "hover:border-gray-300"
+			}`}
+			onClick={onSelect}
+		>
+			<div className="flex items-center">
+				<div
+					{...attributes}
+					{...listeners}
+					className="cursor-grab mr-2 text-gray-400 hover:text-gray-600 flex-shrink-0"
+				>
+					<GripVertical className="h-4 w-4" />
+				</div>
+				<span className="truncate text-sm">カード {index + 1}</span>
+			</div>
+			<Button
+				variant="ghost"
+				size="icon"
+				className="h-5 w-5 text-red-500 hover:text-red-600 flex-shrink-0"
+				onClick={(e) => {
+					e.stopPropagation();
+					if (
+						window.confirm("このカードを削除してもよろしいですか？")
+					) {
+						onDelete();
+					}
+				}}
+			>
+				<Trash className="h-3 w-3" />
+			</Button>
+		</div>
+	);
+};
+
 export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
-	// 内部的に管理するのはアクティブなカードインデックスのみとする
 	const [activeCardIndex, setActiveCardIndex] = useState<number | null>(
 		section.cards.length > 0 ? 0 : null
 	);
@@ -68,35 +155,44 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
 		}
 	};
 
-	// カードを上に移動
-	const moveCardUp = (index: number) => {
-		if (index <= 0) return;
-		const updatedCards = [...section.cards];
-		[updatedCards[index - 1], updatedCards[index]] = [
-			updatedCards[index],
-			updatedCards[index - 1],
-		];
-		onUpdate({
-			...section,
-			cards: updatedCards,
-		});
-		setActiveCardIndex(index - 1);
+	// カードの並び替えを処理
+	const handleDragEnd = (event: DragEndEvent) => {
+		const { active, over } = event;
+
+		if (over && active.id !== over.id) {
+			const oldIndex = section.cards.findIndex(
+				(card, i) => `card-${i}` === active.id
+			);
+			const newIndex = section.cards.findIndex(
+				(card, i) => `card-${i}` === over.id
+			);
+
+			if (oldIndex !== -1 && newIndex !== -1) {
+				const updatedCards = arrayMove(
+					section.cards,
+					oldIndex,
+					newIndex
+				);
+				onUpdate({ ...section, cards: updatedCards });
+				// 並び替え後に選択状態を維持
+				const newActiveIndex = updatedCards.findIndex(
+					(card) => card === section.cards[oldIndex]
+				);
+				setActiveCardIndex(newActiveIndex);
+			}
+		}
 	};
 
-	// カードを下に移動
-	const moveCardDown = (index: number) => {
-		if (index >= section.cards.length - 1) return;
-		const updatedCards = [...section.cards];
-		[updatedCards[index], updatedCards[index + 1]] = [
-			updatedCards[index + 1],
-			updatedCards[index],
-		];
-		onUpdate({
-			...section,
-			cards: updatedCards,
-		});
-		setActiveCardIndex(index + 1);
-	};
+	const sensors = useSensors(
+		useSensor(PointerSensor, {
+			activationConstraint: {
+				distance: 8,
+			},
+		}),
+		useSensor(KeyboardSensor, {
+			coordinateGetter: sortableKeyboardCoordinates,
+		})
+	);
 
 	// クラス名の変更
 	const handleClassNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -173,118 +269,107 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
 								</Button>
 							</div>
 						) : (
-							<div className="grid grid-cols-1 gap-6 md:grid-cols-12">
-								{/* カードリスト */}
-								<div className="md:col-span-3">
-									<div className="space-y-2">
-										{section.cards.map((card, index) => (
-											<div
-												key={index}
-												className={`p-2 border rounded flex justify-between cursor-pointer ${
-													activeCardIndex === index
-														? "border-blue-500 bg-blue-50"
-														: ""
-												}`}
-												onClick={() =>
-													setActiveCardIndex(index)
-												}
-											>
-												<span className="truncate">
-													カード {index + 1}
-												</span>
-												<div className="flex items-center space-x-1">
-													<Button
-														variant="ghost"
-														size="icon"
-														className="h-5 w-5"
-														onClick={(e) => {
-															e.stopPropagation();
-															moveCardUp(index);
-														}}
-														disabled={index === 0}
-													>
-														<MoveUp className="h-3 w-3" />
-													</Button>
-													<Button
-														variant="ghost"
-														size="icon"
-														className="h-5 w-5"
-														onClick={(e) => {
-															e.stopPropagation();
-															moveCardDown(index);
-														}}
-														disabled={
-															index ===
-															section.cards
-																.length -
-																1
+							<DndContext
+								sensors={sensors}
+								collisionDetection={closestCenter}
+								onDragEnd={handleDragEnd}
+							>
+								<SortableContext
+									items={section.cards.map(
+										(_, i) => `card-${i}`
+									)}
+									strategy={verticalListSortingStrategy}
+								>
+									<div className="flex flex-col md:flex-row gap-4">
+										<div className="md:w-1/3 space-y-2">
+											{section.cards.map(
+												(card, index) => (
+													<SortableCardItem
+														key={`card-${index}`}
+														card={card}
+														index={index}
+														isActive={
+															activeCardIndex ===
+															index
 														}
-													>
-														<MoveDown className="h-3 w-3" />
-													</Button>
-													<Button
-														variant="ghost"
-														size="icon"
-														className="h-5 w-5 text-red-500"
-														onClick={(e) => {
-															e.stopPropagation();
-															removeCard(index);
-														}}
-													>
-														<Trash className="h-3 w-3" />
-													</Button>
-												</div>
-											</div>
-										))}
-									</div>
-								</div>
-								{/* カード編集 */}
-								{activeCardIndex !== null && (
-									<div className="md:col-span-9">
-										<UICard className="p-4">
-											<h4 className="text-md font-medium mb-4">
-												カード {activeCardIndex + 1}{" "}
-												を編集
-											</h4>
-											<div className="space-y-4">
-												<ImageUpload
-													initialImage={
-														section.cards[
-															activeCardIndex
-														].image
-													}
-													onImageChange={(url) =>
-														updateCard(
-															activeCardIndex,
-															"image",
-															url
-														)
-													}
-													label="カード画像"
-												/>
-												<div className="space-y-2">
-													<Label>カード内容</Label>
-													<RichTextEditor
-														content={
-															section.cards[
-																activeCardIndex
-															].html
-														}
-														onChange={(content) =>
-															updateCard(
-																activeCardIndex,
-																"html",
-																content
+														onSelect={() =>
+															setActiveCardIndex(
+																index
 															)
 														}
-														placeholder="ここにカードのHTMLを入力..."
+														onDelete={() =>
+															removeCard(index)
+														}
 													/>
-												</div>
+												)
+											)}
+										</div>
+										{activeCardIndex !== null && (
+											<div className="md:w-2/3">
+												<UICard className="p-4">
+													<h4 className="text-md font-medium mb-4">
+														カード{" "}
+														{activeCardIndex + 1}{" "}
+														を編集
+													</h4>
+													<div className="space-y-4">
+														<div className="flex flex-col md:flex-row md:items-center gap-4">
+															<div className="md:w-1/3">
+																<Label>
+																	カード画像
+																</Label>
+															</div>
+															<div className="md:w-2/3">
+																<ImageUpload
+																	label="カード画像"
+																	initialImage={
+																		section
+																			.cards[
+																			activeCardIndex
+																		]?.image
+																	}
+																	onImageChange={(
+																		url
+																	) =>
+																		updateCard(
+																			activeCardIndex,
+																			"image",
+																			url
+																		)
+																	}
+																/>
+															</div>
+														</div>
+														<div className="space-y-2">
+															<Label>
+																カード内容
+																(HTML)
+															</Label>
+															<RichTextEditor
+																initialContent={
+																	section
+																		.cards[
+																		activeCardIndex
+																	]?.html
+																}
+																onContentChange={(
+																	html
+																) =>
+																	updateCard(
+																		activeCardIndex,
+																		"html",
+																		html
+																	)
+																}
+															/>
+														</div>
+													</div>
+												</UICard>
 											</div>
-										</UICard>
+										)}
 									</div>
-								)}
-							</div>
+								</SortableContext>
+							</DndContext>
 						)}
 					</div>
 				</div>
