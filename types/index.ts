@@ -7,29 +7,35 @@ export interface Footer {
 }
 
 export interface BaseSection {
-	layout: string;
-	class: string;
-	bgImage?: string;
-	id: string;
+  layout: string;
+  class: string;
+  bgImage?: string;
+  id: string;
 }
 
 export interface MainVisualSection extends BaseSection {
-	layout: "mainVisual";
-	image?: string;
-	html: string;
-	name?: string;
+  layout: "mainVisual";
+  image?: string;
+  imageClass?: string;
+  textClass?: string;
+  html: string;
+  name?: string;
 }
 
 export interface ImgTextSection extends BaseSection {
-	layout: "imgText";
-	image?: string;
-	html: string;
-	name?: string;
+  layout: "imgText";
+  image?: string;
+  imageClass?: string;
+  textClass?: string;
+  html: string;
+  name?: string;
 }
 
 export interface Card {
-	image?: string;
-	html: string;
+  image?: string;
+  imageClass?: string;
+  textClass?: string;
+  html: string;
 }
 
 export interface CardsSection extends BaseSection {

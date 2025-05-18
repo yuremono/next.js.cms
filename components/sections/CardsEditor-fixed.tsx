@@ -13,96 +13,92 @@ import { CardsSection, Card } from "@/types";
 import { Plus, Trash, GripVertical } from "lucide-react";
 
 import {
-	DndContext,
-	closestCenter,
-	KeyboardSensor,
-	PointerSensor,
-	useSensor,
-	useSensors,
-	DragEndEvent,
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
 } from "@dnd-kit/core";
 import {
-	SortableContext,
-	sortableKeyboardCoordinates,
-	useSortable,
-	verticalListSortingStrategy,
-	arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
 interface CardsEditorProps {
-	section: CardsSection;
-	onUpdate: (section: CardsSection) => void;
+  section: CardsSection;
+  onUpdate: (section: CardsSection) => void;
 }
 
 // ドラッグ可能なカードアイテムのコンポーネント
 const SortableCardItem = ({
-	index,
-	onSelect,
-	onDelete,
-	isActive,
+  index,
+  onSelect,
+  onDelete,
+  isActive,
 }: {
-	card: Card; // cardは使用されていませんが、型定義として残しておきます
-	index: number;
-	onSelect: () => void;
-	onDelete: () => void;
-	isActive: boolean;
+  card: Card; // cardは使用されていませんが、型定義として残しておきます
+  index: number;
+  onSelect: () => void;
+  onDelete: () => void;
+  isActive: boolean;
 }) => {
-	const {
-		attributes,
-		listeners,
-		setNodeRef,
-		transform,
-		transition,
-		isDragging,
-	} = useSortable({
-		id: `card-${index}`,
-	});
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: `card-${index}`,
+  });
 
-	const style = {
-		transform: CSS.Transform.toString(transform),
-		transition,
-		opacity: isDragging ? 0.5 : 1,
-	};
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
 
-	return (
-		<div
-			ref={setNodeRef}
-			style={style}
-			className={`p-2 border rounded flex justify-between items-center cursor-pointer ${
-				isActive
-					? "border-blue-500 bg-blue-50"
-					: "hover:border-gray-300"
-			}`}
-			onClick={onSelect}
-		>
-			<div className="flex items-center">
-				<div
-					{...attributes}
-					{...listeners}
-					className="cursor-grab mr-2 text-gray-400 hover:text-gray-600 flex-shrink-0"
-				>
-					<GripVertical className="h-4 w-4" />
-				</div>
-				<span className="truncate text-sm">カード {index + 1}</span>
-			</div>
-			<Button
-				variant="ghost"
-				size="icon"
-				className="h-5 w-5 text-red-500 hover:text-red-600 flex-shrink-0"
-				onClick={(e) => {
-					e.stopPropagation();
-					if (
-						window.confirm("このカードを削除してもよろしいですか？")
-					) {
-						onDelete();
-					}
-				}}
-			>
-				<Trash className="h-3 w-3" />
-			</Button>
-		</div>
-	);
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`flex cursor-pointer items-center justify-between rounded border p-2 ${
+        isActive ? "border-blue-500 bg-blue-50" : "hover:border-gray-300"
+      }`}
+      onClick={onSelect}
+    >
+      <div className="flex items-center">
+        <div
+          {...attributes}
+          {...listeners}
+          className="mr-2 flex-shrink-0 cursor-grab text-gray-400 hover:text-gray-600"
+        >
+          <GripVertical className="h-4 w-4" />
+        </div>
+        <span className="truncate text-sm">カード {index + 1}</span>
+      </div>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-5 w-5 flex-shrink-0 text-red-500 hover:text-red-600"
+        onClick={(e) => {
+          e.stopPropagation();
+          if (window.confirm("このカードを削除してもよろしいですか？")) {
+            onDelete();
+          }
+        }}
+      >
+        <Trash className="h-3 w-3" />
+      </Button>
+    </div>
+  );
 };
 
 export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
@@ -204,13 +200,6 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
     });
   };
 
-  const handleBgClassChange = (className: string) => {
-    onUpdate({
-      ...section,
-      bgClass: className,
-    });
-  };
-
   // セクション名の変更
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onUpdate({
@@ -224,8 +213,8 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
       <UICard className="p-4">
         <h3 className="mb-4 text-lg font-medium">カードセクション設定</h3>
         <div className="space-y-2">
-          <div className="flex gap-2 space-y-2">
-            <Label className="" htmlFor="cards-name">
+          <div className="flex items-center gap-2">
+            <Label className="w-28" htmlFor="cards-name">
               セクション名
             </Label>
             <Input
@@ -233,10 +222,11 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
               value={section.name || ""}
               onChange={handleNameChange}
               placeholder="例: カード"
+              className="flex-1"
             />
           </div>
-          <div className="flex gap-2 space-y-2">
-            <Label className="" htmlFor="cards-class">
+          <div className="flex items-center gap-2">
+            <Label className="w-28" htmlFor="cards-class">
               セクションクラス
             </Label>
             <Input
@@ -244,13 +234,12 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
               value={section.class}
               onChange={handleClassNameChange}
               placeholder="例: cards-section py-8"
+              className="flex-1"
             />
           </div>
           <BackgroundImageUpload
             initialImage={section.bgImage}
-            initialClass={section.bgClass || ""}
             onImageChange={handleBgImageChange}
-            onClassChange={handleBgClassChange}
             label="背景画像"
           />
 
