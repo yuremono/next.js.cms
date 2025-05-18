@@ -3,6 +3,11 @@
 ## 概要
 このプロジェクトは、テンプレートを用いて簡単に編集できるWebサイトを提供する簡易CMSです。Next.js、TypeScript、TailwindCSS、Supabase、OpenAI APIなどの技術を活用しています。
 
+## ブランチ構成
+
+- `main`: 最新の仮完成版（デモや面接時に見せる用）
+- `archive/initial-version`: プロジェクト初期状態のまま残したバックアップ
+
 ## セットアップ手順
 1. リポジトリをクローン
    ```bash
