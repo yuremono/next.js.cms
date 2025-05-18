@@ -19,105 +19,107 @@ export function PageRenderer({ page }: PageRendererProps) {
 		switch (section.layout) {
 			case "mainVisual":
 				return (
-					<section
-						key={index}
-						className={`main-visual ${sectionClass}`}
-						style={bgStyle}
-					>
-						<div className="container mx-auto px-4 py-12">
-							{section.image && (
-								<div className="relative w-full h-[500px]">
-									<Image
-										src={section.image}
-										alt="Main Visual"
-										fill
-										className="object-cover"
-										priority
-									/>
-								</div>
-							)}
-							<div
-								className="content"
-								dangerouslySetInnerHTML={{
-									__html: section.html,
-								}}
-							/>
-						</div>
-					</section>
-				);
+          <section
+            key={index}
+            className={`main-visual ${sectionClass}`}
+            style={bgStyle}
+          >
+            <div className="container mx-auto px-4 py-12">
+              {section.image && (
+                <div
+                  className={`relative h-[500px] w-full ${section.imageClass || ""}`}
+                >
+                  <Image
+                    src={section.image}
+                    alt="Main Visual"
+                    fill
+                    className="object-cover"
+                    priority
+                  />
+                </div>
+              )}
+              <div
+                className={`content ${section.textClass || ""}`}
+                dangerouslySetInnerHTML={{
+                  __html: section.html,
+                }}
+              />
+            </div>
+          </section>
+        );
 			case "imgText":
 				return (
-					<section
-						key={index}
-						className={`img-text ${sectionClass}`}
-						style={bgStyle}
-					>
-						<div className="container mx-auto px-4 py-12">
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-								{section.image && (
-									<div className="relative w-full h-[400px]">
-										<Image
-											src={section.image}
-											alt="Section Image"
-											fill
-											className="object-cover rounded-lg"
-										/>
-									</div>
-								)}
-								<div
-									className={
-										section.image ? "md:w-1/2" : "w-full"
-									}
-								>
-									<div
-										className="content"
-										dangerouslySetInnerHTML={{
-											__html: section.html,
-										}}
-									/>
-								</div>
-							</div>
-						</div>
-					</section>
-				);
+          <section
+            key={index}
+            className={`img-text ${sectionClass}`}
+            style={bgStyle}
+          >
+            <div className="container mx-auto px-4 py-12">
+              <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-2">
+                {section.image && (
+                  <div
+                    className={`relative h-[400px] w-full ${section.imageClass || ""}`}
+                  >
+                    <Image
+                      src={section.image}
+                      alt="Section Image"
+                      fill
+                      className="rounded-lg object-cover"
+                    />
+                  </div>
+                )}
+                <div className={section.image ? "md:w-1/2" : "w-full"}>
+                  <div
+                    className={`content ${section.textClass || ""}`}
+                    dangerouslySetInnerHTML={{
+                      __html: section.html,
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+        );
 			case "cards":
 				return (
-					<section
-						key={index}
-						className={`cards ${sectionClass}`}
-						style={bgStyle}
-					>
-						<div className="container mx-auto px-4 py-12">
-							<div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-								{section.cards.map((card, idx) => (
-									<div
-										key={idx}
-										className="bg-white rounded-lg shadow-lg overflow-hidden"
-									>
-										{card.image && (
-											<div className="relative w-full h-[200px]">
-												<Image
-													src={card.image}
-													alt={`Card ${idx + 1}`}
-													fill
-													className="object-cover"
-												/>
-											</div>
-										)}
-										<div className="p-6">
-											<div
-												className="content"
-												dangerouslySetInnerHTML={{
-													__html: card.html,
-												}}
-											/>
-										</div>
-									</div>
-								))}
-							</div>
-						</div>
-					</section>
-				);
+          <section
+            key={index}
+            className={`cards ${sectionClass}`}
+            style={bgStyle}
+          >
+            <div className="container mx-auto px-4 py-12">
+              <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+                {section.cards.map((card, idx) => (
+                  <div
+                    key={idx}
+                    className="overflow-hidden rounded-lg bg-white shadow-lg"
+                  >
+                    {card.image && (
+                      <div
+                        className={`relative h-[200px] w-full ${card.imageClass || ""}`}
+                      >
+                        <Image
+                          src={card.image}
+                          alt={`Card ${idx + 1}`}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    )}
+                    <div className="p-6">
+                      <div
+                        className={`content ${card.textClass || ""}`}
+                        dangerouslySetInnerHTML={{
+                          __html: card.html,
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
 			case "form":
 				return (
 					<section

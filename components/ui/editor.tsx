@@ -1,6 +1,7 @@
 "use client";
 
 import { MonacoEditor } from "./monaco-editor";
+import { cn } from "@/lib/utils";
 
 interface EditorProps {
 	content: string;
@@ -12,6 +13,7 @@ interface EditorProps {
 export function RichTextEditor({ content, onChange, language = "html" }: EditorProps) {
 	return (
 		<MonacoEditor
+			
 			content={content}
 			onChange={onChange}
 			language={language}

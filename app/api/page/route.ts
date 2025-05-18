@@ -170,14 +170,17 @@ export async function GET() {
 					.eq("section_id", section.id)
 					.single();
 				sectionResults.push({
-					id: `section-${section.id}`,
-					layout: "mainVisual",
-					class: mv?.class ?? "",
-					bgImage: mv?.bg_image ?? "",
-					name: mv?.name ?? "",
-					image: mv?.image ?? "",
-					html: mv?.html ?? "",
-				});
+          id: `section-${section.id}`,
+          layout: "mainVisual",
+          class: mv?.class ?? "",
+          bgImage: mv?.bg_image ?? "",
+          bgClass: mv?.bg_class ?? "",
+          name: mv?.name ?? "",
+          image: mv?.image ?? "",
+          imageClass: mv?.image_class ?? "",
+          textClass: mv?.text_class ?? "",
+          html: mv?.html ?? "",
+        });
 			} else if (section.type === "imgText") {
 				const { data: it } = await supabase
 					.from("img_text_sections")
@@ -185,14 +188,17 @@ export async function GET() {
 					.eq("section_id", section.id)
 					.single();
 				sectionResults.push({
-					id: `section-${section.id}`,
-					layout: "imgText",
-					class: it?.class ?? "",
-					bgImage: it?.bg_image ?? "",
-					name: it?.name ?? "",
-					image: it?.image ?? "",
-					html: it?.html ?? "",
-				});
+          id: `section-${section.id}`,
+          layout: "imgText",
+          class: it?.class ?? "",
+          bgImage: it?.bg_image ?? "",
+          bgClass: it?.bg_class ?? "",
+          name: it?.name ?? "",
+          image: it?.image ?? "",
+          imageClass: it?.image_class ?? "",
+          textClass: it?.text_class ?? "",
+          html: it?.html ?? "",
+        });
 			} else if (section.type === "cards") {
 				const { data: cs } = await supabase
 					.from("cards_sections")
@@ -205,16 +211,19 @@ export async function GET() {
 					.eq("cards_section_id", section.id)
 					.order("position", { ascending: true });
 				sectionResults.push({
-					id: `section-${section.id}`,
-					layout: "cards",
-					class: cs?.class ?? "",
-					bgImage: cs?.bg_image ?? "",
-					name: cs?.name ?? "",
-					cards: (cards ?? []).map((c) => ({
-						image: c.image ?? "",
-						html: c.html ?? "",
-					})),
-				});
+          id: `section-${section.id}`,
+          layout: "cards",
+          class: cs?.class ?? "",
+          bgImage: cs?.bg_image ?? "",
+          bgClass: cs?.bg_class ?? "",
+          name: cs?.name ?? "",
+          cards: (cards ?? []).map((c) => ({
+            image: c.image ?? "",
+            imageClass: c.image_class ?? "",
+            textClass: c.text_class ?? "",
+            html: c.html ?? "",
+          })),
+        });
 			} else if (section.type === "form") {
 				const { data: fs } = await supabase
 					.from("form_sections")
@@ -365,39 +374,48 @@ export async function POST(req: NextRequest) {
 			// typeごとに固有テーブルも保存
 			if (section.layout === "mainVisual") {
 				await supabase.from("main_visual_sections").insert({
-					section_id: sec.id,
-					class: section.class,
-					bg_image: section.bgImage,
-					name: section.name,
-					image: section.image ?? null,
-					html: section.html,
-				});
+          section_id: sec.id,
+          class: section.class,
+          bg_image: section.bgImage,
+          bg_class: section.bgClass,
+          name: section.name,
+          image: section.image ?? null,
+          image_class: section.imageClass ?? null,
+          text_class: section.textClass ?? null,
+          html: section.html,
+        });
 			}
 			if (section.layout === "imgText") {
 				await supabase.from("img_text_sections").insert({
-					section_id: sec.id,
-					class: section.class,
-					bg_image: section.bgImage,
-					name: section.name,
-					image: section.image ?? null,
-					html: section.html,
-				});
+          section_id: sec.id,
+          class: section.class,
+          bg_image: section.bgImage,
+          bg_class: section.bgClass,
+          name: section.name,
+          image: section.image ?? null,
+          image_class: section.imageClass ?? null,
+          text_class: section.textClass ?? null,
+          html: section.html,
+        });
 			}
 			if (section.layout === "cards") {
 				await supabase.from("cards_sections").insert({
-					section_id: sec.id,
-					class: section.class,
-					bg_image: section.bgImage,
-					name: section.name,
-				});
+          section_id: sec.id,
+          class: section.class,
+          bg_image: section.bgImage,
+          bg_class: section.bgClass,
+          name: section.name,
+        });
 				// cards本体
 				for (const [j, card] of (section.cards ?? []).entries()) {
 					await supabase.from("cards").insert({
-						cards_section_id: sec.id,
-						image: card.image ?? null,
-						html: card.html,
-						position: j,
-					});
+            cards_section_id: sec.id,
+            image: card.image ?? null,
+            image_class: card.imageClass ?? null,
+            text_class: card.textClass ?? null,
+            html: card.html,
+            position: j,
+          });
 				}
 			}
 			if (section.layout === "form") {
