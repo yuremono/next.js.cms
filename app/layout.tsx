@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 
-const inter = Inter({ subsets: ["latin"] });
+const notoSansJP = Noto_Sans_JP({
+	subsets: ["latin"],
+	weight: ["400", "500", "700"],
+	variable: "--font-noto-sans-jp",
+	display: "swap",
+});
 
 export const metadata: Metadata = {
 	title: "簡易CMS - テンプレートベースのWebサイト構築",
@@ -19,7 +24,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="ja" suppressHydrationWarning>
-			<body className={inter.className}>
+			<body className={`${notoSansJP.className} ${notoSansJP.variable}`}>
 				{children}
 				<Toaster
 					position="top-right"
