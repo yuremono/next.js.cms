@@ -15,7 +15,7 @@ module.exports = {
 		},
 		extend: {
 			fontFamily: {
-				sans: ["var(--font-noto-sans-jp)", "sans-serif"],
+				sans: ["var(--font-family-base)"],
 			},
 			colors: {
 				border: "hsl(var(--border))",

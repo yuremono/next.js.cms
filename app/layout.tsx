@@ -1,14 +1,6 @@
 import type { Metadata } from "next";
-import { Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
-
-const notoSansJP = Noto_Sans_JP({
-	subsets: ["latin"],
-	weight: ["400", "500", "700"],
-	variable: "--font-noto-sans-jp",
-	display: "swap",
-});
 
 export const metadata: Metadata = {
 	title: "簡易CMS - テンプレートベースのWebサイト構築",
@@ -24,7 +16,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="ja" suppressHydrationWarning>
-			<body className={`${notoSansJP.className} ${notoSansJP.variable}`}>
+			<body>
 				{children}
 				<Toaster
 					position="top-right"
