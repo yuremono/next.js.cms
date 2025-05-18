@@ -1,17 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { Card } from "./ui/card";
-import { Button } from "./ui/button";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Section } from "@/types";
-import {
-	Grip,
-	Trash2,
-	ChevronUp,
-	ChevronDown,
-	Eye,
-	EyeOff,
-} from "lucide-react";
+import { Grip, Trash2, ChevronUp, ChevronDown } from "lucide-react";
 
 interface SortableSectionsProps {
 	sections: Section[];

@@ -10,7 +10,6 @@ export const metadata: Metadata = {
 	description:
 		"AIによるテキスト生成機能を備えた簡易CMSで、簡単にWebサイトを編集できます。",
 	viewport: "width=device-width, initial-scale=1",
-	charSet: "utf-8",
 };
 
 export default function RootLayout({
@@ -22,7 +21,10 @@ export default function RootLayout({
 		<html lang="ja" suppressHydrationWarning>
 			<body className={inter.className}>
 				{children}
-				<Toaster position="top-right" />
+				<Toaster
+					position="top-right"
+					toastOptions={{ style: { marginTop: "72px" } }}
+				/>
 			</body>
 		</html>
 	);

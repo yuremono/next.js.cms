@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "./ui/button";
-import { Card } from "./ui/card";
-import { Label } from "./ui/label";
-import { Input } from "./ui/input";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { uploadAndOptimizeImage } from "@/lib/imageUtils";
-import { Copy, Upload, X } from "lucide-react";
+import { Copy, Upload } from "lucide-react";
 import { toast } from "sonner";
+import Image from "next/image";
 
 interface ImageData {
 	name: string;
@@ -173,11 +174,14 @@ export function ImageGallery() {
 										key={index}
 										className="relative border rounded group"
 									>
-										<img
-											src={image.url}
-											alt={image.name}
-											className="w-full h-32 object-cover rounded"
-										/>
+										<div className="relative w-full h-[200px]">
+											<Image
+												src={image.url}
+												alt={image.name}
+												fill
+												className="object-cover rounded-lg"
+											/>
+										</div>
 										<div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
 											<Button
 												size="sm"

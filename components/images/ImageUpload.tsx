@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { ImageIcon, Upload, X } from "lucide-react";
 import { uploadAndOptimizeImage } from "@/lib/imageUtils";
 import { ImageGalleryModal } from "./ImageGalleryModal";
+import Image from "next/image";
 
 interface ImageUploadProps {
 	initialImage?: string;
@@ -25,6 +26,13 @@ export function ImageUpload({
 	const [isUploading, setIsUploading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+
+	// 初期画像が変更されたら内部状態を更新
+	useEffect(() => {
+		if (initialImage !== imageUrl) {
+			setImageUrl(initialImage || null);
+		}
+	}, [initialImage, imageUrl]);
 
 	// 画像をアップロード
 	const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,11 +87,16 @@ export function ImageUpload({
 
 			{/* 画像プレビュー */}
 			{imageUrl && (
-				<div className="relative mb-4">
-					<img
+				<div className="relative w-full h-[200px]">
+					<Image
 						src={imageUrl}
-						alt="プレビュー"
-						className="max-h-64 max-w-full rounded border"
+						alt="Uploaded image"
+						fill
+						className="object-cover rounded-lg"
+						unoptimized={
+							imageUrl.includes("_local") ||
+							imageUrl.startsWith("data:")
+						}
 					/>
 					<Button
 						variant="destructive"

@@ -1,9 +1,7 @@
 "use client";
 
-import { Button } from "./ui/button";
-import { Card } from "./ui/card";
+import { Card } from "@/components/ui/card";
 import { ImageIcon, LayoutIcon, CreditCard, FormInput } from "lucide-react";
-import { Section } from "@/types";
 
 interface SectionSelectorProps {
 	onSelect: (sectionType: string) => void;

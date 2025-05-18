@@ -1,13 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { RichTextEditor } from "../ui/editor";
-import { ImageUpload } from "../ImageUpload";
-import { BackgroundImageUpload } from "../BackgroundImageUpload";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import { Card } from "../ui/card";
-import { Button } from "../ui/button";
+import { RichTextEditor } from "@/components/ui/editor";
+import { ImageUpload } from "@/components/images/ImageUpload";
+import { BackgroundImageUpload } from "@/components/images/BackgroundImageUpload";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
 import { MainVisualSection } from "@/types";
 
 interface MainVisualEditorProps {
@@ -16,38 +14,42 @@ interface MainVisualEditorProps {
 }
 
 export function MainVisualEditor({ section, onUpdate }: MainVisualEditorProps) {
-	const [html, setHtml] = useState(section.html);
-	const [mainImage, setMainImage] = useState<string | null>(
-		section.image || null
-	);
-	const [backgroundImage, setBackgroundImage] = useState<string | null>(
-		section.bgImage || null
-	);
-	const [className, setClassName] = useState(section.class);
+	// 直接propsからの値を使用し、内部状態を持たないようにする
 
-	// セクションの更新を処理
-	const handleUpdate = (key: keyof MainVisualSection, value: any) => {
+	const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		onUpdate({
 			...section,
-			[key]: value,
+			name: e.target.value,
 		});
 	};
 
-	// セクション全体を更新
-	const updateSection = () => {
+	const handleHtmlChange = (content: string) => {
 		onUpdate({
 			...section,
-			html,
-			class: className,
-			image: mainImage || undefined,
-			bgImage: backgroundImage || undefined,
+			html: content,
 		});
 	};
 
-	// 値が変更されたらセクションを更新
-	useEffect(() => {
-		updateSection();
-	}, [html, className, mainImage, backgroundImage]);
+	const handleMainImageChange = (img: string | null) => {
+		onUpdate({
+			...section,
+			image: img || undefined,
+		});
+	};
+
+	const handleBgImageChange = (img: string | null) => {
+		onUpdate({
+			...section,
+			bgImage: img || undefined,
+		});
+	};
+
+	const handleClassNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		onUpdate({
+			...section,
+			class: e.target.value,
+		});
+	};
 
 	return (
 		<div className="space-y-6">
@@ -55,35 +57,40 @@ export function MainVisualEditor({ section, onUpdate }: MainVisualEditorProps) {
 				<h3 className="text-lg font-medium mb-4">
 					メインビジュアル設定
 				</h3>
-
 				<div className="space-y-4">
+					<div className="space-y-2">
+						<Label htmlFor="main-visual-name">セクション名</Label>
+						<Input
+							id="main-visual-name"
+							value={section.name || ""}
+							onChange={handleNameChange}
+							placeholder="例: メインビジュアル"
+						/>
+					</div>
 					<div className="space-y-2">
 						<Label htmlFor="main-visual-class">クラス名</Label>
 						<Input
 							id="main-visual-class"
-							value={className}
-							onChange={(e) => setClassName(e.target.value)}
+							value={section.class}
+							onChange={handleClassNameChange}
 							placeholder="例: hero-section bg-gray-100"
 						/>
 					</div>
-
 					<ImageUpload
-						initialImage={mainImage || undefined}
-						onImageChange={setMainImage}
+						initialImage={section.image}
+						onImageChange={handleMainImageChange}
 						label="メイン画像"
 					/>
-
 					<BackgroundImageUpload
-						initialImage={backgroundImage || undefined}
-						onImageChange={setBackgroundImage}
+						initialImage={section.bgImage}
+						onImageChange={handleBgImageChange}
 						label="背景画像"
 					/>
-
 					<div className="space-y-2">
 						<Label>コンテンツ</Label>
 						<RichTextEditor
-							content={html}
-							onChange={(content) => setHtml(content)}
+							content={section.html}
+							onChange={handleHtmlChange}
 							placeholder="ここにメインビジュアルのHTMLを入力..."
 						/>
 					</div>

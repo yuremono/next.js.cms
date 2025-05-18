@@ -5,12 +5,16 @@ import { createClient } from "@supabase/supabase-js";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
-// 必要な環境変数がない場合はモックのSupabaseクライアントを作成
-export const supabase =
-	supabaseUrl && supabaseAnonKey
-		? createClient(supabaseUrl, supabaseAnonKey)
-		: createClient("https://example.supabase.co", "dummy-key", {
-				auth: {
-					persistSession: false,
-				},
-		  });
+// 接続情報があるかどうかをチェック
+export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
+
+// Supabaseクライアントを作成
+export const supabase = createClient(
+	supabaseUrl || "https://example.supabase.co",
+	supabaseAnonKey || "dummy-key",
+	{
+		auth: {
+			persistSession: false,
+		},
+	}
+);

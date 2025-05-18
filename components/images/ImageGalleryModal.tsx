@@ -1,8 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
-import { Button } from "./ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { Check, Loader2, Trash2 } from "lucide-react";
 import {
 	AlertDialog,
@@ -13,7 +18,8 @@ import {
 	AlertDialogFooter,
 	AlertDialogHeader,
 	AlertDialogTitle,
-} from "./ui/alert-dialog";
+} from "@/components/ui/alert-dialog";
+import Image from "next/image";
 
 // 画像情報の型定義
 interface ImageInfo {
@@ -145,10 +151,15 @@ export function ImageGalleryModal({
 									onMouseLeave={() => setHoverIndex(null)}
 								>
 									<div className="relative aspect-square">
-										<img
+										<Image
 											src={image.url}
 											alt={image.name}
 											className="h-full w-full rounded object-cover"
+											width={400}
+											height={400}
+											unoptimized={image.url.includes(
+												"_local"
+											)}
 										/>
 
 										{/* オーバーレイとボタン */}
@@ -198,25 +209,26 @@ export function ImageGalleryModal({
 					<AlertDialogHeader>
 						<AlertDialogTitle>画像の削除</AlertDialogTitle>
 						<AlertDialogDescription>
-							本当にこの画像を削除しますか？この操作は元に戻せません。
+							この画像を削除してもよろしいですか？この操作は元に戻せません。
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
-						<AlertDialogCancel>キャンセル</AlertDialogCancel>
+						<AlertDialogCancel
+							onClick={() => setImageToDelete(null)}
+						>
+							キャンセル
+						</AlertDialogCancel>
 						<AlertDialogAction
 							onClick={() =>
 								imageToDelete && deleteImage(imageToDelete)
 							}
 							disabled={deleting}
+							className="bg-red-600 text-white hover:bg-red-700"
 						>
-							{deleting ? (
-								<>
-									<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-									削除中...
-								</>
-							) : (
-								"削除する"
+							{deleting && (
+								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
 							)}
+							削除
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>

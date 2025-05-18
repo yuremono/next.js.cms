@@ -10,7 +10,7 @@
     --card-foreground: 0 0% 10%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 10%;
-    --primary: 224 82% 56%;
+    --primary: 220 63% 23%;
     --primary-foreground: 0 0% 100%;
     --secondary: 0 0% 95%;
     --secondary-foreground: 0 0% 10%;
@@ -22,7 +22,7 @@
     --destructive-foreground: 0 0% 100%;
     --border: 0 0% 90%;
     --input: 0 0% 90%;
-    --ring: 224 82% 56%;
+    --ring: 220 63% 23%;
     --radius: 0.5rem;
   }
 
@@ -33,7 +33,7 @@
     --card-foreground: 0 0% 98%;
     --popover: 0 0% 12%;
     --popover-foreground: 0 0% 98%;
-    --primary: 224 82% 56%;
+    --primary: 220 63% 23%;
     --primary-foreground: 0 0% 100%;
     --secondary: 0 0% 18%;
     --secondary-foreground: 0 0% 98%;
@@ -45,7 +45,7 @@
     --destructive-foreground: 0 0% 100%;
     --border: 0 0% 24%;
     --input: 0 0% 24%;
-    --ring: 224 82% 56%;
+    --ring: 220 63% 23%;
   }
 }
 
@@ -130,4 +130,29 @@
 
 .text-gradient {
   @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500;
+}
+
+/* レスポンシブ対応強化 */
+@media (max-width: 768px) {
+  .editor-layout {
+    @apply grid-cols-1 gap-6;
+  }
+  
+  .cms-section-container {
+    @apply px-3 py-8;
+  }
+  
+  .hero-section {
+    @apply py-10;
+  }
+  
+  .cards-grid {
+    @apply grid-cols-1;
+  }
+}
+
+@media (max-width: 480px) {
+  .cms-section-container {
+    @apply px-2 py-6;
+  }
 } 
