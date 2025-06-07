@@ -224,8 +224,8 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
       <UICard className="p-4">
         <h3 className="mb-4 text-lg font-medium">カードセクション設定</h3>
         <div className="space-y-2">
-          <div className="flex gap-2 space-y-2">
-            <Label className="" htmlFor="cards-name">
+          <div className="flex items-center gap-4">
+            <Label className="w-32" htmlFor="cards-name">
               セクション名
             </Label>
             <Input
@@ -233,10 +233,11 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
               value={section.name || ""}
               onChange={handleNameChange}
               placeholder="例: カード"
+              className="flex-1"
             />
           </div>
-          <div className="flex gap-2 space-y-2">
-            <Label className="" htmlFor="cards-class">
+          <div className="flex items-center gap-4">
+            <Label className="w-32" htmlFor="cards-class">
               セクションクラス
             </Label>
             <Input
@@ -244,6 +245,7 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
               value={section.class}
               onChange={handleClassNameChange}
               placeholder="例: cards-section py-8"
+              className="flex-1"
             />
           </div>
           <BackgroundImageUpload
@@ -305,7 +307,7 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
                             <div className="flex flex-col gap-4 md:flex-row md:items-center">
                               <div className="w-full">
                                 <ImageUpload
-                                  label="画像"
+                                  label="画像クラス"
                                   initialImage={
                                     section.cards[activeCardIndex]?.image
                                   }
@@ -327,9 +329,9 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
                               </div>
                             </div>
                             <div className="space-y-2">
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-4">
                                 <Label
-                                  className="w-28"
+                                  className="w-32"
                                   htmlFor={`card-${activeCardIndex}-text-class`}
                                 >
                                   テキストクラス

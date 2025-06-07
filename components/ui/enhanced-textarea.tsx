@@ -8,15 +8,15 @@ interface EnhancedTextareaProps extends React.ComponentProps<"textarea"> {
 }
 
 const tagOptions = [
-	{ label: "見出し1", openTag: "<h1>", closeTag: "</h1>" },
-	{ label: "見出し2", openTag: "<h2>", closeTag: "</h2>" },
-	{ label: "見出し3", openTag: "<h3>", closeTag: "</h3>" },
-	{ label: "段落", openTag: "<p>", closeTag: "</p>" },
-	{ label: "太字", openTag: "<b>", closeTag: "</b>" },
-	{ label: "下線", openTag: "<u>", closeTag: "</u>" },
-	{ label: "マーク", openTag: "<mark>", closeTag: "</mark>" },
-	{ label: "小文字", openTag: "<small>", closeTag: "</small>" },
-	{ label: "インライン", openTag: "<span>", closeTag: "</span>" },
+  { label: "h1", openTag: "<h1>", closeTag: "</h1>" },
+  { label: "h2", openTag: "<h2>", closeTag: "</h2>" },
+  { label: "h3", openTag: "<h3>", closeTag: "</h3>" },
+  { label: "p", openTag: "<p>", closeTag: "</p>" },
+  { label: "b", openTag: "<b>", closeTag: "</b>" },
+  { label: "u", openTag: "<u>", closeTag: "</u>" },
+  { label: "mark", openTag: "<mark>", closeTag: "</mark>" },
+  { label: "small", openTag: "<small>", closeTag: "</small>" },
+  { label: "span", openTag: "<span>", closeTag: "</span>" },
 ];
 
 function EnhancedTextarea({

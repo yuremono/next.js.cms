@@ -51,57 +51,53 @@ export function FormEditor({ section, onUpdate }: FormEditorProps) {
 	};
 
 	return (
-		<div className="space-y-6">
-			<Card className="p-4">
-				<h3 className="text-lg font-medium mb-4">
-					フォームセクション設定
-				</h3>
-				<div className="space-y-4">
-					<div className="space-y-2">
-						<Label htmlFor="form-name">セクション名</Label>
-						<Input
-							id="form-name"
-							value={section.name || ""}
-							onChange={handleNameChange}
-							placeholder="例: お問い合わせフォーム"
-						/>
-					</div>
-					<div className="space-y-2">
-						<Label htmlFor="form-class">クラス名</Label>
-						<Input
-							id="form-class"
-							value={section.class}
-							onChange={handleClassNameChange}
-							placeholder="例: form-section"
-						/>
-					</div>
-					<div className="space-y-2">
-						<Label htmlFor="form-endpoint">
-							送信先エンドポイント
-						</Label>
-						<Input
-							id="form-endpoint"
-							value={section.endpoint}
-							onChange={handleEndpointChange}
-							placeholder="例: /api/contact"
-						/>
-					</div>
-					<BackgroundImageUpload
-						initialImage={section.bgImage}
-						onImageChange={handleBgImageChange}
-						label="背景画像"
-					/>
-					<div className="space-y-2">
-						<Label>コンテンツ</Label>
-						<RichTextEditor
-							content={section.html}
-							onChange={handleHtmlChange}
-							placeholder="ここにHTMLを入力..."
-						/>
-					</div>
-				</div>
-			</Card>
-		</div>
-	);
+    <div className="space-y-6">
+      <Card className="p-4">
+        <h3 className="mb-4 text-lg font-medium">フォームセクション設定</h3>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="form-name">セクション名</Label>
+            <Input
+              id="form-name"
+              value={section.name || ""}
+              onChange={handleNameChange}
+              placeholder="例: お問い合わせフォーム"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="form-class">クラス名</Label>
+            <Input
+              id="form-class"
+              value={section.class}
+              onChange={handleClassNameChange}
+              placeholder="例: form-section"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="form-endpoint">送信先エンドポイント</Label>
+            <Input
+              id="form-endpoint"
+              value={section.endpoint}
+              onChange={handleEndpointChange}
+              placeholder="例: /api/contact"
+            />
+          </div>
+          <BackgroundImageUpload
+            initialImage={section.bgImage}
+            onImageChange={handleBgImageChange}
+            label="背景画像"
+          />
+          <div className="space-y-2">
+            <Label>コンテンツ</Label>
+            <RichTextEditor
+              content={section.html}
+              onChange={handleHtmlChange}
+              placeholder="ここにHTMLを入力..."
+            />
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
 }
  

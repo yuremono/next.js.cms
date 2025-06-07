@@ -457,132 +457,136 @@ export default function EditorPage() {
 	}
 
 	return (
-		<div className="min-h-screen flex flex-col">
-			{/* ヘッダー */}
-			<header className="border-b bg-white shadow-sm">
-				<div className="px-4 py-4 flex items-center justify-between">
-					<div className="flex items-center gap-4">
-						<Link href="/">
-							<Button variant="outline" size="icon">
-								<ArrowLeft className="h-4 w-4" />
-							</Button>
-						</Link>
-						<h1 className="text-xl font-bold">CMSエディタ</h1>
-					</div>
-					<div className="flex items-center gap-2">
-						<Link href="/" target="_blank">
-							<Button variant="outline">
-								<Eye className="h-4 w-4 mr-2" />
-								ページを開く
-							</Button>
-						</Link>
-						<Button
-							variant="outline"
-							onClick={() => setPreviewMode(!previewMode)}
-						>
-							<Eye className="h-4 w-4 mr-2" />
-							{previewMode ? "編集に戻る" : "プレビュー"}
-						</Button>
-						<Button onClick={savePage} disabled={isSaving}>
-							<Save className="h-4 w-4 mr-2" />
-							{isSaving ? "保存中..." : "保存"}
-						</Button>
-					</div>
-				</div>
-			</header>
+    <div className="flex min-h-screen flex-col">
+      {/* ヘッダー */}
+      <header className="border-b bg-white shadow-sm">
+        <div className="flex items-center justify-between px-4 py-4">
+          <div className="flex items-center gap-4">
+            <Link href="/">
+              <Button variant="outline" size="icon">
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+            </Link>
+            <h1 className="text-xl font-bold">CMSエディタ</h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link href="/" target="_blank">
+              <Button variant="outline">
+                <Eye className="mr-2 h-4 w-4" />
+                ページを開く
+              </Button>
+            </Link>
+            <Button
+              variant="outline"
+              onClick={() => setPreviewMode(!previewMode)}
+            >
+              <Eye className="mr-2 h-4 w-4" />
+              {previewMode ? "編集に戻る" : "プレビュー"}
+            </Button>
+            <Button onClick={savePage} disabled={isSaving}>
+              <Save className="mr-2 h-4 w-4" />
+              {isSaving ? "保存中..." : "保存"}
+            </Button>
+          </div>
+        </div>
+      </header>
 
-			{previewMode ? (
-				// プレビューモード
-				<div className="flex-1 overflow-auto relative">
-					<PageRenderer page={page} />
-					<div className="fixed top-4 left-4 z-50">
-						<Link href="/" target="_blank">
-							<Button>
-								<Eye className="h-4 w-4 mr-2" />
-								ページを開く
-							</Button>
-						</Link>
-					</div>
-				</div>
-			) : (
-				// 編集モード
-				<div className="flex-1 flex overflow-hidden">
-					{/* サイドバー */}
-					<div className="w-64 bg-gray-50 border-r overflow-y-auto">
-						<div className="p-4">
-							<Tabs
-								value={activeMenuTab}
-								onValueChange={setActiveMenuTab}
-								className="w-full"
-							>
-								<TabsList className="grid w-full grid-cols-3 gap-1">
-									<TabsTrigger value="header">
-										ヘッダー
-									</TabsTrigger>
-									<TabsTrigger value="footer">
-										フッター
-									</TabsTrigger>
-									<TabsTrigger value="css-editor">
-										CSS追加
-									</TabsTrigger>
-									<TabsTrigger value="ai-generator">
-										AIで生成
-									</TabsTrigger>
-									<TabsTrigger value="image-gallery">
-										画像
-									</TabsTrigger>
-									<TabsTrigger value="github">
-										バックアップ
-									</TabsTrigger>
-									<TabsTrigger value="sections">
-										セクション
-									</TabsTrigger>
-								</TabsList>
-							</Tabs>
+      {previewMode ? (
+        // プレビューモード
+        <div className="relative flex-1 overflow-auto">
+          <PageRenderer page={page} />
+          <div className="fixed left-4 top-4 z-50">
+            <Link href="/" target="_blank">
+              <Button>
+                <Eye className="mr-2 h-4 w-4" />
+                ページを開く
+              </Button>
+            </Link>
+          </div>
+        </div>
+      ) : (
+        // 編集モード
+        <div className="flex flex-1 flex-row overflow-hidden">
+          {/* 左端: タブリスト */}
+          <div className="flex min-w-fit flex-col items-start border-r bg-white p-4">
+            <Tabs
+              value={activeMenuTab}
+              onValueChange={setActiveMenuTab}
+              className="w-full"
+            >
+              <TabsList className="flex flex-col items-start gap-1 rounded-none bg-transparent p-0">
+                <TabsTrigger
+                  value="header"
+                  className="w-full rounded-none border-none bg-transparent p-0 text-left"
+                >
+                  ヘッダー
+                </TabsTrigger>
+                <TabsTrigger
+                  value="footer"
+                  className="w-full rounded-none border-none bg-transparent p-0 text-left"
+                >
+                  フッター
+                </TabsTrigger>
+                <TabsTrigger
+                  value="css-editor"
+                  className="w-full rounded-none border-none bg-transparent p-0 text-left"
+                >
+                  CSS追加
+                </TabsTrigger>
+                <TabsTrigger
+                  value="ai-generator"
+                  className="w-full rounded-none border-none bg-transparent p-0 text-left"
+                >
+                  AIで生成
+                </TabsTrigger>
+                <TabsTrigger
+                  value="image-gallery"
+                  className="w-full rounded-none border-none bg-transparent p-0 text-left"
+                >
+                  画像
+                </TabsTrigger>
+                <TabsTrigger
+                  value="github"
+                  className="w-full rounded-none border-none bg-transparent p-0 text-left"
+                >
+                  バックアップ
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+          {/* 中央: セクションリスト */}
+          <div className="flex min-w-[170px] max-w-[18rem] flex-col overflow-y-auto border-r bg-gray-50 p-4">
+            <div className="space-y-4">
+              <div className="mb-3 flex items-center justify-between">
+                <h2 className="text-sm font-medium">
+                  セクション ({page.sections.length})
+                </h2>
+                <Button size="sm" onClick={() => setIsSelectorOpen(true)}>
+                  <Plus className="mr-1 h-3 w-3" />
+                  追加
+                </Button>
+              </div>
+              <SortableSections
+                sections={page.sections}
+                activeSectionIndex={activeSectionIndex}
+                onSectionClick={handleSectionClick}
+                onSectionMove={moveSection}
+                onSectionDelete={deleteSection}
+              />
+            </div>
+          </div>
+          {/* 右: 編集エリア */}
+          <div className="flex-1 overflow-y-auto p-6">{renderEditor()}</div>
+        </div>
+      )}
 
-							<div className="mt-4">
-								{/* セクションリスト - 常に表示 */}
-								<div className="space-y-4">
-									<div className="flex justify-between items-center mb-3">
-										<h2 className="text-sm font-medium">
-											セクション ({page.sections.length})
-										</h2>
-										<Button
-											size="sm"
-											onClick={() =>
-												setIsSelectorOpen(true)
-											}
-										>
-											<Plus className="h-3 w-3 mr-1" />
-											追加
-										</Button>
-									</div>
-									<SortableSections
-										sections={page.sections}
-										activeSectionIndex={activeSectionIndex}
-										onSectionClick={handleSectionClick}
-										onSectionMove={moveSection}
-										onSectionDelete={deleteSection}
-									/>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					{/* メインコンテンツ */}
-					<div className="flex-1 overflow-y-auto p-6">
-						{renderEditor()}
-					</div>
-				</div>
-			)}
-
-			{/* セクション追加ダイアログ */}
-			<Dialog open={isSelectorOpen} onOpenChange={setIsSelectorOpen}>
-				<DialogContent className="sm:max-w-md">
-					<DialogTitle>セクションを追加</DialogTitle>
-					<SectionSelector onSelect={addSection} />
-				</DialogContent>
-			</Dialog>
-		</div>
-	);
+      {/* セクション追加ダイアログ */}
+      <Dialog open={isSelectorOpen} onOpenChange={setIsSelectorOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogTitle>セクションを追加</DialogTitle>
+          <SectionSelector onSelect={addSection} />
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
 }
