@@ -12,7 +12,7 @@ import { SortableSections } from "@/components/SortableSections";
 import { SectionSelector } from "@/components/SectionSelector";
 import { SectionEditorRenderer } from "@/components/editor/SectionEditorRenderer";
 import { PageRenderer } from "@/components/PageRenderer";
-import { Save, Plus, Eye, ExternalLink } from "lucide-react";
+import { Save, Plus, Eye, ExternalLink, Hand, Sun, Moon } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { TextGenerator } from "@/components/sections/TextGenerator";
@@ -22,58 +22,58 @@ import { GitHubPanel } from "@/components/github/GitHubPanel";
 
 // デフォルトのセクションを作成する関数
 const createDefaultSection = (type: string): Section => {
-	// 一意のIDを生成
-	const id = `section-${Date.now()}-${Math.random()
-		.toString(36)
-		.substring(2, 9)}`;
+  // 一意のIDを生成
+  const id = `section-${Date.now()}-${Math.random()
+    .toString(36)
+    .substring(2, 9)}`;
 
-	switch (type) {
-		case "mainVisual":
-			return {
-				id,
-				layout: "mainVisual",
-				class: "hero-section",
-				html: "<h1>メインタイトル</h1><p>サブタイトル：ここにテキストを入力</p>",
-				image: "",
-			};
-		case "imgText":
-			return {
-				id,
-				layout: "imgText",
-				class: "img-text-section",
-				html: "<h2>セクションタイトル</h2><p>ここにテキストを入力します。</p>",
-				image: "",
-			};
-		case "cards":
-			return {
-				id,
-				layout: "cards",
-				class: "cards-section",
-				cards: [
-					{
-						html: "<h3>カード1</h3><p>カード1の内容</p>",
-						image: "",
-					},
-				],
-			};
-		case "form":
-			return {
-				id,
-				layout: "form",
-				class: "form-section",
-				html: "<h2>お問い合わせ</h2><p>以下のフォームよりお問い合わせください。</p>",
-				endpoint: "/api/contact",
-			};
-		default:
-			throw new Error(`未対応のセクションタイプ: ${type}`);
-	}
+  switch (type) {
+    case "mainVisual":
+      return {
+        id,
+        layout: "mainVisual",
+        class: "hero-section",
+        html: "<h1>メインタイトル</h1><p>サブタイトル：ここにテキストを入力</p>",
+        image: "",
+      };
+    case "imgText":
+      return {
+        id,
+        layout: "imgText",
+        class: "img-text-section",
+        html: "<h2>セクションタイトル</h2><p>ここにテキストを入力します。</p>",
+        image: "",
+      };
+    case "cards":
+      return {
+        id,
+        layout: "cards",
+        class: "cards-section",
+        cards: [
+          {
+            html: "<h3>カード1</h3><p>カード1の内容</p>",
+            image: "",
+          },
+        ],
+      };
+    case "form":
+      return {
+        id,
+        layout: "form",
+        class: "form-section",
+        html: "<h2>お問い合わせ</h2><p>以下のフォームよりお問い合わせください。</p>",
+        endpoint: "/api/contact",
+      };
+    default:
+      throw new Error(`未対応のセクションタイプ: ${type}`);
+  }
 };
 
 export default function EditorPage() {
-	// ページデータの状態
-	const [page, setPage] = useState<Page>({
-		header: {
-			html: `<header class="bg-white shadow-sm">
+  // ページデータの状態
+  const [page, setPage] = useState<Page>({
+    header: {
+      html: `<header class="bg-white shadow-sm">
   <div class=" mx-auto px-4 py-4 flex justify-between items-center">
     <div class="logo">
       <a href="/" class="text-xl font-bold">サイト名</a>
@@ -88,9 +88,9 @@ export default function EditorPage() {
     </nav>
   </div>
 </header>`,
-		},
-		footer: {
-			html: `<footer class="bg-gray-800 text-white">
+    },
+    footer: {
+      html: `<footer class="bg-gray-800 text-white">
   <div class="container mx-auto px-4 py-8">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       <div>
@@ -121,358 +121,360 @@ export default function EditorPage() {
     </div>
   </div>
 </footer>`,
-		},
-		sections: [],
-		customCSS: "",
-	});
+    },
+    sections: [],
+    customCSS: "",
+  });
 
-	// 選択中のセクションインデックス
-	const [activeSectionIndex, setActiveSectionIndex] = useState<number | null>(
-		null
-	);
+  // 選択中のセクションインデックス
+  const [activeSectionIndex, setActiveSectionIndex] = useState<number | null>(
+    null
+  );
+  const [theme, setTheme] = useState<"light" | "dark">(
+    typeof window !== "undefined" &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light"
+  );
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark");
+  }, [theme]);
 
-	// 選択中のメニュータブ
-	const [activeMenuTab, setActiveMenuTab] = useState<string>("sections");
+  // 選択中のメニュータブ
+  const [activeMenuTab, setActiveMenuTab] = useState<string>("sections");
 
-	// セクション追加ダイアログの状態
-	const [isSelectorOpen, setIsSelectorOpen] = useState(false);
+  // セクション追加ダイアログの状態
+  const [isSelectorOpen, setIsSelectorOpen] = useState(false);
 
-	// プレビューモードの状態
-	const [previewMode, setPreviewMode] = useState(false);
+  // プレビューモードの状態
+  const [previewMode, setPreviewMode] = useState(false);
 
-	// ロード中の状態
-	const [isLoading, setIsLoading] = useState(true);
+  // ロード中の状態
+  const [isLoading, setIsLoading] = useState(true);
 
-	// データの保存中状態
-	const [isSaving, setIsSaving] = useState(false);
+  // データの保存中状態
+  const [isSaving, setIsSaving] = useState(false);
 
-	// 初期データの読み込み
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				// 復元されたデータがあるか確認
-				const restoredData = localStorage.getItem("restoredPageData");
+  // 追加: レスポンシブ用state
+  //   const [isMobile, setIsMobile] = useState(false);
+  const [sectionListOpen, setSectionListOpen] = useState(false);
 
-				if (restoredData) {
-					// 復元データがある場合はそれを使用
-					try {
-						const parsedData = JSON.parse(restoredData);
+  // 初期データの読み込み
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // 復元されたデータがあるか確認
+        const restoredData = localStorage.getItem("restoredPageData");
 
-						// 既存のセクションにIDがなければ追加
-						if (
-							parsedData.sections &&
-							Array.isArray(parsedData.sections)
-						) {
-							parsedData.sections = parsedData.sections.map(
-								(section: Section) => {
-									if (!section.id) {
-										return {
-											...section,
-											id: `section-${Date.now()}-${Math.random()
-												.toString(36)
-												.substring(2, 9)}`,
-										};
-									}
-									return section;
-								}
-							);
-						}
+        if (restoredData) {
+          // 復元データがある場合はそれを使用
+          try {
+            const parsedData = JSON.parse(restoredData);
 
-						setPage(parsedData);
-						localStorage.removeItem("restoredPageData"); // 使用後は削除
-						toast.success(
-							"バックアップから復元されたデータを読み込みました"
-						);
-					} catch (error) {
-						console.error("復元データの解析に失敗しました", error);
-						toast.error("復元データの読み込みに失敗しました");
-						// APIからデータを取得する
-						await fetchFromAPI();
-					}
-				} else {
-					// 復元データがない場合はAPIからデータを取得
-					await fetchFromAPI();
-				}
-			} catch (error) {
-				console.error("ページデータの取得に失敗しました", error);
-			} finally {
-				setIsLoading(false);
-			}
-		};
+            // 既存のセクションにIDがなければ追加
+            if (parsedData.sections && Array.isArray(parsedData.sections)) {
+              parsedData.sections = parsedData.sections.map(
+                (section: Section) => {
+                  if (!section.id) {
+                    return {
+                      ...section,
+                      id: `section-${Date.now()}-${Math.random()
+                        .toString(36)
+                        .substring(2, 9)}`,
+                    };
+                  }
+                  return section;
+                }
+              );
+            }
 
-		// APIからデータを取得する関数
-		const fetchFromAPI = async () => {
-			const response = await fetch("/api/page");
-			if (response.ok) {
-				const data = await response.json();
+            setPage(parsedData);
+            localStorage.removeItem("restoredPageData"); // 使用後は削除
+            toast.success("バックアップから復元されたデータを読み込みました");
+          } catch (error) {
+            console.error("復元データの解析に失敗しました", error);
+            toast.error("復元データの読み込みに失敗しました");
+            // APIからデータを取得する
+            await fetchFromAPI();
+          }
+        } else {
+          // 復元データがない場合はAPIからデータを取得
+          await fetchFromAPI();
+        }
+      } catch (error) {
+        console.error("ページデータの取得に失敗しました", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-				// 既存のセクションにIDがなければ追加
-				if (data.sections && Array.isArray(data.sections)) {
-					data.sections = data.sections.map((section: Section) => {
-						if (!section.id) {
-							return {
-								...section,
-								id: `section-${Date.now()}-${Math.random()
-									.toString(36)
-									.substring(2, 9)}`,
-							};
-						}
-						return section;
-					});
-				}
+    // APIからデータを取得する関数
+    const fetchFromAPI = async () => {
+      const response = await fetch("/api/page");
+      if (response.ok) {
+        const data = await response.json();
 
-				setPage(data);
-			} else {
-				throw new Error("APIからのデータ取得に失敗しました");
-			}
-		};
+        // 既存のセクションにIDがなければ追加
+        if (data.sections && Array.isArray(data.sections)) {
+          data.sections = data.sections.map((section: Section) => {
+            if (!section.id) {
+              return {
+                ...section,
+                id: `section-${Date.now()}-${Math.random()
+                  .toString(36)
+                  .substring(2, 9)}`,
+              };
+            }
+            return section;
+          });
+        }
 
-		fetchData();
-	}, []);
+        setPage(data);
+      } else {
+        throw new Error("APIからのデータ取得に失敗しました");
+      }
+    };
 
-	// ヘッダーの更新
-	const updateHeader = (header: Header) => {
-		setPage((prev) => ({ ...prev, header }));
-	};
+    fetchData();
+  }, []);
 
-	// フッターの更新
-	const updateFooter = (footer: Footer) => {
-		setPage((prev) => ({ ...prev, footer }));
-	};
+  // 追加: 画面幅監視
+  //   useEffect(() => {
+  //     const handleResize = () => {
+  //       setIsMobile(window.innerWidth <= 960);
+  //     };
+  //     handleResize();
+  //     window.addEventListener("resize", handleResize);
+  //     return () => window.removeEventListener("resize", handleResize);
+  //   }, []);
 
-	// カスタムCSSの更新
-	const updateCustomCSS = (customCSS: string) => {
-		setPage((prev) => ({ ...prev, customCSS }));
-	};
+  // ヘッダーの更新
+  const updateHeader = (header: Header) => {
+    setPage((prev) => ({ ...prev, header }));
+  };
 
-	// セクションの更新
-	const updateSection = (index: number, section: Section) => {
-		setPage((prev) => {
-			const newSections = [...prev.sections];
-			newSections[index] = section;
-			return { ...prev, sections: newSections };
-		});
-	};
+  // フッターの更新
+  const updateFooter = (footer: Footer) => {
+    setPage((prev) => ({ ...prev, footer }));
+  };
 
-	// セクションの選択
-	const handleSectionClick = (index: number) => {
-		setActiveSectionIndex(index);
-		setActiveMenuTab("edit");
-	};
+  // カスタムCSSの更新
+  const updateCustomCSS = (customCSS: string) => {
+    setPage((prev) => ({ ...prev, customCSS }));
+  };
 
-	// セクションの並び替え
-	const moveSection = (fromIndex: number, toIndex: number) => {
-		if (
-			fromIndex < 0 ||
-			fromIndex >= page.sections.length ||
-			toIndex < 0 ||
-			toIndex >= page.sections.length
-		) {
-			return;
-		}
+  // セクションの更新
+  const updateSection = (index: number, section: Section) => {
+    setPage((prev) => {
+      const newSections = [...prev.sections];
+      newSections[index] = section;
+      return { ...prev, sections: newSections };
+    });
+  };
 
-		setPage((prev) => {
-			const newSections = [...prev.sections];
-			const [movedSection] = newSections.splice(fromIndex, 1);
-			newSections.splice(toIndex, 0, movedSection);
-			return { ...prev, sections: newSections };
-		});
+  // セクションの選択
+  const handleSectionClick = (index: number) => {
+    setActiveSectionIndex(index);
+    setActiveMenuTab("edit");
+  };
 
-		if (activeSectionIndex === fromIndex) {
-			setActiveSectionIndex(toIndex);
-		} else if (
-			activeSectionIndex !== null &&
-			((fromIndex < activeSectionIndex &&
-				toIndex >= activeSectionIndex) ||
-				(fromIndex > activeSectionIndex &&
-					toIndex <= activeSectionIndex))
-		) {
-			setActiveSectionIndex(
-				fromIndex < activeSectionIndex
-					? activeSectionIndex - 1
-					: activeSectionIndex + 1
-			);
-		}
-	};
+  // セクションの並び替え
+  const moveSection = (fromIndex: number, toIndex: number) => {
+    if (
+      fromIndex < 0 ||
+      fromIndex >= page.sections.length ||
+      toIndex < 0 ||
+      toIndex >= page.sections.length
+    ) {
+      return;
+    }
 
-	// セクションの削除
-	const deleteSection = (index: number) => {
-		setPage((prev) => {
-			const newSections = prev.sections.filter((_, i) => i !== index);
-			return { ...prev, sections: newSections };
-		});
+    setPage((prev) => {
+      const newSections = [...prev.sections];
+      const [movedSection] = newSections.splice(fromIndex, 1);
+      newSections.splice(toIndex, 0, movedSection);
+      return { ...prev, sections: newSections };
+    });
 
-		if (activeSectionIndex === index) {
-			setActiveSectionIndex(null);
-		} else if (activeSectionIndex !== null && index < activeSectionIndex) {
-			setActiveSectionIndex(activeSectionIndex - 1);
-		}
-	};
+    if (activeSectionIndex === fromIndex) {
+      setActiveSectionIndex(toIndex);
+    } else if (
+      activeSectionIndex !== null &&
+      ((fromIndex < activeSectionIndex && toIndex >= activeSectionIndex) ||
+        (fromIndex > activeSectionIndex && toIndex <= activeSectionIndex))
+    ) {
+      setActiveSectionIndex(
+        fromIndex < activeSectionIndex
+          ? activeSectionIndex - 1
+          : activeSectionIndex + 1
+      );
+    }
+  };
 
-	// セクションの追加
-	const addSection = (type: string) => {
-		try {
-			const newSection = createDefaultSection(type);
+  // セクションの削除
+  const deleteSection = (index: number) => {
+    setPage((prev) => {
+      const newSections = prev.sections.filter((_, i) => i !== index);
+      return { ...prev, sections: newSections };
+    });
 
-			setPage((prev) => {
-				const newSections = [...prev.sections, newSection];
-				return { ...prev, sections: newSections };
-			});
+    if (activeSectionIndex === index) {
+      setActiveSectionIndex(null);
+    } else if (activeSectionIndex !== null && index < activeSectionIndex) {
+      setActiveSectionIndex(activeSectionIndex - 1);
+    }
+  };
 
-			// 新しく追加したセクションを選択
-			setActiveSectionIndex(page.sections.length);
-			setActiveMenuTab("edit");
-			setIsSelectorOpen(false);
-		} catch (error) {
-			console.error("セクションの追加に失敗しました", error);
-		}
-	};
+  // セクションの追加
+  const addSection = (type: string) => {
+    try {
+      const newSection = createDefaultSection(type);
 
-	// ページデータの保存
-	const savePage = async () => {
-		setIsSaving(true);
+      setPage((prev) => {
+        const newSections = [...prev.sections, newSection];
+        return { ...prev, sections: newSections };
+      });
 
-		try {
-			const response = await fetch("/api/page", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(page),
-			});
+      // 新しく追加したセクションを選択
+      setActiveSectionIndex(page.sections.length);
+      setActiveMenuTab("edit");
+      setIsSelectorOpen(false);
+    } catch (error) {
+      console.error("セクションの追加に失敗しました", error);
+    }
+  };
 
-			if (!response.ok) {
-				throw new Error("保存に失敗しました");
-			}
+  // ページデータの保存
+  const savePage = async () => {
+    setIsSaving(true);
 
-			toast.success("ページが保存されました");
-		} catch (error) {
-			console.error("保存エラー:", error);
-			toast.error("保存に失敗しました");
-		} finally {
-			setIsSaving(false);
-		}
-	};
+    try {
+      const response = await fetch("/api/page", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(page),
+      });
 
-	// タイプに応じた編集コンポーネントを表示
-	const renderEditor = () => {
-		switch (activeMenuTab) {
-			case "header":
-				return (
-					<HeaderEditor
-						header={page.header}
-						onUpdate={updateHeader}
-					/>
-				);
-			case "footer":
-				return (
-					<FooterEditor
-						footer={page.footer}
-						onUpdate={updateFooter}
-					/>
-				);
-			case "css-editor":
-				return (
-					<CSSEditor
-						initialCSS={page.customCSS || ""}
-						onUpdate={updateCustomCSS}
-					/>
-				);
-			case "github":
-				return <GitHubPanel page={page} />;
-			case "ai-generator":
-				return (
-					<div className="space-y-6">
-						<Card className="p-4">
-							<h3 className="text-lg font-medium mb-4">
-								AIテキスト生成
-							</h3>
-							<TextGenerator
-								onSelect={(text) => {
-									// テキストを生成して、クリップボードにコピー
-									navigator.clipboard
-										.writeText(text)
-										.then(() => {
-											toast.success(
-												"テキストをクリップボードにコピーしました"
-											);
-										})
-										.catch(() => {
-											toast.error("コピーに失敗しました");
-										});
-								}}
-							/>
-							<div className="mt-4 text-sm text-gray-500">
-								<p>
-									生成したテキストは各セクションのHTMLエディタにコピー＆ペーストして使用できます。
-								</p>
-							</div>
-						</Card>
-					</div>
-				);
-			case "image-gallery":
-				return <ImageGallery />;
-			case "edit":
-				if (
-					activeSectionIndex !== null &&
-					page.sections[activeSectionIndex]
-				) {
-					return (
-						<SectionEditorRenderer
-							section={page.sections[activeSectionIndex]}
-							onUpdate={(updatedSection) =>
-								updateSection(
-									activeSectionIndex,
-									updatedSection
-								)
-							}
-						/>
-					);
-				}
-				return (
-					<div className="text-center p-8">
-						<p className="text-gray-500 mb-4">
-							編集するセクションを選択するか、新しいセクションを追加してください。
-						</p>
-						<Button onClick={() => setIsSelectorOpen(true)}>
-							<Plus className="h-4 w-4 mr-2" />
-							セクションを追加
-						</Button>
-					</div>
-				);
-			default:
-				return null;
-		}
-	};
+      if (!response.ok) {
+        throw new Error("保存に失敗しました");
+      }
 
-	if (isLoading) {
-		return (
-			<div className="flex items-center justify-center min-h-screen">
-				<div className="text-center">
-					<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900 mx-auto"></div>
-					<p className="mt-4">読み込み中...</p>
-				</div>
-			</div>
-		);
-	}
+      toast.success("ページが保存されました");
+    } catch (error) {
+      console.error("保存エラー:", error);
+      toast.error("保存に失敗しました");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
-	return (
+  // タイプに応じた編集コンポーネントを表示
+  const renderEditor = () => {
+    switch (activeMenuTab) {
+      case "header":
+        return <HeaderEditor header={page.header} onUpdate={updateHeader} />;
+      case "footer":
+        return <FooterEditor footer={page.footer} onUpdate={updateFooter} />;
+      case "css-editor":
+        return (
+          <CSSEditor
+            initialCSS={page.customCSS || ""}
+            onUpdate={updateCustomCSS}
+          />
+        );
+      case "github":
+        return <GitHubPanel page={page} />;
+      case "ai-generator":
+        return (
+          <div className="space-y-6">
+            <Card className="p-4">
+              <h3 className="mb-4 text-lg font-medium">AIテキスト生成</h3>
+              <TextGenerator
+                onSelect={(text) => {
+                  // テキストを生成して、クリップボードにコピー
+                  navigator.clipboard
+                    .writeText(text)
+                    .then(() => {
+                      toast.success("テキストをクリップボードにコピーしました");
+                    })
+                    .catch(() => {
+                      toast.error("コピーに失敗しました");
+                    });
+                }}
+              />
+              <div className="mt-4 text-sm text-gray-500">
+                <p>
+                  生成したテキストは各セクションのHTMLエディタにコピー＆ペーストして使用できます。
+                </p>
+              </div>
+            </Card>
+          </div>
+        );
+      case "image-gallery":
+        return <ImageGallery />;
+      case "edit":
+        if (activeSectionIndex !== null && page.sections[activeSectionIndex]) {
+          return (
+            <SectionEditorRenderer
+              section={page.sections[activeSectionIndex]}
+              onUpdate={(updatedSection) =>
+                updateSection(activeSectionIndex, updatedSection)
+              }
+            />
+          );
+        }
+        return (
+          <div className="p-8 text-center">
+            <p className="mb-4 text-gray-500">
+              編集するセクションを選択するか、新しいセクションを追加してください。
+            </p>
+            <Button onClick={() => setIsSelectorOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              セクションを追加
+            </Button>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-gray-900"></div>
+          <p className="mt-4">読み込み中...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
     <div className="flex min-h-screen flex-col">
       {/* ヘッダー */}
-      <header className="border-b bg-white shadow-sm">
-        <div className="flex items-center justify-between px-4 py-4">
+      <header className="border-b  shadow-sm">
+        <div className="flex flex-wrap items-center gap-2 px-4 py-4">
           <div className="flex items-center gap-4">
-            {/* <Link href="/">
-              <Button variant="outline" size="icon">
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-            </Link> */}
-            <h1 className="text-xl font-bold">CMSエディタ</h1>
+            <h1 className="text-3xl font-light">/editor</h1>
+            <button
+              aria-label="ダークモード切替"
+              className="ml-2 border-none bg-transparent p-1 outline-none focus:outline-none"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            >
+              {theme === "dark" ? (
+                <Sun className="h-6 w-6 text-yellow-400" />
+              ) : (
+                <Moon className="h-6 w-6 text-zinc-700" />
+              )}
+            </button>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-2">
             <Link href="/" target="_blank">
               <Button variant="outline">
-                <ExternalLink className="mr-2 h-4 w-4" />
+                <ExternalLink className=" h-4 w-4" />
                 ページを開く
               </Button>
             </Link>
@@ -480,11 +482,11 @@ export default function EditorPage() {
               variant="outline"
               onClick={() => setPreviewMode(!previewMode)}
             >
-              <Eye className="mr-2 h-4 w-4" />
+              <Eye className=" h-4 w-4" />
               {previewMode ? "編集に戻る" : "プレビュー"}
             </Button>
             <Button onClick={savePage} disabled={isSaving}>
-              <Save className="mr-2 h-4 w-4" />
+              <Save className="h-4 w-4" />
               {isSaving ? "保存中..." : "保存"}
             </Button>
           </div>
@@ -506,68 +508,106 @@ export default function EditorPage() {
         </div>
       ) : (
         // 編集モード
-        <div className="flex flex-1 flex-row overflow-hidden">
+        <div className="flex flex-1 flex-col overflow-hidden lg:flex-row">
           {/* 左端: タブリスト */}
-          <div className="flex min-w-fit flex-col items-start border-r bg-white p-4">
+          <div className="relative w-full overflow-x-auto border-b  px-2 pb-1 pt-2 lg:w-auto lg:border-b-0 lg:border-r lg:p-4">
             <Tabs
               value={activeMenuTab}
               onValueChange={setActiveMenuTab}
-              className="w-full"
+              className="w-max min-w-full lg:w-full"
             >
-              <TabsList className="flex flex-col items-start gap-4 rounded-none bg-transparent p-0">
+              <TabsList className="flex min-w-full flex-row items-center gap-2 whitespace-nowrap rounded-none bg-transparent p-0 text-xs lg:flex-col lg:items-start lg:gap-4 lg:whitespace-normal lg:text-base">
                 <TabsTrigger
                   value="header"
-                  className="w-full rounded-none border-none bg-transparent p-0 text-left"
+                  className="min-w-[70px] rounded-none border-none bg-transparent p-2 text-left lg:w-full lg:p-0"
                 >
                   ヘッダー
                 </TabsTrigger>
                 <TabsTrigger
                   value="footer"
-                  className="w-full rounded-none border-none bg-transparent p-0 text-left"
+                  className="min-w-[70px] rounded-none border-none bg-transparent p-2 text-left lg:w-full lg:p-0"
                 >
                   フッター
                 </TabsTrigger>
                 <TabsTrigger
                   value="css-editor"
-                  className="w-full rounded-none border-none bg-transparent p-0 text-left"
+                  className="min-w-[70px] rounded-none border-none bg-transparent p-2 text-left lg:w-full lg:p-0"
                 >
                   CSS追加
                 </TabsTrigger>
                 <TabsTrigger
                   value="ai-generator"
-                  className="w-full rounded-none border-none bg-transparent p-0 text-left"
+                  className="min-w-[70px] rounded-none border-none bg-transparent p-2 text-left lg:w-full lg:p-0"
                 >
                   AIで生成
                 </TabsTrigger>
                 <TabsTrigger
                   value="image-gallery"
-                  className="w-full rounded-none border-none bg-transparent p-0 text-left"
+                  className="min-w-[70px] rounded-none border-none bg-transparent p-2 text-left lg:w-full lg:p-0"
                 >
                   画像一覧
                 </TabsTrigger>
                 <TabsTrigger
                   value="github"
-                  className="w-full rounded-none border-none bg-transparent p-0 text-left"
+                  className="min-w-[70px] rounded-none border-none bg-transparent p-2 text-left lg:w-full lg:p-0"
                 >
                   バックアップ
                 </TabsTrigger>
               </TabsList>
+              {/* Handアイコン */}
+              <div
+                className="pointer-events-none absolute right-2 top-1 flex h-full items-center lg:hidden"
+                style={{ zIndex: 10 }}
+              >
+                <div
+                  id="tab-flick-indicator"
+                  className="transition-opacity duration-300"
+                  style={{ opacity: 0 }}
+                >
+                  <Hand className="h-5 w-5 animate-bounce text-gray-400" />
+                </div>
+              </div>
             </Tabs>
           </div>
-          {/* 中央: セクションリスト */}
-          <div className="flex min-w-[170px] max-w-[18rem] flex-col overflow-y-auto border-r bg-gray-50 p-4">
-            <div className="space-y-4">
-              <div className="mb-3 flex items-center justify-between">
-                <h2 className="text-sm font-medium">
-                  セクション ({page.sections.length})
-                </h2>
-                <Button size="sm" onClick={() => setIsSelectorOpen(true)}>
-                  <Plus className="mr-1 h-3 w-3" />
-                  追加
-                </Button>
-              </div>
+          {/* セクションリスト */}
+          <div className=" w-full border-b  px-2 py-2 lg:min-w-[170px] lg:max-w-[18rem]  lg:overflow-y-auto lg:border-b-0 lg:border-r  lg:p-4">
+            <div className="mb-3 flex w-full items-center">
+              <h2 className="text-sm font-medium">
+                セクション ({page.sections.length})
+              </h2>
+              <Button
+                size="sm"
+                onClick={() => setIsSelectorOpen(true)}
+                className="ml-auto mr-2"
+              >
+                <Plus className="mr-1 h-3 w-3" />
+                追加
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="lg:hidden"
+                onClick={() => setSectionListOpen((v) => !v)}
+              >
+                選択
+              </Button>
+            </div>
+            {/* PC時は常時リスト表示、SP時は開閉 */}
+            <div
+              className={
+                "w-full " +
+                (sectionListOpen ? "" : "hidden") +
+                " lg:block lg:w-full"
+              }
+            >
               <SortableSections
-                sections={page.sections}
+                sections={
+                  sectionListOpen ||
+                  typeof window === "undefined" ||
+                  window.innerWidth >= 1024
+                    ? page.sections
+                    : page.sections.filter((_, i) => i === activeSectionIndex)
+                }
                 activeSectionIndex={activeSectionIndex}
                 onSectionClick={handleSectionClick}
                 onSectionMove={moveSection}
@@ -587,6 +627,24 @@ export default function EditorPage() {
           <SectionSelector onSelect={addSection} />
         </DialogContent>
       </Dialog>
+      {/* タブ横スクロール時のみHandアイコン表示スクリプト */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+				(function(){
+					function updateFlickIcon() {
+						var el = document.querySelector('[data-slot="tabs-list"]');
+						var ind = document.getElementById('tab-flick-indicator');
+						if (!el || !ind) return;
+						var isOverflowing = el.scrollWidth > el.clientWidth + 8;
+						ind.style.opacity = isOverflowing ? 1 : 0;
+					}
+					window.addEventListener('resize', updateFlickIcon);
+					setTimeout(updateFlickIcon, 300);
+				})();
+				`,
+        }}
+      />
     </div>
   );
 }

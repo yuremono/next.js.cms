@@ -116,7 +116,7 @@ const SortableItem = ({
 			style={style}
 			className={`p-2 ${
 				isActive
-					? "border-blue-500 bg-blue-50"
+					? "border-blue-500 "
 					: "hover:border-gray-300"
 			} cursor-pointer transition-colors mb-2`}
 			onClick={onSelect}
