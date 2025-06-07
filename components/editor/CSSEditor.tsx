@@ -33,19 +33,19 @@ export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
 	};
 
 	return (
-		<div className="space-y-6">
-			<Card className="p-4">
-				<h3 className="text-lg font-medium mb-4">カスタムCSS</h3>
+    <div className="CSSEditor space-y-6">
+      <Card className="p-4">
+        <h3 className="mb-4 text-lg font-medium">カスタムCSS</h3>
 
-				<div className="space-y-4">
-					<div className="space-y-2">
-						<Label htmlFor="custom-css">カスタムCSSを編集</Label>
-						<Textarea
-							id="custom-css"
-							value={css}
-							onChange={handleCSSChange}
-							className="font-mono text-sm min-h-[300px]"
-							placeholder="/* ここにカスタムCSSを入力 */
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="custom-css">カスタムCSSを編集</Label>
+            <Textarea
+              id="custom-css"
+              value={css}
+              onChange={handleCSSChange}
+              className="min-h-[300px] font-mono text-sm"
+              placeholder="/* ここにカスタムCSSを入力 */
 body {
   /* 例: 背景色を変更 */
   /* background-color: #f5f5f5; */
@@ -62,27 +62,27 @@ footer {
   /* background-color: #333333; */
   /* color: #ffffff; */
 }"
-						/>
-					</div>
+            />
+          </div>
 
-					<Button onClick={applyCSS}>CSSを適用</Button>
+          <Button onClick={applyCSS}>CSSを適用</Button>
 
-					<div className="mt-4">
-						<h4 className="font-medium mb-2">使用方法</h4>
-						<div className="text-sm text-gray-600 space-y-2">
-							<p>
-								このカスタムCSSはページのヘッダー（&lt;head&gt;タグ内）に直接挿入されます。
-							</p>
-							<p>
-								カスタムCSSを使用して、ページ全体の見た目をカスタマイズできます。
-							</p>
-							<p>
-								変更を保存するには「CSSを適用」ボタンをクリックし、ページの「保存」ボタンを押してください。
-							</p>
-						</div>
-					</div>
-				</div>
-			</Card>
-		</div>
-	);
+          <div className="mt-4">
+            <h4 className="mb-2 font-medium">使用方法</h4>
+            <div className="space-y-2 text-sm text-gray-600">
+              <p>
+                このカスタムCSSはページのヘッダー（&lt;head&gt;タグ内）に直接挿入されます。
+              </p>
+              <p>
+                カスタムCSSを使用して、ページ全体の見た目をカスタマイズできます。
+              </p>
+              <p>
+                変更を保存するには「CSSを適用」ボタンをクリックし、ページの「保存」ボタンを押してください。
+              </p>
+            </div>
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
 }

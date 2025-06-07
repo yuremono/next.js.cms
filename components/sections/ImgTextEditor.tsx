@@ -66,12 +66,12 @@ export function ImgTextEditor({ section, onUpdate }: ImgTextEditorProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="ImgTextEditor space-y-6">
       <Card className="p-4">
         <h3 className="mb-4 text-lg font-medium">画像テキストセクション設定</h3>
         <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <Label className="w-28" htmlFor="imgtext-name">
+          <div className="flex items-center gap-4">
+            <Label className="" htmlFor="imgtext-name">
               セクション名
             </Label>
             <Input
@@ -82,8 +82,8 @@ export function ImgTextEditor({ section, onUpdate }: ImgTextEditorProps) {
               className="flex-1"
             />
           </div>
-          <div className="flex items-center gap-2">
-            <Label className="w-28" htmlFor="imgtext-class">
+          <div className="flex items-center gap-4">
+            <Label className="" htmlFor="imgtext-class">
               セクションクラス
             </Label>
             <Input
@@ -99,15 +99,15 @@ export function ImgTextEditor({ section, onUpdate }: ImgTextEditorProps) {
             initialClass={section.imageClass || ""}
             onImageChange={handleImageChange}
             onClassChange={handleImageClassChange}
-            label="画像"
+            label="画像クラス"
           />
           <BackgroundImageUpload
             initialImage={section.bgImage}
             onImageChange={handleBgImageChange}
             label="背景画像"
           />
-          <div className="flex items-center gap-2">
-            <Label className="w-28" htmlFor="imgtext-text-class">
+          <div className="flex items-center gap-4">
+            <Label className="" htmlFor="imgtext-text-class">
               テキストクラス
             </Label>
             <Input

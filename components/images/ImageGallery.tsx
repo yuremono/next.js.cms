@@ -111,14 +111,14 @@ export function ImageGallery() {
 	return (
 		<div className="space-y-6">
 			<Card className="p-4">
-				<h3 className="text-lg font-medium mb-4">画像ギャラリー</h3>
+				<h3 className="text-lg font-medium mb-4">画像一覧</h3>
 
 				<div className="space-y-4">
 					{/* アップロードフォーム */}
 					<div>
 						<Label
 							htmlFor="gallery-image-upload"
-							className="mb-2 block"
+							className="mb-2 block w-full"
 						>
 							新しい画像をアップロード
 						</Label>

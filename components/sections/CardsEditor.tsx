@@ -106,7 +106,7 @@ const SortableCardItem = ({
 };
 
 export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
-  const [activeCardIndex, setActiveCardIndex] = useState<number | null>(
+	const [activeCardIndex, setActiveCardIndex] = useState<number | null>(
     section.cards.length > 0 ? 0 : null
   );
 
@@ -204,13 +204,6 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
     });
   };
 
-  const handleBgClassChange = (className: string) => {
-    onUpdate({
-      ...section,
-      bgClass: className,
-    });
-  };
-
   // セクション名の変更
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onUpdate({
@@ -220,12 +213,12 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="CardsEditor space-y-6">
       <UICard className="p-4">
         <h3 className="mb-4 text-lg font-medium">カードセクション設定</h3>
         <div className="space-y-2">
           <div className="flex items-center gap-4">
-            <Label className="w-32" htmlFor="cards-name">
+            <Label className="" htmlFor="cards-name">
               セクション名
             </Label>
             <Input
@@ -237,7 +230,7 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
             />
           </div>
           <div className="flex items-center gap-4">
-            <Label className="w-32" htmlFor="cards-class">
+            <Label className="" htmlFor="cards-class">
               セクションクラス
             </Label>
             <Input
@@ -250,9 +243,7 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
           </div>
           <BackgroundImageUpload
             initialImage={section.bgImage}
-            initialClass={section.bgClass || ""}
             onImageChange={handleBgImageChange}
-            onClassChange={handleBgClassChange}
             label="背景画像"
           />
 
@@ -331,7 +322,7 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
                             <div className="space-y-2">
                               <div className="flex items-center gap-4">
                                 <Label
-                                  className="w-32"
+                                  className=""
                                   htmlFor={`card-${activeCardIndex}-text-class`}
                                 >
                                   テキストクラス

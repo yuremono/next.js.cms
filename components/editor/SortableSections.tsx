@@ -37,7 +37,7 @@ export function SortableSections({
 	};
 
 	return (
-		<div className="space-y-2">
+		<div className="SortableSections space-y-2">
 			{sections.map((section, index) => (
 				<Card
 					key={index}

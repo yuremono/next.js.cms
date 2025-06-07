@@ -99,8 +99,8 @@ export function ImageUpload({
 
   return (
     <div className="flex flex-wrap justify-between space-y-4">
-      <div className="flex w-full gap-2 space-y-2">
-        <Label className="w-28">{label}</Label>
+      <div className="flex w-full gap-4 space-y-2">
+        <Label className="">{label}</Label>
         <Input
           className="flex-1"
           placeholder="例: object-cover rounded"
@@ -113,7 +113,7 @@ export function ImageUpload({
       <div className="">
         <Label
           htmlFor="image-upload"
-          className="flex w-full cursor-pointer items-center gap-2 rounded border border-dashed px-4 py-2 hover:bg-gray-50"
+          className="flex w-full cursor-pointer items-center gap-4 rounded border border-dashed px-4 py-2 hover:bg-gray-50"
         >
           <Upload className="h-4 w-4" />
           <span>ファイルをアップロード</span>
@@ -131,7 +131,7 @@ export function ImageUpload({
           variant="outline"
           type="button"
           onClick={() => setIsGalleryOpen(true)}
-          className="flex items-center gap-2"
+          className="flex items-center gap-4"
         >
           <ImageIcon className="h-4 w-4" />
           アップロード済み画像から選択

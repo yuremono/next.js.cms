@@ -4,9 +4,10 @@ import { Section } from "@/types";
 import {
 	Trash2,
 	ImageIcon,
-	LayoutIcon,
+	LayoutGrid,
 	CreditCard,
-	FormInput,
+	Mail,
+	Copy,
 	GripVertical,
 } from "lucide-react";
 import {
@@ -77,15 +78,15 @@ const SortableItem = ({
 				);
 			case "imgText":
 				return (
-					<LayoutIcon className="h-6 w-6 text-green-500 mr-2 flex-shrink-0" />
+					<Copy className="h-6 w-6 text-green-500 mr-2 flex-shrink-0" />
 				);
 			case "cards":
 				return (
-					<CreditCard className="h-6 w-6 text-yellow-500 mr-2 flex-shrink-0" />
+					<LayoutGrid className="h-6 w-6 text-yellow-500 mr-2 flex-shrink-0" />
 				);
 			case "form":
 				return (
-					<FormInput className="h-6 w-6 text-purple-500 mr-2 flex-shrink-0" />
+					<Mail className="h-6 w-6 text-purple-500 mr-2 flex-shrink-0" />
 				);
 			default:
 				return null;

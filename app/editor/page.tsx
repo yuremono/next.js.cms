@@ -12,7 +12,7 @@ import { SortableSections } from "@/components/SortableSections";
 import { SectionSelector } from "@/components/SectionSelector";
 import { SectionEditorRenderer } from "@/components/editor/SectionEditorRenderer";
 import { PageRenderer } from "@/components/PageRenderer";
-import { Save, Plus, Eye, ArrowLeft } from "lucide-react";
+import { Save, Plus, Eye, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { TextGenerator } from "@/components/sections/TextGenerator";
@@ -462,17 +462,17 @@ export default function EditorPage() {
       <header className="border-b bg-white shadow-sm">
         <div className="flex items-center justify-between px-4 py-4">
           <div className="flex items-center gap-4">
-            <Link href="/">
+            {/* <Link href="/">
               <Button variant="outline" size="icon">
                 <ArrowLeft className="h-4 w-4" />
               </Button>
-            </Link>
+            </Link> */}
             <h1 className="text-xl font-bold">CMSエディタ</h1>
           </div>
           <div className="flex items-center gap-2">
             <Link href="/" target="_blank">
               <Button variant="outline">
-                <Eye className="mr-2 h-4 w-4" />
+                <ExternalLink className="mr-2 h-4 w-4" />
                 ページを開く
               </Button>
             </Link>
@@ -498,7 +498,7 @@ export default function EditorPage() {
           <div className="fixed left-4 top-4 z-50">
             <Link href="/" target="_blank">
               <Button>
-                <Eye className="mr-2 h-4 w-4" />
+                <ExternalLink className="mr-2 h-4 w-4" />
                 ページを開く
               </Button>
             </Link>
@@ -514,7 +514,7 @@ export default function EditorPage() {
               onValueChange={setActiveMenuTab}
               className="w-full"
             >
-              <TabsList className="flex flex-col items-start gap-1 rounded-none bg-transparent p-0">
+              <TabsList className="flex flex-col items-start gap-4 rounded-none bg-transparent p-0">
                 <TabsTrigger
                   value="header"
                   className="w-full rounded-none border-none bg-transparent p-0 text-left"
@@ -543,7 +543,7 @@ export default function EditorPage() {
                   value="image-gallery"
                   className="w-full rounded-none border-none bg-transparent p-0 text-left"
                 >
-                  画像
+                  画像一覧
                 </TabsTrigger>
                 <TabsTrigger
                   value="github"

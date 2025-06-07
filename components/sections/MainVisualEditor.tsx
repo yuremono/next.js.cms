@@ -66,12 +66,12 @@ export function MainVisualEditor({ section, onUpdate }: MainVisualEditorProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="MainVisualEditor space-y-6">
       <Card className="p-4">
         <h3 className="mb-4 text-lg font-medium">メインビジュアル設定</h3>
         <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <Label className="w-28" htmlFor="main-visual-name">
+          <div className="flex items-center gap-4">
+            <Label className="" htmlFor="main-visual-name">
               セクション名
             </Label>
             <Input
@@ -82,8 +82,8 @@ export function MainVisualEditor({ section, onUpdate }: MainVisualEditorProps) {
               className="flex-1"
             />
           </div>
-          <div className="flex items-center gap-2">
-            <Label className="w-28" htmlFor="main-visual-class">
+          <div className="flex items-center gap-4">
+            <Label className="" htmlFor="main-visual-class">
               セクションクラス
             </Label>
             <Input
@@ -99,15 +99,15 @@ export function MainVisualEditor({ section, onUpdate }: MainVisualEditorProps) {
             initialClass={section.imageClass || ""}
             onImageChange={handleMainImageChange}
             onClassChange={handleImageClassChange}
-            label="画像"
+            label="画像クラス"
           />
           <BackgroundImageUpload
             initialImage={section.bgImage}
             onImageChange={handleBgImageChange}
             label="背景画像"
           />
-          <div className="flex items-center gap-2">
-            <Label className="w-28" htmlFor="main-visual-text-class">
+          <div className="flex items-center gap-4">
+            <Label className="" htmlFor="main-visual-text-class">
               テキストクラス
             </Label>
             <Input

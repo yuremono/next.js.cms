@@ -122,91 +122,80 @@ export function PageRenderer({ page }: PageRendererProps) {
         );
 			case "form":
 				return (
-					<section
-						key={index}
-						className={`form ${sectionClass}`}
-						style={bgStyle}
-					>
-						<div className="container mx-auto px-4 py-12">
-							<div
-								className="content mb-8"
-								dangerouslySetInnerHTML={{
-									__html: section.html,
-								}}
-							/>
-							<form
-								action={section.endpoint || "/api/contact"}
-								method="POST"
-								className="max-w-2xl mx-auto"
-							>
-								<div className="mb-4">
-									<label
-										htmlFor="name"
-										className="block mb-2 font-medium"
-									>
-										お名前
-									</label>
-									<input
-										type="text"
-										id="name"
-										name="name"
-										className="w-full p-2 border rounded"
-										required
-									/>
-								</div>
-								<div className="mb-4">
-									<label
-										htmlFor="email"
-										className="block mb-2 font-medium"
-									>
-										メールアドレス
-									</label>
-									<input
-										type="email"
-										id="email"
-										name="email"
-										className="w-full p-2 border rounded"
-										required
-									/>
-								</div>
-								<div className="mb-4">
-									<label
-										htmlFor="message"
-										className="block mb-2 font-medium"
-									>
-										メッセージ
-									</label>
-									<textarea
-										id="message"
-										name="message"
-										rows={4}
-										className="w-full p-2 border rounded"
-										required
-									></textarea>
-								</div>
-								<div className="mb-4">
-									<label className="flex items-center">
-										<input
-											type="checkbox"
-											name="privacy"
-											className="mr-2"
-											required
-										/>
-										<span>
-											プライバシーポリシーに同意する
-										</span>
-									</label>
-								</div>
-								<button
-									type="submit"
-									className="px-4 py-2 bg-blue-900 text-white rounded font-medium"
-								>
-									送信
-								</button>
-							</form>
-						</div>
-					</section>
-				);
+          <section
+            key={index}
+            className={`form ${sectionClass}`}
+            style={bgStyle}
+          >
+            <div className="container mx-auto px-4 py-12">
+              <div
+                className={`content mb-8 ${section.textClass || ""}`}
+                dangerouslySetInnerHTML={{
+                  __html: section.html,
+                }}
+              />
+              <form
+                action={section.endpoint || "/api/contact"}
+                method="POST"
+                className="mx-auto max-w-2xl"
+              >
+                <div className="mb-4">
+                  <label htmlFor="name" className="mb-2 block font-medium">
+                    お名前
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    className="w-full rounded border p-2"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="email" className="mb-2 block font-medium">
+                    メールアドレス
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    className="w-full rounded border p-2"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="message" className="mb-2 block font-medium">
+                    メッセージ
+                  </label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    rows={4}
+                    className="w-full rounded border p-2"
+                    required
+                  ></textarea>
+                </div>
+                <div className="mb-4">
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="privacy"
+                      className="mr-2"
+                      required
+                    />
+                    <span>プライバシーポリシーに同意する</span>
+                  </label>
+                </div>
+                <button
+                  type="submit"
+                  className="rounded bg-blue-900 px-4 py-2 font-medium text-white"
+                >
+                  送信
+                </button>
+              </form>
+            </div>
+          </section>
+        );
 			default:
 				return (
 					<section key={index} className="unknown-section">

@@ -51,12 +51,14 @@ export function FormEditor({ section, onUpdate }: FormEditorProps) {
 	};
 
 	return (
-    <div className="space-y-6">
+    <div className="FormEditor space-y-6">
       <Card className="p-4">
         <h3 className="mb-4 text-lg font-medium">フォームセクション設定</h3>
         <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="form-name">セクション名</Label>
+          <div className="flex items-center gap-4">
+            <Label className="" htmlFor="form-name">
+              セクション名
+            </Label>
             <Input
               id="form-name"
               value={section.name || ""}
@@ -64,8 +66,10 @@ export function FormEditor({ section, onUpdate }: FormEditorProps) {
               placeholder="例: お問い合わせフォーム"
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="form-class">クラス名</Label>
+          <div className="flex items-center gap-4">
+            <Label className="" htmlFor="form-class">
+              クラス名
+            </Label>
             <Input
               id="form-class"
               value={section.class}
@@ -73,8 +77,12 @@ export function FormEditor({ section, onUpdate }: FormEditorProps) {
               placeholder="例: form-section"
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="form-endpoint">送信先エンドポイント</Label>
+          <div className="flex items-center gap-4">
+            <Label className="" htmlFor="form-endpoint">
+              送信先
+              <br />
+              エンドポイント
+            </Label>
             <Input
               id="form-endpoint"
               value={section.endpoint}

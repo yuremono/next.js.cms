@@ -154,6 +154,8 @@ export default async function Home() {
 								bgImage: mv?.bg_image ?? "",
 								name: mv?.name ?? "",
 								image: mv?.image ?? "",
+								imageClass: mv?.image_class ?? "",
+								textClass: mv?.text_class ?? "",
 								html: mv?.html ?? "",
 							});
 						} else if (section.type === "imgText") {
@@ -169,6 +171,8 @@ export default async function Home() {
 								bgImage: it?.bg_image ?? "",
 								name: it?.name ?? "",
 								image: it?.image ?? "",
+								imageClass: it?.image_class ?? "",
+								textClass: it?.text_class ?? "",
 								html: it?.html ?? "",
 							});
 						} else if (section.type === "cards") {
@@ -190,6 +194,8 @@ export default async function Home() {
 								name: cs?.name ?? "",
 								cards: (cards ?? []).map((c) => ({
 									image: c.image ?? "",
+									imageClass: c.image_class ?? "",
+									textClass: c.text_class ?? "",
 									html: c.html ?? "",
 								})),
 							});
