@@ -66,8 +66,8 @@ export function MainVisualEditor({ section, onUpdate }: MainVisualEditorProps) {
   };
 
   return (
-    <div className="MainVisualEditor space-y-6">
-      <Card className="p-4">
+    <div className="MainVisualEditor space-y-6 h-full">
+      <Card className="flex  flex-col rounded-sm p-4 h-full">
         <h3 className="mb-4 text-lg font-medium">メインビジュアル設定</h3>
         <div className="space-y-2">
           <div className="flex items-center gap-4">

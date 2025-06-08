@@ -5,7 +5,6 @@ import {
 	Trash2,
 	ImageIcon,
 	LayoutGrid,
-	CreditCard,
 	Mail,
 	Copy,
 	GripVertical,
@@ -74,19 +73,19 @@ const SortableItem = ({
 		switch (section.layout) {
 			case "mainVisual":
 				return (
-					<ImageIcon className="h-6 w-6 text-blue-500 mr-2 flex-shrink-0" />
+					<ImageIcon className="w-4 text-blue-500 mr-2 flex-shrink-0" />
 				);
 			case "imgText":
 				return (
-					<Copy className="h-6 w-6 text-green-500 mr-2 flex-shrink-0" />
+					<Copy className=" w-4 text-green-500 mr-2 flex-shrink-0" />
 				);
 			case "cards":
 				return (
-					<LayoutGrid className="h-6 w-6 text-yellow-500 mr-2 flex-shrink-0" />
+					<LayoutGrid className="w-4 text-yellow-500 mr-2 flex-shrink-0" />
 				);
 			case "form":
 				return (
-					<Mail className="h-6 w-6 text-purple-500 mr-2 flex-shrink-0" />
+					<Mail className=" w-4 text-purple-500 mr-2 flex-shrink-0" />
 				);
 			default:
 				return null;
@@ -111,50 +110,46 @@ const SortableItem = ({
 	};
 
 	return (
-		<Card
-			ref={setNodeRef}
-			style={style}
-			className={`p-2 ${
-				isActive
-					? "border-blue-500 "
-					: "hover:border-gray-300"
-			} cursor-pointer transition-colors mb-2`}
-			onClick={onSelect}
-		>
-			<div className="flex items-center justify-between">
-				<div className="flex items-center">
-					<div
-						{...attributes}
-						{...listeners}
-						className="cursor-grab mr-2 text-gray-400 hover:text-gray-600"
-					>
-						<GripVertical className="h-4 w-4 flex-shrink-0" />
-					</div>
-					{getSectionIcon(section)}
-					<span className="text-sm">{getSectionTitle(section)}</span>
-				</div>
-				<div className="flex items-center space-x-1">
-					<Button
-						variant="ghost"
-						size="icon"
-						className="h-7 w-7 text-red-500 hover:text-red-600"
-						onClick={(e) => {
-							e.stopPropagation();
-							if (
-								window.confirm(
-									"このセクションを削除してもよろしいですか？"
-								)
-							) {
-								onDelete();
-							}
-						}}
-					>
-						<Trash2 className="h-4 w-4" />
-					</Button>
-				</div>
-			</div>
-		</Card>
-	);
+    <Card
+      ref={setNodeRef}
+      style={style}
+      className={`rounded-lg p-2 ${
+        isActive ? "border-blue-500 " : "hover:border-gray-300"
+      } mb-2 cursor-pointer transition-colors`}
+      onClick={onSelect}
+    >
+      <div className="flex items-center justify-between">
+        <div className="flex items-center">
+          <div
+            {...attributes}
+            {...listeners}
+            className="mr-2 cursor-grab text-gray-400 hover:text-gray-600"
+          >
+            <GripVertical className="h-4 w-4 flex-shrink-0" />
+          </div>
+          {getSectionIcon(section)}
+          <span className="text-sm">{getSectionTitle(section)}</span>
+        </div>
+        <div className="flex items-center space-x-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 text-red-500 hover:text-red-600"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (
+                window.confirm("このセクションを削除してもよろしいですか？")
+              ) {
+                onDelete();
+              }
+            }}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    </Card>
+  );
 };
 
 export function SortableSections({

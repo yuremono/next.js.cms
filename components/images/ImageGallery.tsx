@@ -108,103 +108,92 @@ export function ImageGallery() {
 		fetchImages();
 	}, []);
 
-	return (
-		<div className="space-y-6">
-			<Card className="p-4">
-				<h3 className="text-lg font-medium mb-4">画像一覧</h3>
+	  return (
+      <div className="flex h-full flex-col space-y-6">
+        <Card className="flex flex-1 flex-col rounded-sm p-4">
+          <h3 className="mb-4 text-lg font-medium">画像一覧</h3>
 
-				<div className="space-y-4">
-					{/* アップロードフォーム */}
-					<div>
-						<Label
-							htmlFor="gallery-image-upload"
-							className="mb-2 block w-full"
-						>
-							新しい画像をアップロード
-						</Label>
-						<div className="flex items-center gap-2">
-							<Label
-								htmlFor="gallery-image-upload"
-								className="flex cursor-pointer items-center gap-2 rounded border border-dashed px-4 py-2 hover:bg-gray-50"
-							>
-								<Upload className="h-4 w-4" />
-								<span>画像を選択</span>
-								<Input
-									id="gallery-image-upload"
-									type="file"
-									accept="image/*"
-									className="hidden"
-									onChange={handleFileUpload}
-									disabled={isUploading}
-								/>
-							</Label>
-							{isUploading && (
-								<span className="text-sm">
-									アップロード中...
-								</span>
-							)}
-						</div>
-					</div>
+          <div className="space-y-4">
+            {/* アップロードフォーム */}
+            <div>
+              <Label
+                htmlFor="gallery-image-upload"
+                className="mb-2 block w-full"
+              >
+                新しい画像をアップロード
+              </Label>
+              <div className="flex items-center gap-2">
+                <Label
+                  htmlFor="gallery-image-upload"
+                  className="flex cursor-pointer items-center gap-2 rounded border border-dashed px-4 py-2 hover:bg-gray-50"
+                >
+                  <Upload className="h-4 w-4" />
+                  <span>画像を選択</span>
+                  <Input
+                    id="gallery-image-upload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleFileUpload}
+                    disabled={isUploading}
+                  />
+                </Label>
+                {isUploading && (
+                  <span className="text-sm">アップロード中...</span>
+                )}
+              </div>
+            </div>
 
-					{error && <p className="text-sm text-red-500">{error}</p>}
+            {error && <p className="text-sm text-red-500">{error}</p>}
 
-					{/* 画像ギャラリー */}
-					<div className="mt-6">
-						<h4 className="text-md font-medium mb-2">
-							アップロード済み画像 ({images.length})
-						</h4>
+            {/* 画像ギャラリー */}
+            <div className="mt-6">
+              <h4 className="text-md mb-2 font-medium">
+                アップロード済み画像 ({images.length})
+              </h4>
 
-						{isLoading ? (
-							<div className="text-center py-8">
-								<div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-900 mx-auto"></div>
-								<p className="mt-2">
-									画像を読み込んでいます...
-								</p>
-							</div>
-						) : images.length === 0 ? (
-							<div className="text-center py-8 border border-dashed rounded">
-								<p className="text-gray-500">
-									アップロードされた画像はありません
-								</p>
-							</div>
-						) : (
-							<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-								{images.map((image, index) => (
-									<div
-										key={index}
-										className="relative border rounded group"
-									>
-										<div className="relative w-full h-[200px]">
-											<Image
-												src={image.url}
-												alt={image.name}
-												fill
-												className="object-cover rounded-lg"
-											/>
-										</div>
-										<div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
-											<Button
-												size="sm"
-												variant="secondary"
-												onClick={() =>
-													copyToClipboard(image.url)
-												}
-												className="bg-white"
-											>
-												<Copy className="h-4 w-4 mr-1" />
-												URLをコピー
-											</Button>
-										</div>
-										<div className="p-2 text-xs truncate">
-											{image.name}
-										</div>
-									</div>
-								))}
-							</div>
-						)}
-					</div>
-				</div>
-			</Card>
-		</div>
-	);
+              {isLoading ? (
+                <div className="py-8 text-center">
+                  <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-gray-900"></div>
+                  <p className="mt-2">画像を読み込んでいます...</p>
+                </div>
+              ) : images.length === 0 ? (
+                <div className="rounded border border-dashed py-8 text-center">
+                  <p className="text-gray-500">
+                    アップロードされた画像はありません
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+                  {images.map((image, index) => (
+                    <div key={index} className="group relative rounded border">
+                      <div className="relative h-[200px] w-full">
+                        <Image
+                          src={image.url}
+                          alt={image.name}
+                          fill
+                          className="rounded-lg object-cover"
+                        />
+                      </div>
+                      <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 opacity-0 transition-all group-hover:bg-opacity-50 group-hover:opacity-100">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => copyToClipboard(image.url)}
+                          className="bg-white"
+                        >
+                          <Copy className="mr-1 h-4 w-4" />
+                          URLをコピー
+                        </Button>
+                      </div>
+                      <div className="truncate p-2 text-xs">{image.name}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </Card>
+      </div>
+    );
 }

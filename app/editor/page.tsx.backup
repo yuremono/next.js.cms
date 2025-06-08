@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-// import { Card } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Footer, Header, Page, Section } from "@/types";
@@ -154,9 +154,6 @@ export default function EditorPage() {
 
   // データの保存中状態
   const [isSaving, setIsSaving] = useState(false);
-
-  // 追加: レスポンシブ用state
-  const [sectionListOpen, setSectionListOpen] = useState(false);
 
   // 初期データの読み込み
   useEffect(() => {
@@ -387,19 +384,29 @@ export default function EditorPage() {
         return <GitHubPanel page={page} />;
       case "ai-generator":
         return (
-          <TextGenerator
-            onSelect={(text) => {
-              // テキストを生成して、クリップボードにコピー
-              navigator.clipboard
-                .writeText(text)
-                .then(() => {
-                  toast.success("テキストをクリップボードにコピーしました");
-                })
-                .catch(() => {
-                  toast.error("コピーに失敗しました");
-                });
-            }}
-          />
+          <div className="space-y-6">
+            <Card className="p-4">
+              <h3 className="mb-4 text-lg font-medium">AIテキスト生成</h3>
+              <TextGenerator
+                onSelect={(text) => {
+                  // テキストを生成して、クリップボードにコピー
+                  navigator.clipboard
+                    .writeText(text)
+                    .then(() => {
+                      toast.success("テキストをクリップボードにコピーしました");
+                    })
+                    .catch(() => {
+                      toast.error("コピーに失敗しました");
+                    });
+                }}
+              />
+              <div className="mt-4 text-sm text-gray-500">
+                <p>
+                  生成したテキストは各セクションのHTMLエディタにコピー＆ペーストして使用できます。
+                </p>
+              </div>
+            </Card>
+          </div>
         );
       case "image-gallery":
         return <ImageGallery />;
@@ -460,7 +467,7 @@ export default function EditorPage() {
           style={{ minHeight: "var(--header-height)" }}
         >
           <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-light font-jost">/editor</h1>
+            <h1 className="text-3xl font-light">/editor</h1>
             <button
               aria-label="ダークモード切替"
               className="ml-2 border-none bg-transparent p-1 outline-none focus:outline-none"
@@ -572,44 +579,33 @@ export default function EditorPage() {
             </Tabs>
           </div>
           {/* セクションリスト */}
-          <div className=" w-full border-b   lg:min-w-[170px] lg:max-w-[18rem]  lg:overflow-y-auto lg:border-b-0 lg:border-r  p-4">
-            <div className=" flex w-full items-center gap-2">
+          <div className=" w-full border-b  px-2 py-2 lg:min-w-[170px] lg:max-w-[18rem]  lg:overflow-y-auto lg:border-b-0 lg:border-r  lg:p-4">
+            <div className="mb-3 flex w-full items-center">
               <h2 className="text-sm font-medium">
                 セクション ({page.sections.length})
               </h2>
-
               <Button
                 size="sm"
                 onClick={() => setIsSelectorOpen(true)}
-                className="ml-auto"
+                className="ml-auto mr-2"
               >
                 <Plus className="mr-1 h-3 w-3" />
                 追加
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="lg:hidden"
-                onClick={() => setSectionListOpen((v) => !v)}
-              >
-                選択
               </Button>
             </div>
             {/* PC時は常時リスト表示、SP時は開閉 */}
             <div
               className={
-                "w-full mt-4 " +
-                (sectionListOpen ? "" : "hidden") +
+                "w-full " +
+                (activeSectionIndex !== null ? "" : "hidden") +
                 " lg:block lg:w-full"
               }
             >
               <SortableSections
                 sections={
-                  sectionListOpen ||
-                  typeof window === "undefined" ||
-                  window.innerWidth >= 1024
-                    ? page.sections
-                    : page.sections.filter((_, i) => i === activeSectionIndex)
+                  activeSectionIndex !== null
+                    ? [page.sections[activeSectionIndex]]
+                    : page.sections
                 }
                 activeSectionIndex={activeSectionIndex}
                 onSectionClick={handleSectionClick}
@@ -619,8 +615,11 @@ export default function EditorPage() {
             </div>
           </div>
           {/* 右: 編集エリア */}
-          <div className="h-[calc(100vh-80px)] flex-1 overflow-y-auto p-6">
-            <div className="flex h-full flex-col">{renderEditor()}</div>
+          <div
+            className="flex flex-1 flex-col overflow-y-auto p-6"
+            style={{ maxHeight: "var(--main-height)" }}
+          >
+            {renderEditor()}
           </div>
         </div>
       )}

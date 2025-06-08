@@ -7,111 +7,115 @@ import { BackgroundImageUpload } from "@/components/images/BackgroundImageUpload
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 // import { Textarea } from "@/components/ui/textarea";
-import { Card as UICard } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CardsSection, Card } from "@/types";
-import { Plus, Trash, GripVertical } from "lucide-react";
+import { CardsSection, Card as CardType } from "@/types";
+import { Plus, Trash2, GripVertical } from "lucide-react";
 
 import {
-	DndContext,
-	closestCenter,
-	KeyboardSensor,
-	PointerSensor,
-	useSensor,
-	useSensors,
-	DragEndEvent,
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
 } from "@dnd-kit/core";
 import {
-	SortableContext,
-	sortableKeyboardCoordinates,
-	useSortable,
-	verticalListSortingStrategy,
-	arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
 interface CardsEditorProps {
-	section: CardsSection;
-	onUpdate: (section: CardsSection) => void;
+  section: CardsSection;
+  onUpdate: (section: CardsSection) => void;
 }
 
 // ドラッグ可能なカードアイテムのコンポーネント
 const SortableCardItem = ({
-	index,
-	onSelect,
-	onDelete,
-	isActive,
+  index,
+  onSelect,
+  onDelete,
+  isActive,
 }: {
-	card: Card; // cardは使用されていませんが、型定義として残しておきます
-	index: number;
-	onSelect: () => void;
-	onDelete: () => void;
-	isActive: boolean;
+  card: CardType; // cardは使用されていませんが、型定義として残しておきます
+  index: number;
+  onSelect: () => void;
+  onDelete: () => void;
+  isActive: boolean;
 }) => {
-	const {
-		attributes,
-		listeners,
-		setNodeRef,
-		transform,
-		transition,
-		isDragging,
-	} = useSortable({
-		id: `card-${index}`,
-	});
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: `card-${index}`,
+  });
 
-	const style = {
-		transform: CSS.Transform.toString(transform),
-		transition,
-		opacity: isDragging ? 0.5 : 1,
-	};
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
 
-	return (
-		<div
-			ref={setNodeRef}
-			style={style}
-			className={`p-2 border rounded flex justify-between items-center cursor-pointer ${
-				isActive
-					? "border-blue-500 bg-blue-50"
-					: "hover:border-gray-300"
-			}`}
-			onClick={onSelect}
-		>
-			<div className="flex items-center">
-				<div
-					{...attributes}
-					{...listeners}
-					className="cursor-grab mr-2 text-gray-400 hover:text-gray-600 flex-shrink-0"
-				>
-					<GripVertical className="h-4 w-4" />
-				</div>
-				<span className="truncate text-sm">カード {index + 1}</span>
-			</div>
-			<Button
-				variant="ghost"
-				size="icon"
-				className="h-5 w-5 text-red-500 hover:text-red-600 flex-shrink-0"
-				onClick={(e) => {
-					e.stopPropagation();
-					if (
-						window.confirm("このカードを削除してもよろしいですか？")
-					) {
-						onDelete();
-					}
-				}}
-			>
-				<Trash className="h-3 w-3" />
-			</Button>
-		</div>
-	);
+  return (
+    <Card
+      ref={setNodeRef}
+      style={style}
+      className={`rounded-lg p-2 ${
+        isActive ? "border-blue-500 " : "hover:border-gray-300"
+      } mb-2 cursor-pointer transition-colors`}
+      onClick={onSelect}
+    >
+      <div className="flex items-center justify-between">
+        <div className="flex items-center">
+          <div
+            {...attributes}
+            {...listeners}
+            className="mr-2 cursor-grab text-gray-400 hover:text-gray-600"
+          >
+            <GripVertical className="h-4 w-4 flex-shrink-0" />
+          </div>
+          <span className="text-sm">カード {index + 1}</span>
+        </div>
+        <div className="flex items-center space-x-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 text-red-500 hover:text-red-600"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (window.confirm("このカードを削除してもよろしいですか？")) {
+                onDelete();
+              }
+            }}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    </Card>
+  );
 };
 
 export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
-	const [activeCardIndex, setActiveCardIndex] = useState<number | null>(
+  const [activeCardIndex, setActiveCardIndex] = useState<number | null>(
     section.cards.length > 0 ? 0 : null
   );
 
   // カードの更新を処理
-  const updateCard = (index: number, key: keyof Card, value: string | null) => {
+  const updateCard = (
+    index: number,
+    key: keyof CardType,
+    value: string | null
+  ) => {
     const updatedCards = [...section.cards];
     updatedCards[index] = {
       ...updatedCards[index],
@@ -125,7 +129,7 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
 
   // 新しいカードを追加
   const addCard = () => {
-    const newCard: Card = {
+    const newCard: CardType = {
       image: "",
       imageClass: "",
       textClass: "",
@@ -213,10 +217,10 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
   };
 
   return (
-    <div className="CardsEditor space-y-6">
-      <UICard className="p-4">
+    <div className="CardsEditor flex-1 space-y-6">
+      <Card className="flex h-full flex-col rounded-sm p-4">
         <h3 className="mb-4 text-lg font-medium">カードセクション設定</h3>
-        <div className="space-y-2">
+        <div className="flex flex-1 flex-col space-y-2">
           <div className="flex items-center gap-4">
             <Label className="" htmlFor="cards-name">
               セクション名
@@ -247,9 +251,9 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
             label="背景画像"
           />
 
-          <div className="mt-4 border-t pt-4">
-            <div className="mb-4 flex items-center justify-between">
-              <h4 className="text-md font-medium">
+          <div className="mt-4 flex flex-1 flex-col border-t pt-4">
+            <div className="mb-4 flex items-center gap-4">
+              <h4 className="text-md w-32 font-medium">
                 カード ({section.cards.length})
               </h4>
               <Button size="sm" onClick={addCard}>
@@ -270,13 +274,14 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}
+                // className={"flex-1"}
               >
                 <SortableContext
                   items={section.cards.map((_, i) => `card-${i}`)}
                   strategy={verticalListSortingStrategy}
                 >
-                  <div className="flex flex-col gap-4 md:flex-row">
-                    <div className="space-y-2 md:w-1/3">
+                  <div className="flex flex-col gap-4 md:flex-row ">
+                    <div className="space-y-2 md:w-32">
                       {section.cards.map((card, index) => (
                         <SortableCardItem
                           key={`card-${index}`}
@@ -289,8 +294,8 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
                       ))}
                     </div>
                     {activeCardIndex !== null && (
-                      <div className="md:w-2/3">
-                        <UICard className="p-4">
+                      <div className="h-full md:flex-1">
+                        <Card className="rounded-sm p-4">
                           <h4 className="text-md mb-4 font-medium">
                             カード {activeCardIndex + 1} を編集
                           </h4>
@@ -352,7 +357,7 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
                               />
                             </div>
                           </div>
-                        </UICard>
+                        </Card>
                       </div>
                     )}
                   </div>
@@ -361,7 +366,7 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
             )}
           </div>
         </div>
-      </UICard>
+      </Card>
     </div>
   );
 }

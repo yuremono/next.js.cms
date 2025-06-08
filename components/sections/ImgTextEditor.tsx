@@ -66,8 +66,8 @@ export function ImgTextEditor({ section, onUpdate }: ImgTextEditorProps) {
   };
 
   return (
-    <div className="ImgTextEditor space-y-6">
-      <Card className="p-4">
+    <div className="ImgTextEditor space-y-6 h-full">
+      <Card className="flex  flex-col rounded-sm p-4 h-full">
         <h3 className="mb-4 text-lg font-medium">画像テキストセクション設定</h3>
         <div className="space-y-2">
           <div className="flex items-center gap-4">

@@ -1,7 +1,6 @@
 "use client";
 
 import { MonacoEditor } from "./monaco-editor";
-import { cn } from "@/lib/utils";
 import { EnhancedTextarea } from "./enhanced-textarea";
 
 interface EditorProps {
@@ -37,10 +36,17 @@ export function RichTextEditor({
   }
   return (
     <EnhancedTextarea
+      processNewlines={true}
       value={content}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
+      className="field-sizing-content flex-1"
+      style={{
+        height: "auto",
+        minHeight: "8rem",
+        maxHeight: "50vh",
+        overflowY: "auto",
+      }}
     />
   );
 }
- 

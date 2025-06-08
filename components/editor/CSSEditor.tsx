@@ -33,18 +33,18 @@ export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
 	};
 
 	return (
-    <div className="CSSEditor space-y-6">
-      <Card className="p-4">
+    <div className="CSSEditor flex h-full flex-col space-y-6">
+      <Card className="flex flex-1 flex-col rounded-sm p-4">
         <h3 className="mb-4 text-lg font-medium">カスタムCSS</h3>
 
-        <div className="space-y-4">
-          <div className="space-y-2">
+        <div className="flex flex-1 flex-col space-y-4">
+          <div className="flex flex-1 flex-col space-y-2">
             <Label htmlFor="custom-css">カスタムCSSを編集</Label>
             <Textarea
               id="custom-css"
               value={css}
               onChange={handleCSSChange}
-              className="min-h-[300px] font-mono text-sm"
+              className="max-h-[50vh] min-h-32 flex-1 resize-none font-mono text-sm"
               placeholder="/* ここにカスタムCSSを入力 */
 body {
   /* 例: 背景色を変更 */

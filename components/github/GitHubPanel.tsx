@@ -464,70 +464,71 @@ export function GitHubPanel({ page }: { page: Page }) {
 	};
 
 	return (
-		<Card className="p-4">
-			<h3 className="text-lg font-medium mb-4">バックアップ</h3>
+    <div className="flex h-full flex-col space-y-6">
+      <Card className="flex flex-1 flex-col rounded-sm p-4">
+        <h3 className="mb-4 text-lg font-medium">バックアップ</h3>
 
-			{/* 接続状態表示 */}
-			<div className="mb-4">
-				{connectionStatus === null ? (
-					<div className="flex items-center text-gray-500">
-						<Circle className="h-4 w-4 mr-2 animate-pulse" />
-						接続を確認中...
-					</div>
-				) : connectionStatus.connected ? (
-					<div className="flex items-center text-green-600">
-						<Circle className="h-4 w-4 mr-2 fill-green-600" />
-						<span className="mr-2">接続済み:</span>
-						<a
-							href={connectionStatus.url}
-							target="_blank"
-							rel="noreferrer"
-							className="underline"
-						>
-							{connectionStatus.repo}
-						</a>
-					</div>
-				) : (
-					<div className="flex flex-col text-red-500">
-						<div className="flex items-center">
-							<AlertCircle className="h-4 w-4 mr-2" />
-							未接続: {connectionStatus.error}
-						</div>
-						{connectionStatus.details && (
-							<div className="text-xs mt-1 ml-6 text-red-400">
-								詳細: {connectionStatus.details}
-							</div>
-						)}
-					</div>
-				)}
-			</div>
+        {/* 接続状態表示 */}
+        <div className="mb-4">
+          {connectionStatus === null ? (
+            <div className="flex items-center text-gray-500">
+              <Circle className="mr-2 h-4 w-4 animate-pulse" />
+              接続を確認中...
+            </div>
+          ) : connectionStatus.connected ? (
+            <div className="flex items-center text-green-600">
+              <Circle className="mr-2 h-4 w-4 fill-green-600" />
+              <span className="mr-2">接続済み:</span>
+              <a
+                href={connectionStatus.url}
+                target="_blank"
+                rel="noreferrer"
+                className="underline"
+              >
+                {connectionStatus.repo}
+              </a>
+            </div>
+          ) : (
+            <div className="flex flex-col text-red-500">
+              <div className="flex items-center">
+                <AlertCircle className="mr-2 h-4 w-4" />
+                未接続: {connectionStatus.error}
+              </div>
+              {connectionStatus.details && (
+                <div className="ml-6 mt-1 text-xs text-red-400">
+                  詳細: {connectionStatus.details}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
 
-			{/* 操作ボタン群 */}
-			<div className="grid grid-cols-2 gap-3">
-				{/* バックアップ機能 */}
-				<Button
-					variant="outline"
-					className="flex items-center"
-					onClick={() => handleCreateBackup()}
-					disabled={!connectionStatus?.connected || loading}
-				>
-					<History className="h-4 w-4 mr-2" />
-					{loading ? "処理中..." : "バックアップを作成"}
-				</Button>
+        {/* 操作ボタン群 */}
+        <div className="grid grid-cols-2 gap-3">
+          {/* バックアップ機能 */}
+          <Button
+            variant="outline"
+            className="flex items-center"
+            onClick={() => handleCreateBackup()}
+            disabled={!connectionStatus?.connected || loading}
+          >
+            <History className="mr-2 h-4 w-4" />
+            {loading ? "処理中..." : "バックアップを作成"}
+          </Button>
 
-				<Button
-					variant="outline"
-					className="flex items-center"
-					onClick={() => setModalOpen("backupList")}
-					disabled={!connectionStatus?.connected}
-				>
-					<RotateCcw className="h-4 w-4 mr-2" />
-					バックアップから復元
-				</Button>
+          <Button
+            variant="outline"
+            className="flex items-center"
+            onClick={() => setModalOpen("backupList")}
+            disabled={!connectionStatus?.connected}
+          >
+            <RotateCcw className="mr-2 h-4 w-4" />
+            バックアップから復元
+          </Button>
 
-				{/* // 以下は不要な機能としてコメントアウト */}
+          {/* // 以下は不要な機能としてコメントアウト */}
 
-				{/* <Button
+          {/* <Button
 					variant="outline"
 					className="flex items-center"
 					onClick={() => setModalOpen("issue")}
@@ -537,7 +538,7 @@ export function GitHubPanel({ page }: { page: Page }) {
 					イシュー作成
 				</Button> */}
 
-				{/* <Button
+          {/* <Button
 					variant="outline"
 					className="flex items-center"
 					onClick={() => setModalOpen("pr")}
@@ -547,7 +548,7 @@ export function GitHubPanel({ page }: { page: Page }) {
 					PR作成
 				</Button> */}
 
-				{/* <Button
+          {/* <Button
 					variant="outline"
 					className="flex items-center"
 					onClick={() => setModalOpen("branch")}
@@ -557,7 +558,7 @@ export function GitHubPanel({ page }: { page: Page }) {
 					ブランチ作成
 				</Button> */}
 
-				{/* <Button
+          {/* <Button
 					variant="outline"
 					className="flex items-center"
 					onClick={() => setModalOpen("commit")}
@@ -566,278 +567,248 @@ export function GitHubPanel({ page }: { page: Page }) {
 					<Save className="h-4 w-4 mr-2" />
 					変更をコミット
 				</Button> */}
-			</div>
+        </div>
 
-			{/* バックアップ一覧モーダル */}
-			<Dialog
-				open={modalOpen === "backupList"}
-				onOpenChange={(open) => !open && setModalOpen(null)}
-			>
-				<DialogContent className="max-w-3xl">
-					<DialogTitle>バックアップから復元</DialogTitle>
-					<div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
-						{loadingBackups ? (
-							<div className="text-center p-4">
-								<div className="animate-spin h-6 w-6 border-2 border-gray-500 border-t-transparent rounded-full mx-auto mb-2"></div>
-								バックアップ一覧を読み込み中...
-							</div>
-						) : backups.length === 0 ? (
-							<div className="text-center p-4 text-gray-500">
-								バックアップが見つかりませんでした
-							</div>
-						) : (
-							<div className="space-y-2">
-								{backups.map((backup) => (
-									<div
-										key={backup.name}
-										className={`flex items-center justify-between p-3 rounded-md border ${
-											selectedBackup === backup.name
-												? "border-blue-500 bg-blue-50"
-												: "border-gray-200"
-										}`}
-										onClick={() =>
-											setSelectedBackup(backup.name)
-										}
-									>
-										<div>
-											<div className="font-medium">
-												{formatDate(backup.date)}
-											</div>
-											<div className="text-xs text-gray-500">
-												{backup.name}
-											</div>
-										</div>
-										<div>
-											<Button
-												variant="outline"
-												size="sm"
-												onClick={(e) => {
-													e.stopPropagation();
-													setSelectedBackup(
-														backup.name
-													);
-												}}
-												className={
-													selectedBackup ===
-													backup.name
-														? "hidden"
-														: ""
-												}
-											>
-												選択
-											</Button>
-										</div>
-									</div>
-								))}
-							</div>
-						)}
-					</div>
-					<DialogFooter>
-						<Button
-							variant="outline"
-							onClick={() => setModalOpen(null)}
-						>
-							キャンセル
-						</Button>
-						<Button
-							onClick={handleRestoreBackup}
-							disabled={loading || !selectedBackup}
-						>
-							{loading
-								? "復元中..."
-								: "選択したバックアップを復元"}
-						</Button>
-					</DialogFooter>
-				</DialogContent>
-			</Dialog>
+        {/* バックアップ一覧モーダル */}
+        <Dialog
+          open={modalOpen === "backupList"}
+          onOpenChange={(open) => !open && setModalOpen(null)}
+        >
+          <DialogContent className="max-w-3xl">
+            <DialogTitle>バックアップから復元</DialogTitle>
+            <div className="max-h-[60vh] space-y-4 overflow-y-auto py-4">
+              {loadingBackups ? (
+                <div className="p-4 text-center">
+                  <div className="mx-auto mb-2 h-6 w-6 animate-spin rounded-full border-2 border-gray-500 border-t-transparent"></div>
+                  バックアップ一覧を読み込み中...
+                </div>
+              ) : backups.length === 0 ? (
+                <div className="p-4 text-center text-gray-500">
+                  バックアップが見つかりませんでした
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {backups.map((backup) => (
+                    <div
+                      key={backup.name}
+                      className={`flex items-center justify-between rounded-md border p-3 ${
+                        selectedBackup === backup.name
+                          ? "border-blue-500 bg-blue-50"
+                          : "border-gray-200"
+                      }`}
+                      onClick={() => setSelectedBackup(backup.name)}
+                    >
+                      <div>
+                        <div className="font-medium">
+                          {formatDate(backup.date)}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {backup.name}
+                        </div>
+                      </div>
+                      <div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedBackup(backup.name);
+                          }}
+                          className={
+                            selectedBackup === backup.name ? "hidden" : ""
+                          }
+                        >
+                          選択
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setModalOpen(null)}>
+                キャンセル
+              </Button>
+              <Button
+                onClick={handleRestoreBackup}
+                disabled={loading || !selectedBackup}
+              >
+                {loading ? "復元中..." : "選択したバックアップを復元"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
-			{/* 
+        {/* 
 			// 以下は不要なモーダルとしてコメントアウト
 
 			{/* イシュー作成モーダル */}
-			<Dialog
-				open={modalOpen === "issue"}
-				onOpenChange={(open) => !open && setModalOpen(null)}
-			>
-				<DialogContent>
-					<DialogTitle>新しいイシューを作成</DialogTitle>
-					<div className="space-y-4 py-4">
-						<div className="space-y-2">
-							<Label htmlFor="issue-title">タイトル</Label>
-							<Input
-								id="issue-title"
-								value={issueTitle}
-								onChange={(e) => setIssueTitle(e.target.value)}
-								placeholder="イシューのタイトル"
-							/>
-						</div>
-						<div className="space-y-2">
-							<Label htmlFor="issue-body">説明</Label>
-							<Textarea
-								id="issue-body"
-								value={issueBody}
-								onChange={(e) => setIssueBody(e.target.value)}
-								placeholder="イシューの詳細"
-								rows={5}
-							/>
-						</div>
-					</div>
-					<DialogFooter>
-						<Button
-							variant="outline"
-							onClick={() => setModalOpen(null)}
-						>
-							キャンセル
-						</Button>
-						<Button onClick={handleCreateIssue} disabled={loading}>
-							{loading ? "作成中..." : "作成"}
-						</Button>
-					</DialogFooter>
-				</DialogContent>
-			</Dialog>
+        <Dialog
+          open={modalOpen === "issue"}
+          onOpenChange={(open) => !open && setModalOpen(null)}
+        >
+          <DialogContent>
+            <DialogTitle>新しいイシューを作成</DialogTitle>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="issue-title">タイトル</Label>
+                <Input
+                  id="issue-title"
+                  value={issueTitle}
+                  onChange={(e) => setIssueTitle(e.target.value)}
+                  placeholder="イシューのタイトル"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="issue-body">説明</Label>
+                <Textarea
+                  id="issue-body"
+                  value={issueBody}
+                  onChange={(e) => setIssueBody(e.target.value)}
+                  placeholder="イシューの詳細"
+                  rows={5}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setModalOpen(null)}>
+                キャンセル
+              </Button>
+              <Button onClick={handleCreateIssue} disabled={loading}>
+                {loading ? "作成中..." : "作成"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
-			{/* PR作成モーダル */}
-			<Dialog
-				open={modalOpen === "pr"}
-				onOpenChange={(open) => !open && setModalOpen(null)}
-			>
-				<DialogContent>
-					<DialogTitle>新しいプルリクエストを作成</DialogTitle>
-					<div className="space-y-4 py-4">
-						<div className="space-y-2">
-							<Label htmlFor="pr-title">タイトル</Label>
-							<Input
-								id="pr-title"
-								value={prTitle}
-								onChange={(e) => setPrTitle(e.target.value)}
-								placeholder="PRのタイトル"
-							/>
-						</div>
-						<div className="space-y-2">
-							<Label htmlFor="pr-branch">ブランチ名</Label>
-							<Input
-								id="pr-branch"
-								value={prBranch}
-								onChange={(e) => setPrBranch(e.target.value)}
-								placeholder="変更を含むブランチ (例: feature/new-design)"
-							/>
-						</div>
-						<div className="space-y-2">
-							<Label htmlFor="pr-base">ベースブランチ</Label>
-							<Input
-								id="pr-base"
-								value={prBaseBranch}
-								onChange={(e) =>
-									setPrBaseBranch(e.target.value)
-								}
-								placeholder="マージ先のブランチ (通常はmain)"
-							/>
-						</div>
-						<div className="space-y-2">
-							<Label htmlFor="pr-body">説明</Label>
-							<Textarea
-								id="pr-body"
-								value={prBody}
-								onChange={(e) => setPrBody(e.target.value)}
-								placeholder="PRの説明"
-								rows={5}
-							/>
-						</div>
-					</div>
-					<DialogFooter>
-						<Button
-							variant="outline"
-							onClick={() => setModalOpen(null)}
-						>
-							キャンセル
-						</Button>
-						<Button onClick={handleCreatePR} disabled={loading}>
-							{loading ? "作成中..." : "作成"}
-						</Button>
-					</DialogFooter>
-				</DialogContent>
-			</Dialog>
+        {/* PR作成モーダル */}
+        <Dialog
+          open={modalOpen === "pr"}
+          onOpenChange={(open) => !open && setModalOpen(null)}
+        >
+          <DialogContent>
+            <DialogTitle>新しいプルリクエストを作成</DialogTitle>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="pr-title">タイトル</Label>
+                <Input
+                  id="pr-title"
+                  value={prTitle}
+                  onChange={(e) => setPrTitle(e.target.value)}
+                  placeholder="PRのタイトル"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="pr-branch">ブランチ名</Label>
+                <Input
+                  id="pr-branch"
+                  value={prBranch}
+                  onChange={(e) => setPrBranch(e.target.value)}
+                  placeholder="変更を含むブランチ (例: feature/new-design)"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="pr-base">ベースブランチ</Label>
+                <Input
+                  id="pr-base"
+                  value={prBaseBranch}
+                  onChange={(e) => setPrBaseBranch(e.target.value)}
+                  placeholder="マージ先のブランチ (通常はmain)"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="pr-body">説明</Label>
+                <Textarea
+                  id="pr-body"
+                  value={prBody}
+                  onChange={(e) => setPrBody(e.target.value)}
+                  placeholder="PRの説明"
+                  rows={5}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setModalOpen(null)}>
+                キャンセル
+              </Button>
+              <Button onClick={handleCreatePR} disabled={loading}>
+                {loading ? "作成中..." : "作成"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
-			{/* コミットモーダル */}
-			<Dialog
-				open={modalOpen === "commit"}
-				onOpenChange={(open) => !open && setModalOpen(null)}
-			>
-				<DialogContent>
-					<DialogTitle>変更をコミット</DialogTitle>
-					<div className="space-y-4 py-4">
-						<div className="space-y-2">
-							<Label htmlFor="commit-message">
-								コミットメッセージ
-							</Label>
-							<Input
-								id="commit-message"
-								value={commitMessage}
-								onChange={(e) =>
-									setCommitMessage(e.target.value)
-								}
-								placeholder="コミットメッセージ"
-							/>
-						</div>
-						<p className="text-sm text-gray-500">
-							現在のページデータが data/page.json
-							にコミットされます。
-						</p>
-					</div>
-					<DialogFooter>
-						<Button
-							variant="outline"
-							onClick={() => setModalOpen(null)}
-						>
-							キャンセル
-						</Button>
-						<Button onClick={handleCommit} disabled={loading}>
-							{loading ? "コミット中..." : "コミット"}
-						</Button>
-					</DialogFooter>
-				</DialogContent>
-			</Dialog>
+        {/* コミットモーダル */}
+        <Dialog
+          open={modalOpen === "commit"}
+          onOpenChange={(open) => !open && setModalOpen(null)}
+        >
+          <DialogContent>
+            <DialogTitle>変更をコミット</DialogTitle>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="commit-message">コミットメッセージ</Label>
+                <Input
+                  id="commit-message"
+                  value={commitMessage}
+                  onChange={(e) => setCommitMessage(e.target.value)}
+                  placeholder="コミットメッセージ"
+                />
+              </div>
+              <p className="text-sm text-gray-500">
+                現在のページデータが data/page.json にコミットされます。
+              </p>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setModalOpen(null)}>
+                キャンセル
+              </Button>
+              <Button onClick={handleCommit} disabled={loading}>
+                {loading ? "コミット中..." : "コミット"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
-			{/* ブランチ作成モーダル */}
-			<Dialog
-				open={modalOpen === "branch"}
-				onOpenChange={(open) => !open && setModalOpen(null)}
-			>
-				<DialogContent>
-					<DialogTitle>新しいブランチを作成</DialogTitle>
-					<div className="space-y-4 py-4">
-						<div className="space-y-2">
-							<Label htmlFor="branch-name">ブランチ名</Label>
-							<Input
-								id="branch-name"
-								value={branchName}
-								onChange={(e) => setBranchName(e.target.value)}
-								placeholder="例: feature/new-section"
-							/>
-						</div>
-						<div className="space-y-2">
-							<Label htmlFor="base-branch">ベースブランチ</Label>
-							<Input
-								id="base-branch"
-								value={baseBranch}
-								onChange={(e) => setBaseBranch(e.target.value)}
-								placeholder="派生元のブランチ (通常はmain)"
-							/>
-						</div>
-					</div>
-					<DialogFooter>
-						<Button
-							variant="outline"
-							onClick={() => setModalOpen(null)}
-						>
-							キャンセル
-						</Button>
-						<Button onClick={handleCreateBranch} disabled={loading}>
-							{loading ? "作成中..." : "作成"}
-						</Button>
-					</DialogFooter>
-				</DialogContent>
-			</Dialog>
-		</Card>
-	);
+        {/* ブランチ作成モーダル */}
+        <Dialog
+          open={modalOpen === "branch"}
+          onOpenChange={(open) => !open && setModalOpen(null)}
+        >
+          <DialogContent>
+            <DialogTitle>新しいブランチを作成</DialogTitle>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="branch-name">ブランチ名</Label>
+                <Input
+                  id="branch-name"
+                  value={branchName}
+                  onChange={(e) => setBranchName(e.target.value)}
+                  placeholder="例: feature/new-section"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="base-branch">ベースブランチ</Label>
+                <Input
+                  id="base-branch"
+                  value={baseBranch}
+                  onChange={(e) => setBaseBranch(e.target.value)}
+                  placeholder="派生元のブランチ (通常はmain)"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setModalOpen(null)}>
+                キャンセル
+              </Button>
+              <Button onClick={handleCreateBranch} disabled={loading}>
+                {loading ? "作成中..." : "作成"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </Card>
+    </div>
+  );
 }

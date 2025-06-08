@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { ImageIcon, LayoutGrid, CreditCard, Mail, Copy } from "lucide-react";
+import { ImageIcon, LayoutGrid, Mail, Copy } from "lucide-react";
 
 interface SectionSelectorProps {
 	onSelect: (sectionType: string) => void;
