@@ -47,37 +47,6 @@ function Button({
   }) {
     const Comp = asChild ? Slot : "button";
 
-    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const originalValue = e.target.value;
-      console.log("Original textarea value:", originalValue);
-      console.log("Contains newlines:", originalValue.includes("\n"));
-
-      if (props.onChange) {
-        if (wrapEnabled) {
-          // 改行ONの場合：改行文字を<br>に変換
-          const processedValue = originalValue.replace(/\n/g, "<br>");
-          console.log("Processed value (newlines → <br>):", processedValue);
-
-          // 変換された値でonChangeを呼び出す
-          const newEvent = {
-            ...e,
-            target: { ...e.target, value: processedValue },
-          } as React.ChangeEvent<HTMLTextAreaElement>;
-          props.onChange(newEvent);
-        } else {
-          // 改行OFFの場合：改行文字を削除
-          const processedValue = originalValue.replace(/\n/g, "");
-          console.log("Processed value (newlines removed):", processedValue);
-
-          const newEvent = {
-            ...e,
-            target: { ...e.target, value: processedValue },
-          } as React.ChangeEvent<HTMLTextAreaElement>;
-          props.onChange(newEvent);
-        }
-      }
-    };
-
     return (
       <Comp
         data-slot="button"

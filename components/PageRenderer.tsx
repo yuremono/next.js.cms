@@ -24,7 +24,7 @@ export function PageRenderer({ page }: PageRendererProps) {
             className={`main-visual ${sectionClass}`}
             style={bgStyle}
           >
-            <div className="container mx-auto px-4 py-12">
+            <div className="container mx-auto ">
               {section.image && (
                 <div
                   className={`relative h-[500px] w-full ${section.imageClass || ""}`}
@@ -54,7 +54,7 @@ export function PageRenderer({ page }: PageRendererProps) {
             className={`img-text ${sectionClass}`}
             style={bgStyle}
           >
-            <div className="container mx-auto px-4 py-12">
+            <div className="container mx-auto ">
               <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-2">
                 {section.image && (
                   <div
@@ -87,7 +87,7 @@ export function PageRenderer({ page }: PageRendererProps) {
             className={`cards ${sectionClass}`}
             style={bgStyle}
           >
-            <div className="container mx-auto px-4 py-12">
+            <div className="container mx-auto ">
               <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
                 {section.cards.map((card, idx) => (
                   <div
@@ -127,7 +127,7 @@ export function PageRenderer({ page }: PageRendererProps) {
             className={`form ${sectionClass}`}
             style={bgStyle}
           >
-            <div className="container mx-auto px-4 py-12">
+            <div className="container mx-auto ">
               <div
                 className={`content mb-8 ${section.textClass || ""}`}
                 dangerouslySetInnerHTML={{
@@ -199,7 +199,7 @@ export function PageRenderer({ page }: PageRendererProps) {
 			default:
 				return (
 					<section key={index} className="unknown-section">
-						<div className="container mx-auto px-4 py-12">
+						<div className="container mx-auto ">
 							<p className="text-red-500">
 								未知のセクションタイプです
 							</p>

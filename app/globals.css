@@ -82,17 +82,7 @@
 }
 
 /* セクションタイプのスタイル */
-.hero-section {
-  @apply py-16 text-center;
-}
 
-.img-text-section {
-  @apply py-12;
-}
-
-.cards-section {
-  @apply py-12;
-}
 
 .cards-grid {
   @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8;

@@ -13,26 +13,51 @@ interface CSSEditorProps {
 }
 
 export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
-	const [css, setCSS] = useState(initialCSS || "");
+  const [css, setCSS] = useState(initialCSS || "");
+  const [isApplying, setIsApplying] = useState(false);
 
-	// 初期CSSが更新された場合に状態を更新
-	useEffect(() => {
-		setCSS(initialCSS || "");
-	}, [initialCSS]);
+  // 初期CSSが更新された場合に状態を更新
+  useEffect(() => {
+    setCSS(initialCSS || "");
+  }, [initialCSS]);
 
-	// CSSの変更を処理
-	const handleCSSChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-		const newCSS = e.target.value;
-		setCSS(newCSS);
-	};
+  // CSSの変更を処理
+  const handleCSSChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newCSS = e.target.value;
+    setCSS(newCSS);
+  };
 
-	// CSSを適用
-	const applyCSS = () => {
-		onUpdate(css);
-		toast.success("CSSが更新されました");
-	};
+  // CSSを適用
+  const applyCSS = async () => {
+    setIsApplying(true);
 
-	return (
+    try {
+      // 1. データベースの更新
+      onUpdate(css);
+
+      // 2. custom.cssファイルの生成
+      const response = await fetch("/api/css", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ css }),
+      });
+
+      if (!response.ok) {
+        throw new Error("CSSファイルの生成に失敗しました");
+      }
+
+      toast.success("CSSが更新され、トップページに反映されました");
+    } catch (error) {
+      console.error("CSS適用エラー:", error);
+      toast.error("CSSの適用に失敗しました");
+    } finally {
+      setIsApplying(false);
+    }
+  };
+
+  return (
     <div className="CSSEditor flex h-full flex-col space-y-6">
       <Card className="flex flex-1 flex-col rounded-sm p-4">
         <h3 className="mb-4 text-lg font-medium">カスタムCSS</h3>
@@ -65,13 +90,15 @@ footer {
             />
           </div>
 
-          <Button onClick={applyCSS}>CSSを適用</Button>
+          <Button onClick={applyCSS} disabled={isApplying}>
+            {isApplying ? "適用中..." : "CSSを適用"}
+          </Button>
 
           <div className="mt-4">
             <h4 className="mb-2 font-medium">使用方法</h4>
             <div className="space-y-2 text-sm ">
               <p>
-                このカスタムCSSはページのヘッダー（&lt;head&gt;タグ内）に直接挿入されます。
+                このカスタムCSSはトップページのヘッダー（&lt;head&gt;タグ内）に直接挿入されます。
               </p>
               <p>
                 カスタムCSSを使用して、ページ全体の見た目をカスタマイズできます。

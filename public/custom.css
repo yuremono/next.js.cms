@@ -1,0 +1,16 @@
+/* カスタムCSSの例 */
+/* ヘッダーのスタイルをカスタマイズ */
+
+header {
+  background-color: blue;
+  border-bottom: 1px solid #e9ecef;
+}
+
+header a {
+  color: #343a40;
+}
+
+header a:hover {
+  color: #007bff;
+  text-decoration: none;
+}

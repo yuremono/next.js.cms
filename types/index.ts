@@ -45,10 +45,11 @@ export interface CardsSection extends BaseSection {
 }
 
 export interface FormSection extends BaseSection {
-	layout: "form";
-	html: string;
-	endpoint: string;
-	name?: string;
+  layout: "form";
+  html: string;
+  endpoint: string;
+  name?: string;
+  textClass?: string;
 }
 
 export type Section =
@@ -76,4 +77,3 @@ export function isSection(obj: any): obj is Section {
 			obj.layout === "form")
 	);
 }
- 
