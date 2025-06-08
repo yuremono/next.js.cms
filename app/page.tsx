@@ -162,6 +162,7 @@ export default async function Home() {
                 imageClass: mv?.image_class ?? "",
                 textClass: mv?.text_class ?? "",
                 html: mv?.html ?? "",
+                imageAspectRatio: mv?.image_aspect_ratio ?? "auto",
               });
             } else if (section.type === "imgText") {
               const { data: it } = await supabase
@@ -179,6 +180,7 @@ export default async function Home() {
                 imageClass: it?.image_class ?? "",
                 textClass: it?.text_class ?? "",
                 html: it?.html ?? "",
+                imageAspectRatio: it?.image_aspect_ratio ?? "auto",
               });
             } else if (section.type === "cards") {
               const { data: cs } = await supabase
@@ -202,6 +204,7 @@ export default async function Home() {
                   imageClass: c.image_class ?? "",
                   textClass: c.text_class ?? "",
                   html: c.html ?? "",
+                  imageAspectRatio: c.image_aspect_ratio ?? "auto",
                 })),
               });
             } else if (section.type === "form") {

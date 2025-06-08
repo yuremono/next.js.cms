@@ -179,6 +179,7 @@ export async function GET() {
           imageClass: mv?.image_class ?? "",
           textClass: mv?.text_class ?? "",
           html: mv?.html ?? "",
+          imageAspectRatio: mv?.image_aspect_ratio ?? "auto",
         });
       } else if (section.type === "imgText") {
         const { data: it } = await supabase
@@ -196,6 +197,7 @@ export async function GET() {
           imageClass: it?.image_class ?? "",
           textClass: it?.text_class ?? "",
           html: it?.html ?? "",
+          imageAspectRatio: it?.image_aspect_ratio ?? "auto",
         });
       } else if (section.type === "cards") {
         const { data: cs } = await supabase
@@ -219,6 +221,7 @@ export async function GET() {
             imageClass: c.image_class ?? "",
             textClass: c.text_class ?? "",
             html: c.html ?? "",
+            imageAspectRatio: c.image_aspect_ratio ?? "auto",
           })),
         });
       } else if (section.type === "form") {
@@ -376,6 +379,7 @@ export async function POST(req: NextRequest) {
           image_class: section.imageClass ?? null,
           text_class: section.textClass ?? null,
           html: section.html,
+          image_aspect_ratio: section.imageAspectRatio ?? "auto",
         });
       }
       if (section.layout === "imgText") {
@@ -388,6 +392,7 @@ export async function POST(req: NextRequest) {
           image_class: section.imageClass ?? null,
           text_class: section.textClass ?? null,
           html: section.html,
+          image_aspect_ratio: section.imageAspectRatio ?? "auto",
         });
       }
       if (section.layout === "cards") {
@@ -406,6 +411,7 @@ export async function POST(req: NextRequest) {
             text_class: card.textClass ?? null,
             html: card.html,
             position: j,
+            image_aspect_ratio: card.imageAspectRatio ?? "auto",
           });
         }
       }
