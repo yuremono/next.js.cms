@@ -69,7 +69,7 @@ footer {
 
           <div className="mt-4">
             <h4 className="mb-2 font-medium">使用方法</h4>
-            <div className="space-y-2 text-sm text-gray-600">
+            <div className="space-y-2 text-sm ">
               <p>
                 このカスタムCSSはページのヘッダー（&lt;head&gt;タグ内）に直接挿入されます。
               </p>

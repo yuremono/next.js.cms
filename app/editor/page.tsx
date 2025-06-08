@@ -456,7 +456,7 @@ export default function EditorPage() {
       {/* ヘッダー */}
       <header className="border-b  shadow-sm">
         <div
-          className="flex flex-wrap items-center gap-2 px-4 "
+          className="flex flex-wrap items-center gap-2 px-4 py-2"
           style={{ minHeight: "var(--header-height)" }}
         >
           <div className="flex items-center gap-4">
@@ -583,7 +583,7 @@ export default function EditorPage() {
                 onClick={() => setIsSelectorOpen(true)}
                 className="ml-auto"
               >
-                <Plus className="mr-1 h-3 w-3" />
+                <Plus className=" h-3 w-3" />
                 追加
               </Button>
               <Button
@@ -620,7 +620,7 @@ export default function EditorPage() {
           </div>
           {/* 右: 編集エリア */}
           <div className="h-[calc(100vh-80px)] flex-1 overflow-y-auto p-6">
-            <div className="flex h-full flex-col">{renderEditor()}</div>
+            <div className="flex flex-col">{renderEditor()}</div>
           </div>
         </div>
       )}

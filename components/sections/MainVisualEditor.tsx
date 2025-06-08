@@ -119,6 +119,7 @@ export function MainVisualEditor({ section, onUpdate }: MainVisualEditorProps) {
             />
           </div>
           <RichTextEditor
+          compact={true}
             content={section.html}
             onChange={handleHtmlChange}
             placeholder="ここにメインビジュアルのHTMLを入力..."

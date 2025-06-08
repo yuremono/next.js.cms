@@ -119,6 +119,7 @@ export function ImgTextEditor({ section, onUpdate }: ImgTextEditorProps) {
             />
           </div>
           <RichTextEditor
+          compact={true}
             content={section.html}
             onChange={handleHtmlChange}
             placeholder="ここにHTMLを入力..."

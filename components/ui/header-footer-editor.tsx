@@ -1,7 +1,7 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./tabs";
-import { MonacoEditor } from "./monaco-editor";
+import { SimpleHtmlEditor } from "./simple-html-editor";
 import { useState } from "react";
 
 interface HeaderFooterEditorProps {
@@ -20,37 +20,35 @@ export function HeaderFooterEditor({
 	const [activeTab, setActiveTab] = useState<string>("header");
 
 	return (
-		<div className="border rounded-md">
-			<Tabs value={activeTab} onValueChange={setActiveTab}>
-				<TabsList className="grid w-full grid-cols-2">
-					<TabsTrigger value="header">ヘッダー</TabsTrigger>
-					<TabsTrigger value="footer">フッター</TabsTrigger>
-				</TabsList>
-				<TabsContent value="header">
-					<MonacoEditor
-						content={header}
-						onChange={onHeaderChange}
-						language="html"
-						height="300px"
-						options={{
-							wordWrap: "on",
-							minimap: { enabled: false },
-						}}
-					/>
-				</TabsContent>
-				<TabsContent value="footer">
-					<MonacoEditor
-						content={footer}
-						onChange={onFooterChange}
-						language="html"
-						height="300px"
-						options={{
-							wordWrap: "on",
-							minimap: { enabled: false },
-						}}
-					/>
-				</TabsContent>
-			</Tabs>
-		</div>
-	);
+    <div className="rounded-md border">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="header">ヘッダー</TabsTrigger>
+          <TabsTrigger value="footer">フッター</TabsTrigger>
+        </TabsList>
+        <TabsContent value="header">
+          <SimpleHtmlEditor
+            value={header}
+            onChange={onHeaderChange}
+            placeholder="ヘッダーのHTMLを入力してください..."
+            compact={true}
+            style={{
+              minHeight: "300px",
+            }}
+          />
+        </TabsContent>
+        <TabsContent value="footer">
+          <SimpleHtmlEditor
+            value={footer}
+            onChange={onFooterChange}
+            placeholder="フッターのHTMLを入力してください..."
+            compact={true}
+            style={{
+              minHeight: "300px",
+            }}
+          />
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
 }

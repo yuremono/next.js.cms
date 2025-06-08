@@ -350,6 +350,7 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
                                 />
                               </div>
                               <RichTextEditor
+          compact={true}
                                 content={section.cards[activeCardIndex]?.html}
                                 onChange={(html) =>
                                   updateCard(activeCardIndex, "html", html)

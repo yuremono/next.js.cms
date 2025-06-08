@@ -98,6 +98,7 @@ export function FormEditor({ section, onUpdate }: FormEditorProps) {
           <div className="space-y-2">
             <Label>コンテンツ</Label>
             <RichTextEditor
+          compact={true}
               content={section.html}
               onChange={handleHtmlChange}
               placeholder="ここにHTMLを入力..."

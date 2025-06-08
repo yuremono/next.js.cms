@@ -131,7 +131,7 @@ export function ImageUpload({
           variant="outline"
           type="button"
           onClick={() => setIsGalleryOpen(true)}
-          className="flex items-center gap-4"
+          className="flex items-center gap-4 mt-1"
         >
           <ImageIcon className="h-4 w-4" />
           アップロード済み画像から選択

@@ -1,13 +1,14 @@
 "use client";
 
 import { MonacoEditor } from "./monaco-editor";
-import { EnhancedTextarea } from "./enhanced-textarea";
+import { SimpleHtmlEditor } from "./simple-html-editor";
 
 interface EditorProps {
   content: string;
   onChange: (content: string) => void;
   placeholder?: string;
   language?: string;
+  compact?: boolean;
 }
 
 export function RichTextEditor({
@@ -16,6 +17,7 @@ export function RichTextEditor({
   language = "html",
   useMonaco = false,
   placeholder,
+  compact,
 }: EditorProps & { useMonaco?: boolean }) {
   if (useMonaco) {
     return (
@@ -34,19 +36,18 @@ export function RichTextEditor({
       />
     );
   }
+
   return (
-    <EnhancedTextarea
-      processNewlines={true}
+    <SimpleHtmlEditor
       value={content}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={onChange}
       placeholder={placeholder}
-      className="field-sizing-content flex-1"
+      compact={compact}
+      className="flex-1"
       style={{
-        height: "auto",
         minHeight: "8rem",
         maxHeight: "50vh",
-        overflowY: "auto",
       }}
     />
   );
-}
+} 

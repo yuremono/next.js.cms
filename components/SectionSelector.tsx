@@ -34,31 +34,27 @@ export function SectionSelector({ onSelect }: SectionSelectorProps) {
   ];
 
 	return (
-		<div className="p-4">
-			<h3 className="text-xl font-medium mb-4">セクションを追加</h3>
-			<p className="text-gray-500 mb-6">
-				追加したいセクションのタイプを選択してください
-			</p>
+    <div className="SectionSelector p-4">
+      <h3 className="mb-4 text-xl font-medium">セクションを追加</h3>
+      <p className="mb-6 text-gray-500">
+        追加したいセクションのタイプを選択してください
+      </p>
 
-			<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-				{sectionTypes.map((section) => (
-					<Card
-						key={section.type}
-						className="p-4 cursor-pointer hover:border-blue-300 transition-colors"
-						onClick={() => onSelect(section.type)}
-					>
-						<div className="flex flex-col items-center text-center p-4">
-							{section.icon}
-							<h4 className="font-medium mt-3 mb-1">
-								{section.title}
-							</h4>
-							<p className="text-sm text-gray-500">
-								{section.description}
-							</p>
-						</div>
-					</Card>
-				))}
-			</div>
-		</div>
-	);
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {sectionTypes.map((section) => (
+          <Card
+            key={section.type}
+            className="cursor-pointer p-4 transition-colors hover:border-blue-300"
+            onClick={() => onSelect(section.type)}
+          >
+            <div className="flex flex-col items-center p-4 text-center">
+              {section.icon}
+              <h4 className="mb-1 mt-3 font-medium">{section.title}</h4>
+              <p className="text-sm text-gray-500">{section.description}</p>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
 }

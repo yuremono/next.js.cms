@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { EnhancedTextarea } from "@/components/ui/enhanced-textarea";
+import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
@@ -88,7 +88,7 @@ export function TextGenerator({ onSelect }: TextGeneratorProps) {
 
           <div className="flex flex-1 flex-col space-y-2">
             <Label htmlFor="prompt">プロンプト</Label>
-            <EnhancedTextarea
+            <Textarea
               id="prompt"
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}

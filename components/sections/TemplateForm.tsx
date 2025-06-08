@@ -7,7 +7,7 @@ import { z } from "zod";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { EnhancedTextarea } from "../ui/enhanced-textarea";
+import { Textarea } from "../ui/textarea";
 import { RichTextEditor } from "../ui/editor";
 
 const templateSchema = z.object({
@@ -86,7 +86,7 @@ export function TemplateForm({
 
       <div className="space-y-2">
         <Label htmlFor="description">説明</Label>
-        <EnhancedTextarea id="description" {...register("description")} />
+        <Textarea id="description" {...register("description")} />
         {errors.description && (
           <p className="text-sm text-red-500">{errors.description.message}</p>
         )}
@@ -95,6 +95,7 @@ export function TemplateForm({
       <div className="space-y-2">
         <Label htmlFor="content">コンテンツ</Label>
         <RichTextEditor
+          compact={true}
           content={content}
           onChange={(value) => {
             setContent(value);
@@ -116,7 +117,7 @@ export function TemplateForm({
 
       <div className="space-y-2">
         <Label htmlFor="meta_description">メタディスクリプション</Label>
-        <EnhancedTextarea
+        <Textarea
           id="meta_description"
           {...register("meta_description")}
         />
