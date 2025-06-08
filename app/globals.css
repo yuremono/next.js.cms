@@ -6,159 +6,83 @@
 @tailwind utilities;
 
 @layer base {
-        .font-jost{font-family: "Jost", "Zen Kaku Gothic New", 'Noto Sans JP', sans-serif;}
-        :root {
-                --header-height:4rem;
-                --main-height:calc(100vh - var(--header-height));
-        /* フォント設定 */
-        --font-family-base: "Zen Kaku Gothic New", 'Noto Sans JP', sans-serif;
-        
-        /* カラー設定 */
-        --background: 0 0% 100%;
-        --foreground: 0 0% 10%;
-        --card: 0 0% 100%;
-        --card-foreground: 0 0% 10%;
-        --popover: 0 0% 100%;
-        --popover-foreground: 0 0% 10%;
-        --primary: 220 63% 23%;
-        --primary-foreground: 0 0% 100%;
-        --secondary: 0 0% 95%;
-        --secondary-foreground: 0 0% 10%;
-        --muted: 0 0% 95%;
-        --muted-foreground: 0 0% 45%;
-        --accent: 0 0% 95%;
-        --accent-foreground: 0 0% 10%;
-        --destructive: 0 84% 60%;
-        --destructive-foreground: 0 0% 100%;
-        --border: 0 0% 90%;
-        --input: 0 0% 90%;
-        --ring: 220 63% 23%;
-        --radius: 0.5rem;
-  }
+        .font-jost {
+                font-family: "Jost", "Zen Kaku Gothic New", 'Noto Sans JP', sans-serif;
+        }
 
-  .dark {
-    --background: 0 0% 10%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 12%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 12%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 220 63% 23%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 18%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 18%;
-    --muted-foreground: 0 0% 65%;
-    --accent: 0 0% 18%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 24%;
-    --input: 0 0% 24%;
-    --ring: 220 63% 23%;
-  }
+        :root {
+                --header-height: 4rem;
+                --main-height: calc(100vh - var(--header-height));
+                /* フォント設定 */
+                --font-family-base: "Zen Kaku Gothic New", 'Noto Sans JP', sans-serif;
+
+                /* カラー設定 */
+                --background: hsl(0, 0%, 100%);
+                --foreground: hsl(0, 0%, 10%);
+                --card: hsl(0, 0%, 100%);
+                --card-foreground: hsl(0, 0%, 10%);
+                --popover: hsl(0, 0%, 100%);
+                --popover-foreground: hsl(0, 0%, 10%);
+                --primary: hsl(220, 63%, 23%);
+                --primary-foreground: hsl(0, 0%, 100%);
+                --secondary: hsl(0, 0%, 95%);
+                --secondary-foreground: hsl(0, 0%, 10%);
+                --muted: hsl(0, 0%, 95%);
+                --muted-foreground: hsl(0, 0%, 45%);
+                --accent: hsl(0, 0%, 95%);
+                --accent-foreground: hsl(0, 0%, 10%);
+                --destructive: hsl(0, 84%, 60%);
+                --destructive-foreground: hsl(0, 0%, 100%);
+                --border: hsl(0, 0%, 90%);
+                --input: hsl(0, 0%, 90%);
+                --ring: hsl(220, 63%, 23%);
+                --radius: 0.5rem;
+        }
+
+        .dark {
+                --background: hsl(0, 0%, 10%);
+                --foreground: hsl(0, 0%, 98%);
+                --card: hsl(0, 0%, 12%);
+                --card-foreground: hsl(0, 0%, 98%);
+                --popover: hsl(0, 0%, 12%);
+                --popover-foreground: hsl(0, 0%, 98%);
+                --primary: hsl(220, 63%, 23%);
+                --primary-foreground: hsl(0, 0%, 100%);
+                --secondary: hsl(0, 0%, 18%);
+                --secondary-foreground: hsl(0, 0%, 98%);
+                --muted: hsl(0, 0%, 18%);
+                --muted-foreground: hsl(0, 0%, 65%);
+                --accent: hsl(0, 0%, 18%);
+                --accent-foreground: hsl(0, 0%, 98%);
+                --destructive: hsl(0, 84%, 60%);
+                --destructive-foreground: hsl(0, 0%, 100%);
+                --border: hsl(0, 0%, 24%);
+                --input: hsl(0, 0%, 24%);
+                --ring: hsl(220, 63%, 23%);
+        }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
-    font-family: var(--font-family-base);
-  }
+        * {
+                @apply border-border;
+        }
+
+        body {
+                @apply bg-background text-foreground;
+                font-feature-settings: "rlig"1, "calt"1;
+                font-family: var(--font-family-base);
+        }
 }
-.field-sizing-content{
+
+/* CMSスタイル定義 */
+.field-sizing-content {
         field-sizing: content;
 }
-/* CMSスタイル定義 */
-.cms-section {
-  @apply relative w-full;
-}
-
-.cms-section-container {
-  @apply container mx-auto px-4 py-12;
-}
-
-/* セクションタイプのスタイル */
 
 
-.cards-grid {
-  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8;
-}
 
-.card-item {
-  @apply bg-white rounded-lg shadow-md overflow-hidden;
-}
-
-.card-content {
-  @apply p-4;
-}
-
-/* 管理画面のスタイル */
-.editor-layout {
-  @apply grid grid-cols-1 md:grid-cols-[300px_1fr] gap-4 p-4;
-}
-
-.section-placeholder {
-  @apply border-2 border-dashed border-gray-300 rounded-md p-4 mb-4 bg-gray-50 text-center text-gray-500;
-}
-
-.dragging {
-  @apply opacity-50;
-}
-
-.section-controls {
-  @apply flex items-center justify-end space-x-2 p-1 bg-gray-100 rounded;
-}
-
-.section-handle {
-  @apply cursor-move;
-}
-
-/* トランジションとアニメーション */
-.fade-in {
-  @apply transition-opacity duration-300 ease-in-out;
-}
-
-.hover-lift {
-  @apply transition-transform duration-200 ease-in-out hover:-translate-y-1;
-}
-
-/* ユーティリティクラス */
-.shadow-soft {
-  @apply shadow-md;
-}
-
-.text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500;
-}
-
-/* レスポンシブ対応強化 */
-@media (max-width: 768px) {
-  .editor-layout {
-    @apply grid-cols-1 gap-6;
-  }
-  
-  .cms-section-container {
-    @apply px-3 py-8;
-  }
-  
-  .hero-section {
-    @apply py-10;
-  }
-  
-  .cards-grid {
-    @apply grid-cols-1;
-  }
-}
-
-@media (max-width: 480px) {
-  .cms-section-container {
-    @apply px-2 py-6;
-  }
-} 
 @media (max-width: 400px) {
-        html{font-size:94%;}
-} 
+        html {
+                font-size: 94%;
+        }
+}

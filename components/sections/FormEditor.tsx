@@ -74,7 +74,7 @@ export function FormEditor({ section, onUpdate }: FormEditorProps) {
               id="form-class"
               value={section.class}
               onChange={handleClassNameChange}
-              placeholder="例: form-section"
+              placeholder="例: Form"
             />
           </div>
           <div className="flex items-center gap-4">

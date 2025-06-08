@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Page } from "@/types";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { CustomCSSLoader } from "@/components/CustomCSSLoader";
+import "./top.scss";
 
 // デフォルトページデータ（APIから取得できない場合のフォールバック）
 const DEFAULT_PAGE_DATA: Page = {
@@ -59,40 +60,45 @@ const DEFAULT_PAGE_DATA: Page = {
     {
       id: "section-default-1",
       layout: "mainVisual",
-      class: "hero-section ",
+      class: "MainVisual ",
       html: '<h1 class="text-4xl font-bold mb-4">簡易CMSシステム</h1><p class="text-xl">AIによるテキスト生成機能を備えた、テンプレートベースのWebサイト構築システムです。<br>ドラッグ＆ドロップでセクションを追加・入れ替えでき、簡単にWebサイトを編集できます。</p>',
       image: "",
+      imageAspectRatio: "auto",
     },
     {
       id: "section-default-2",
       layout: "imgText",
-      class: "img-text-section",
+      class: "ImgText",
       html: '<h2 class="text-2xl font-semibold mb-4">セクションタイトル</h2><p>ここにテキストを入力します。このページは管理画面から自由に編集することができます。画像やテキストの配置、セクションの追加・並べ替えなど、さまざまなカスタマイズが可能です。</p><p class="mt-4">AIテキスト生成機能を使えば、プロフェッショナルな文章を簡単に作成できます。</p>',
       image: "",
+      imageAspectRatio: "auto",
     },
     {
       id: "section-default-3",
       layout: "cards",
-      class: "cards-section ",
+      class: "Cards ",
       cards: [
         {
           html: '<h3 class="text-xl font-semibold mb-2">簡単操作</h3><p>直感的なインターフェースで、専門知識がなくても簡単にWebサイトを編集できます。</p>',
           image: "",
+          imageAspectRatio: "auto",
         },
         {
           html: '<h3 class="text-xl font-semibold mb-2">AI機能</h3><p>OpenAI連携でプロフェッショナルなテキストを自動生成できます。</p>',
           image: "",
+          imageAspectRatio: "auto",
         },
         {
           html: '<h3 class="text-xl font-semibold mb-2">レスポンシブ</h3><p>PC・タブレット・スマートフォンなど、あらゆる画面サイズに対応しています。</p>',
           image: "",
+          imageAspectRatio: "auto",
         },
       ],
     },
     {
       id: "section-default-4",
       layout: "form",
-      class: "form-section",
+      class: "Form",
       html: '<h2 class="text-2xl font-semibold text-center mb-6">お問い合わせ</h2><p class="text-center mb-8">製品に関するご質問やご要望がございましたら、下記フォームよりお気軽にお問い合わせください。</p>',
       endpoint: "/api/contact",
     },

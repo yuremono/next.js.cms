@@ -1,0 +1,22 @@
+/* トップページ専用スタイル */
+/* 入れ子構造のみ使用 */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+// @layerディレクティブは使用せず、通常のCSSのみ使用
+@layer base {
+        :root {
+                --section-mt: 6rem;
+        }
+        main {
+                >*+* {
+                        margin-top: var(--section-mt);
+                }
+        }
+}
+
+.container {
+        padding-inline: unset;
+        
+}

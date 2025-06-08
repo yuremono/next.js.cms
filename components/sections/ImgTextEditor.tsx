@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { ImgTextSection } from "@/types";
+import { getImageAspectRatio } from "@/lib/image-utils";
 
 interface ImgTextEditorProps {
   section: ImgTextSection;
@@ -30,11 +31,31 @@ export function ImgTextEditor({ section, onUpdate }: ImgTextEditorProps) {
     });
   };
 
-  const handleImageChange = (img: string | null) => {
-    onUpdate({
-      ...section,
-      image: img || undefined,
-    });
+  const handleImageChange = async (img: string | null) => {
+    if (img) {
+      try {
+        // 画像比率を取得
+        const aspectRatio = await getImageAspectRatio(img);
+        onUpdate({
+          ...section,
+          image: img,
+          imageAspectRatio: aspectRatio,
+        });
+      } catch (error) {
+        console.error("画像比率の取得に失敗しました:", error);
+        onUpdate({
+          ...section,
+          image: img,
+          imageAspectRatio: "auto",
+        });
+      }
+    } else {
+      onUpdate({
+        ...section,
+        image: undefined,
+        imageAspectRatio: undefined,
+      });
+    }
   };
 
   const handleImageClassChange = (className: string) => {
@@ -66,8 +87,8 @@ export function ImgTextEditor({ section, onUpdate }: ImgTextEditorProps) {
   };
 
   return (
-    <div className="ImgTextEditor space-y-6 h-full">
-      <Card className="flex  flex-col rounded-sm p-4 h-full">
+    <div className="ImgTextEditor h-full space-y-6">
+      <Card className="flex  h-full flex-col rounded-sm p-4">
         <h3 className="mb-4 text-lg font-medium">画像テキストセクション設定</h3>
         <div className="space-y-2">
           <div className="flex items-center gap-4">
@@ -90,7 +111,7 @@ export function ImgTextEditor({ section, onUpdate }: ImgTextEditorProps) {
               id="imgtext-class"
               value={section.class}
               onChange={handleClassNameChange}
-              placeholder="例: img-text-section"
+              placeholder="例: ImgText"
               className="flex-1"
             />
           </div>
@@ -119,7 +140,7 @@ export function ImgTextEditor({ section, onUpdate }: ImgTextEditorProps) {
             />
           </div>
           <RichTextEditor
-          compact={true}
+            compact={true}
             content={section.html}
             onChange={handleHtmlChange}
             placeholder="ここにHTMLを入力..."

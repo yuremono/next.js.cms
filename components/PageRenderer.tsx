@@ -4,30 +4,35 @@
 
 import { Page, Section } from "@/types";
 import Image from "next/image";
+import "../app/top.scss";
 
 interface PageRendererProps {
-	page: Page;
+  page: Page;
 }
 
 export function PageRenderer({ page }: PageRendererProps) {
-	const renderSection = (section: Section, index: number) => {
-		const sectionClass = section.class || "";
-		const bgStyle = section.bgImage
-			? { backgroundImage: `url(${section.bgImage})` }
-			: {};
+  const renderSection = (section: Section, index: number) => {
+    const sectionClass = section.class || "";
+    const bgStyle = section.bgImage
+      ? { backgroundImage: `url(${section.bgImage})` }
+      : {};
 
-		switch (section.layout) {
-			case "mainVisual":
-				return (
+    switch (section.layout) {
+      case "mainVisual":
+        return (
           <section
             key={index}
-            className={`main-visual ${sectionClass}`}
+            className={`MainVisual ${sectionClass}`}
             style={bgStyle}
           >
-            <div className="container mx-auto ">
+            <div className=" mx-auto ">
               {section.image && (
                 <div
-                  className={`relative h-[500px] w-full ${section.imageClass || ""}`}
+                  className={`relative w-full ${section.imageClass || ""}`}
+                  style={{
+                    aspectRatio: section.imageAspectRatio || "auto",
+                    minHeight: section.imageAspectRatio ? "auto" : "500px",
+                  }}
                 >
                   <Image
                     src={section.image}
@@ -47,18 +52,22 @@ export function PageRenderer({ page }: PageRendererProps) {
             </div>
           </section>
         );
-			case "imgText":
-				return (
+      case "imgText":
+        return (
           <section
             key={index}
-            className={`img-text ${sectionClass}`}
+            className={`ImgText
+                 ${sectionClass}`}
             style={bgStyle}
           >
             <div className="container mx-auto ">
               <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-2">
                 {section.image && (
                   <div
-                    className={`relative h-[400px] w-full ${section.imageClass || ""}`}
+                    className={`relative w-full ${section.imageClass || ""}`}
+                    style={{
+                      aspectRatio: section.imageAspectRatio || "auto",
+                    }}
                   >
                     <Image
                       src={section.image}
@@ -80,11 +89,11 @@ export function PageRenderer({ page }: PageRendererProps) {
             </div>
           </section>
         );
-			case "cards":
-				return (
+      case "cards":
+        return (
           <section
             key={index}
-            className={`cards ${sectionClass}`}
+            className={`Cards ${sectionClass}`}
             style={bgStyle}
           >
             <div className="container mx-auto ">
@@ -96,7 +105,11 @@ export function PageRenderer({ page }: PageRendererProps) {
                   >
                     {card.image && (
                       <div
-                        className={`relative h-[200px] w-full ${card.imageClass || ""}`}
+                        className={`relative w-full ${card.imageClass || ""}`}
+                        style={{
+                          aspectRatio: card.imageAspectRatio || "auto",
+                          minHeight: card.imageAspectRatio ? "auto" : "200px",
+                        }}
                       >
                         <Image
                           src={card.image}
@@ -120,11 +133,11 @@ export function PageRenderer({ page }: PageRendererProps) {
             </div>
           </section>
         );
-			case "form":
-				return (
+      case "form":
+        return (
           <section
             key={index}
-            className={`form ${sectionClass}`}
+            className={`Form ${sectionClass}`}
             style={bgStyle}
           >
             <div className="container mx-auto ">
@@ -196,34 +209,30 @@ export function PageRenderer({ page }: PageRendererProps) {
             </div>
           </section>
         );
-			default:
-				return (
-					<section key={index} className="unknown-section">
-						<div className="container mx-auto ">
-							<p className="text-red-500">
-								未知のセクションタイプです
-							</p>
-						</div>
-					</section>
-				);
-		}
-	};
+      default:
+        return (
+          <section key={index} className="unknown-section">
+            <div className="container mx-auto ">
+              <p className="text-red-500">未知のセクションタイプです</p>
+            </div>
+          </section>
+        );
+    }
+  };
 
-	return (
-		<>
-			<header
-				className="header"
-				dangerouslySetInnerHTML={{ __html: page.header.html }}
-			/>
-			<main className="min-h-screen">
-				{page.sections.map((section, index) =>
-					renderSection(section, index)
-				)}
-			</main>
-			<footer
-				className="footer"
-				dangerouslySetInnerHTML={{ __html: page.footer.html }}
-			/>
-		</>
-	);
+  return (
+    <>
+      <header
+        className="header"
+        dangerouslySetInnerHTML={{ __html: page.header.html }}
+      />
+      <main className="min-h-screen">
+        {page.sections.map((section, index) => renderSection(section, index))}
+      </main>
+      <footer
+        className="footer"
+        dangerouslySetInnerHTML={{ __html: page.footer.html }}
+      />
+    </>
+  );
 }

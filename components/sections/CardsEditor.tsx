@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CardsSection, Card as CardType } from "@/types";
 import { Plus, Trash2, GripVertical } from "lucide-react";
+import { getImageAspectRatio } from "@/lib/image-utils";
 
 import {
   DndContext,
@@ -111,16 +112,45 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
   );
 
   // カードの更新を処理
-  const updateCard = (
+  const updateCard = async (
     index: number,
     key: keyof CardType,
     value: string | null
   ) => {
     const updatedCards = [...section.cards];
-    updatedCards[index] = {
-      ...updatedCards[index],
-      [key]: value || undefined,
-    };
+
+    if (key === "image") {
+      if (value) {
+        try {
+          // 画像比率を取得
+          const aspectRatio = await getImageAspectRatio(value);
+          updatedCards[index] = {
+            ...updatedCards[index],
+            image: value,
+            imageAspectRatio: aspectRatio,
+          };
+        } catch (error) {
+          console.error("画像比率の取得に失敗しました:", error);
+          updatedCards[index] = {
+            ...updatedCards[index],
+            image: value,
+            imageAspectRatio: "auto",
+          };
+        }
+      } else {
+        updatedCards[index] = {
+          ...updatedCards[index],
+          image: undefined,
+          imageAspectRatio: undefined,
+        };
+      }
+    } else {
+      updatedCards[index] = {
+        ...updatedCards[index],
+        [key]: value || undefined,
+      };
+    }
+
     onUpdate({
       ...section,
       cards: updatedCards,
@@ -132,6 +162,7 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
     const newCard: CardType = {
       image: "",
       imageClass: "",
+      imageAspectRatio: "auto",
       textClass: "",
       html: "<h3>新しいカード</h3><p>ここにカードの内容を入力してください。</p>",
     };
@@ -241,7 +272,7 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
               id="cards-class"
               value={section.class}
               onChange={handleClassNameChange}
-              placeholder="例: cards-section py-8"
+              placeholder="例: Cards py-8"
               className="flex-1"
             />
           </div>
@@ -350,7 +381,7 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
                                 />
                               </div>
                               <RichTextEditor
-          compact={true}
+                                compact={true}
                                 content={section.cards[activeCardIndex]?.html}
                                 onChange={(html) =>
                                   updateCard(activeCardIndex, "html", html)

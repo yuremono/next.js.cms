@@ -1,7 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import "../top.scss";
 import { Button } from "@/components/ui/button";
+import "../top.scss";
+import "../top.scss";
 // import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -19,6 +22,8 @@ import { TextGenerator } from "@/components/sections/TextGenerator";
 import { ImageGallery } from "@/components/images/ImageGallery";
 import { CSSEditor } from "@/components/editor/CSSEditor";
 import { GitHubPanel } from "@/components/github/GitHubPanel";
+import "../top.scss";
+import "../top.scss";
 
 // デフォルトのセクションを作成する関数
 const createDefaultSection = (type: string): Section => {
@@ -32,23 +37,27 @@ const createDefaultSection = (type: string): Section => {
       return {
         id,
         layout: "mainVisual",
-        class: "hero-section",
+        class: "MainVisual",
         html: "<h1>メインタイトル</h1><p>サブタイトル：ここにテキストを入力</p>",
         image: "",
+        imageAspectRatio: "auto",
       };
     case "imgText":
       return {
         id,
         layout: "imgText",
-        class: "img-text-section",
+        class: "ImgText",
         html: "<h2>セクションタイトル</h2><p>ここにテキストを入力します。</p>",
         image: "",
+        imageAspectRatio: "auto",
+        imageAspectRatio: "auto",
+        imageAspectRatio: "auto",
       };
     case "cards":
       return {
         id,
         layout: "cards",
-        class: "cards-section",
+        class: "Cards",
         cards: [
           {
             html: "<h3>カード1</h3><p>カード1の内容</p>",
@@ -60,7 +69,7 @@ const createDefaultSection = (type: string): Section => {
       return {
         id,
         layout: "form",
-        class: "form-section",
+        class: "Form",
         html: "<h2>お問い合わせ</h2><p>以下のフォームよりお問い合わせください。</p>",
         endpoint: "/api/contact",
       };

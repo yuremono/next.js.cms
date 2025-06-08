@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { MainVisualSection } from "@/types";
+import { getImageAspectRatio } from "@/lib/image-utils";
 
 interface MainVisualEditorProps {
   section: MainVisualSection;
@@ -30,11 +31,31 @@ export function MainVisualEditor({ section, onUpdate }: MainVisualEditorProps) {
     });
   };
 
-  const handleMainImageChange = (img: string | null) => {
-    onUpdate({
-      ...section,
-      image: img || undefined,
-    });
+  const handleImageChange = async (img: string | null) => {
+    if (img) {
+      try {
+        // 画像比率を取得
+        const aspectRatio = await getImageAspectRatio(img);
+        onUpdate({
+          ...section,
+          image: img,
+          imageAspectRatio: aspectRatio,
+        });
+      } catch (error) {
+
+        onUpdate({
+          ...section,
+          image: img,
+          imageAspectRatio: "auto",
+        });
+      }
+    } else {
+      onUpdate({
+        ...section,
+        image: undefined,
+        imageAspectRatio: undefined,
+      });
+    }
   };
 
   const handleImageClassChange = (className: string) => {
@@ -66,16 +87,16 @@ export function MainVisualEditor({ section, onUpdate }: MainVisualEditorProps) {
   };
 
   return (
-    <div className="MainVisualEditor space-y-6 h-full">
-      <Card className="flex  flex-col rounded-sm p-4 h-full">
+    <div className="MainVisualEditor h-full space-y-6">
+      <Card className="flex  h-full flex-col rounded-sm p-4">
         <h3 className="mb-4 text-lg font-medium">メインビジュアル設定</h3>
         <div className="space-y-2">
           <div className="flex items-center gap-4">
-            <Label className="" htmlFor="main-visual-name">
+            <Label className="" htmlFor="MainVisual-name">
               セクション名
             </Label>
             <Input
-              id="main-visual-name"
+              id="MainVisual-name"
               value={section.name || ""}
               onChange={handleNameChange}
               placeholder="例: メインビジュアル"
@@ -83,21 +104,21 @@ export function MainVisualEditor({ section, onUpdate }: MainVisualEditorProps) {
             />
           </div>
           <div className="flex items-center gap-4">
-            <Label className="" htmlFor="main-visual-class">
+            <Label className="" htmlFor="MainVisual-class">
               セクションクラス
             </Label>
             <Input
-              id="main-visual-class"
+              id="MainVisual-class"
               value={section.class}
               onChange={handleClassNameChange}
-              placeholder="例: hero-section bg-gray-100"
+              placeholder="例: MainVisual "
               className="flex-1"
             />
           </div>
           <ImageUpload
             initialImage={section.image}
             initialClass={section.imageClass || ""}
-            onImageChange={handleMainImageChange}
+            onImageChange={handleImageChange}
             onClassChange={handleImageClassChange}
             label="画像クラス"
           />
@@ -107,19 +128,19 @@ export function MainVisualEditor({ section, onUpdate }: MainVisualEditorProps) {
             label="背景画像"
           />
           <div className="flex items-center gap-4">
-            <Label className="" htmlFor="main-visual-text-class">
+            <Label className="" htmlFor="MainVisual-text-class">
               テキストクラス
             </Label>
             <Input
-              id="main-visual-text-class"
+              id="MainVisual-text-class"
               value={section.textClass || ""}
               onChange={handleTextClassChange}
-              placeholder="例: hero-content text-center"
+              placeholder="例: MainVisual-content text-center"
               className="flex-1"
             />
           </div>
           <RichTextEditor
-          compact={true}
+            compact={true}
             content={section.html}
             onChange={handleHtmlChange}
             placeholder="ここにメインビジュアルのHTMLを入力..."

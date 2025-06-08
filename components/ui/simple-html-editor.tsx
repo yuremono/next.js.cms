@@ -235,7 +235,7 @@ export function SimpleHtmlEditor({
             size="sm"
             onClick={() => insertTag("class")}
             className="text-xs"
-            style={{ border: "1px solid hsl(var(--primary))" }}
+            style={{ border: "1px solid var(--primary)" }}
           >
             class
           </Button>
@@ -245,7 +245,7 @@ export function SimpleHtmlEditor({
             size="sm"
             onClick={() => insertTag("style")}
             className="text-xs"
-            style={{ border: "1px solid hsl(var(--primary))" }}
+            style={{ border: "1px solid var(--primary)" }}
           >
             style
           </Button>

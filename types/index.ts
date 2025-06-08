@@ -17,6 +17,8 @@ export interface MainVisualSection extends BaseSection {
   layout: "mainVisual";
   image?: string;
   imageClass?: string;
+  imageAspectRatio?: string; // 画像比率 (例: "4/3", "16/9")
+  imageAspectRatio?: string; // 画像比率 (例: "4/3", "16/9")
   textClass?: string;
   html: string;
   name?: string;
@@ -26,6 +28,7 @@ export interface ImgTextSection extends BaseSection {
   layout: "imgText";
   image?: string;
   imageClass?: string;
+  imageAspectRatio?: string; // 画像比率 (例: "4/3", "16/9")
   textClass?: string;
   html: string;
   name?: string;
@@ -34,6 +37,7 @@ export interface ImgTextSection extends BaseSection {
 export interface Card {
   image?: string;
   imageClass?: string;
+  imageAspectRatio?: string; // 画像比率 (例: "4/3", "16/9")
   textClass?: string;
   html: string;
 }

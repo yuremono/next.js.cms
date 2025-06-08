@@ -36,7 +36,7 @@ app/page.tsx (HomePage)
 #### 2. MainVisualセクション
 ```html
 <!-- トップページHTML出力 -->
-<section class="main-visual hero-section">
+<section class="MainVisual">
   <div class="container mx-auto px-4 py-12"> ⭐ **py-12はここ**
     <div class="relative h-[500px] w-full firstImg">
       <img alt="Main Visual" ... />
@@ -48,7 +48,7 @@ app/page.tsx (HomePage)
 </section>
 ```
 - **HTML生成**: `components/PageRenderer.tsx` L21-44
-  - L23: `className="main-visual ${sectionClass}"` (sectionClass = section.class)
+  - L23: `className="MainVisual ${sectionClass}"` (sectionClass = section.class)
   - L27: `className="container mx-auto px-4 py-12"` ⭐ **py-12編集箇所**
   - L30: `className="relative h-[500px] w-full ${section.imageClass}"`
   - L39: `className="content ${section.textClass}"`
@@ -64,7 +64,7 @@ app/page.tsx (HomePage)
 #### 3. ImgTextセクション
 ```html
 <!-- トップページHTML出力 -->
-<section class="img-text img-text-section">
+<section class="img-text ImgText">
   <div class="container mx-auto px-4 py-12"> ⭐ **py-12はここ**
     <div class="grid grid-cols-1 items-center gap-8 md:grid-cols-2">
       ...画像とテキスト...
@@ -81,7 +81,7 @@ app/page.tsx (HomePage)
 #### 4. Cardsセクション
 ```html
 <!-- トップページHTML出力 -->
-<section class="cards cards-section">
+<section class="cards Cards">
   <div class="container mx-auto px-4 py-12"> ⭐ **py-12はここ**
     <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
       ...カード群...
@@ -98,7 +98,7 @@ app/page.tsx (HomePage)
 #### 5. Formセクション
 ```html
 <!-- トップページHTML出力 -->
-<section class="form form-section">
+<section class="form Form">
   <div class="container mx-auto px-4 py-12"> ⭐ **py-12はここ**
     <div class="content mb-8">...HTMLコンテンツ...</div>
     <form class="mx-auto max-w-2xl">...フォーム...</form>
@@ -194,7 +194,7 @@ activeTab === "sections" && selectedSectionId
 
 **MainVisualEditor** (`components/sections/MainVisualEditor.tsx`):
 - セクション名 (section.name)
-- セクションクラス (section.class) ⭐ **"hero-section"など**
+- セクションクラス (section.class) ⭐ **"MainVisual"など**
 - 画像URL + 画像クラス (section.image, section.imageClass)
 - 背景画像 (section.bgImage)  
 - テキストクラス (section.textClass)
@@ -229,7 +229,7 @@ activeTab === "sections" && selectedSectionId
 2. 必要に応じて他セクションも同様に変更 (L52,83,116)
 
 ### ケース2: デフォルトセクションクラスを変更  
-1. `app/page.tsx` L60 `class: "hero-section"` を変更
+1. `app/page.tsx` L60 `class: "MainVisual"` を変更
 2. または編集画面でセクションクラスを変更してデータベース保存
 
 ### ケース3: 新しいセクションタイプを追加
