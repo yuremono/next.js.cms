@@ -160,6 +160,7 @@ export default async function Home() {
                 name: mv?.name ?? "",
                 image: mv?.image ?? "",
                 imageClass: mv?.image_class ?? "",
+                imageAspectRatio: mv?.image_aspect_ratio ?? "auto",
                 textClass: mv?.text_class ?? "",
                 html: mv?.html ?? "",
               });
@@ -177,6 +178,7 @@ export default async function Home() {
                 name: it?.name ?? "",
                 image: it?.image ?? "",
                 imageClass: it?.image_class ?? "",
+                imageAspectRatio: it?.image_aspect_ratio ?? "auto",
                 textClass: it?.text_class ?? "",
                 html: it?.html ?? "",
               });
@@ -200,6 +202,7 @@ export default async function Home() {
                 cards: (cards ?? []).map((c) => ({
                   image: c.image ?? "",
                   imageClass: c.image_class ?? "",
+                  imageAspectRatio: c.image_aspect_ratio ?? "auto",
                   textClass: c.text_class ?? "",
                   html: c.html ?? "",
                 })),

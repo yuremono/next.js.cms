@@ -67,16 +67,18 @@ export interface Page {
 	sections: Section[];
 	customCSS?: string;
 }
-
-export function isSection(obj: any): obj is Section {
-	return (
-		obj &&
-		typeof obj === "object" &&
-		typeof obj.layout === "string" &&
-		typeof obj.class === "string" &&
-		(obj.layout === "mainVisual" ||
-			obj.layout === "imgText" ||
-			obj.layout === "cards" ||
-			obj.layout === "form")
-	);
+export function isSection(obj: unknown): obj is Section {
+  return (
+    obj &&
+    typeof obj === "object" &&
+    obj !== null &&
+    "layout" in obj &&
+    "class" in obj &&
+    typeof (obj as Record<string, unknown>).layout === "string" &&
+    typeof (obj as Record<string, unknown>).class === "string" &&
+    ((obj as Record<string, unknown>).layout === "mainVisual" ||
+      (obj as Record<string, unknown>).layout === "imgText" ||
+      (obj as Record<string, unknown>).layout === "cards" ||
+      (obj as Record<string, unknown>).layout === "form")
+  );
 }
