@@ -1,8 +1,7 @@
 import { PageRenderer } from "@/components/PageRenderer";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Page } from "@/types";
-import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { Page, Section } from "@/types";
 import { CustomCSSLoader } from "@/components/CustomCSSLoader";
 import "./top.scss";
 
@@ -114,134 +113,48 @@ export default async function Home() {
   let pageData: Page | null = null;
 
   console.log("環境変数状態:", {
-    supabaseConfigured: isSupabaseConfigured,
     nodeEnv: process.env.NODE_ENV,
     buildTime: new Date().toISOString(), // デプロイ確認用
-    version: "1.0.1", // バージョン追加
+    version: "1.0.2", // バージョン追加
   });
 
   try {
-    // APIではなく直接データを取得
-    if (isSupabaseConfigured) {
-      // 1. ページ本体
-      const { data: page, error: pageError } = await supabase
-        .from("pages")
-        .select("*")
-        .eq("id", 1)
-        .single();
-
-      if (pageError || !page) {
-        pageData = DEFAULT_PAGE_DATA;
-      } else {
-        // 2. セクション一覧
-        const { data: sections, error: secError } = await supabase
-          .from("sections")
-          .select("*")
-          .eq("page_id", page.id)
-          .order("position", { ascending: true });
-
-        if (secError) {
-          pageData = DEFAULT_PAGE_DATA;
-        } else {
-          // 3. 各セクションの詳細を取得
-          const sectionResults = [];
-          for (const section of sections) {
-            if (section.type === "mainVisual") {
-              const { data: mv } = await supabase
-                .from("main_visual_sections")
-                .select("*")
-                .eq("section_id", section.id)
-                .single();
-              sectionResults.push({
-                id: `section-${section.id}`,
-                layout: "mainVisual",
-                class: mv?.class ?? "",
-                bgImage: mv?.bg_image ?? "",
-                name: mv?.name ?? "",
-                image: mv?.image ?? "",
-                imageClass: mv?.image_class ?? "",
-                imageAspectRatio: mv?.image_aspect_ratio ?? "auto",
-                textClass: mv?.text_class ?? "",
-                html: mv?.html ?? "",
-              });
-            } else if (section.type === "imgText") {
-              const { data: it } = await supabase
-                .from("img_text_sections")
-                .select("*")
-                .eq("section_id", section.id)
-                .single();
-              sectionResults.push({
-                id: `section-${section.id}`,
-                layout: "imgText",
-                class: it?.class ?? "",
-                bgImage: it?.bg_image ?? "",
-                name: it?.name ?? "",
-                image: it?.image ?? "",
-                imageClass: it?.image_class ?? "",
-                imageAspectRatio: it?.image_aspect_ratio ?? "auto",
-                textClass: it?.text_class ?? "",
-                html: it?.html ?? "",
-              });
-            } else if (section.type === "cards") {
-              const { data: cs } = await supabase
-                .from("cards_sections")
-                .select("*")
-                .eq("section_id", section.id)
-                .single();
-              const { data: cards } = await supabase
-                .from("cards")
-                .select("*")
-                .eq("cards_section_id", section.id)
-                .order("position", { ascending: true });
-              sectionResults.push({
-                id: `section-${section.id}`,
-                layout: "cards",
-                class: cs?.class ?? "",
-                bgImage: cs?.bg_image ?? "",
-                name: cs?.name ?? "",
-                cards: (cards ?? []).map((c) => ({
-                  image: c.image ?? "",
-                  imageClass: c.image_class ?? "",
-                  imageAspectRatio: c.image_aspect_ratio ?? "auto",
-                  textClass: c.text_class ?? "",
-                  html: c.html ?? "",
-                })),
-              });
-            } else if (section.type === "form") {
-              const { data: fs } = await supabase
-                .from("form_sections")
-                .select("*")
-                .eq("section_id", section.id)
-                .single();
-              sectionResults.push({
-                id: `section-${section.id}`,
-                layout: "form",
-                class: fs?.class ?? "",
-                bgImage: fs?.bg_image ?? "",
-                name: fs?.name ?? "",
-                html: fs?.html ?? "",
-                endpoint: fs?.endpoint ?? "",
-              });
-            }
-          }
-
-          // 4. 組み立て
-          pageData = {
-            header: { html: page.header_html },
-            footer: { html: page.footer_html },
-            customCSS: page.custom_css,
-            sections: sectionResults,
-          };
-        }
+    // エディタと同じAPIエンドポイントを使用してデータを取得
+    const response = await fetch(
+      `${process.env.VERCEL_URL ? "https://" + process.env.VERCEL_URL : "http://localhost:3000"}/api/page`,
+      {
+        method: "GET",
+        cache: "no-store", // 常に最新データを取得
       }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+
+      // セクションにIDがなければ追加（エディタと同じ処理）
+      if (data.sections && Array.isArray(data.sections)) {
+        data.sections = data.sections.map((section: Section) => {
+          if (!section.id) {
+            return {
+              ...section,
+              id: `section-${Date.now()}-${Math.random()
+                .toString(36)
+                .substring(2, 9)}`,
+            };
+          }
+          return section;
+        });
+      }
+
+      pageData = data;
     } else {
-      // Supabase未設定ならデフォルトデータ
-      console.log("Supabase設定なし、デフォルトデータを使用");
+      console.log("API取得失敗、デフォルトデータを使用");
       pageData = DEFAULT_PAGE_DATA;
     }
   } catch (error) {
     console.error("ページデータの取得に失敗しました", error);
-    pageData = null;
+    console.log("エラーのため、デフォルトデータを使用");
+    pageData = DEFAULT_PAGE_DATA;
   }
 
   // データが取得できなかった場合のデフォルト表示
