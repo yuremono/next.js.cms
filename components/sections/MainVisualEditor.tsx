@@ -41,7 +41,7 @@ export function MainVisualEditor({ section, onUpdate }: MainVisualEditorProps) {
           image: img,
           imageAspectRatio: aspectRatio,
         });
-      } catch (error) {
+      } catch {
 
         onUpdate({
           ...section,

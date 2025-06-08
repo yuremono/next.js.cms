@@ -50,8 +50,6 @@ const createDefaultSection = (type: string): Section => {
         html: "<h2>セクションタイトル</h2><p>ここにテキストを入力します。</p>",
         image: "",
         imageAspectRatio: "auto",
-        imageAspectRatio: "auto",
-        imageAspectRatio: "auto",
       };
     case "cards":
       return {

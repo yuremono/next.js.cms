@@ -24,7 +24,7 @@ export function CustomCSSLoader() {
           link.type = "text/css";
           document.head.appendChild(link);
         }
-      } catch (error) {
+      } catch {
         // custom.cssが存在しない場合は何もしない
         console.log("custom.css not found");
       }
