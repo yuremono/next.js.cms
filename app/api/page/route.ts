@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { Page } from "@/types";
+import { checkAuth } from "@/lib/auth";
 
 const DEFAULT_PAGE_DATA: Page = {
   header: {
@@ -263,6 +264,10 @@ export async function GET() {
 
 // ページデータ保存
 export async function POST(req: NextRequest) {
+  // 認証チェック
+  if (!checkAuth()) {
+    return NextResponse.json({ error: "認証が必要です" }, { status: 401 });
+  }
   try {
     const pageData = await req.json();
 

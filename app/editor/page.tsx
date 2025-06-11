@@ -15,13 +15,23 @@ import { SortableSections } from "@/components/SortableSections";
 import { SectionSelector } from "@/components/SectionSelector";
 import { SectionEditorRenderer } from "@/components/editor/SectionEditorRenderer";
 import { PageRenderer } from "@/components/PageRenderer";
-import { Save, Plus, Eye, ExternalLink, Hand, Sun, Moon } from "lucide-react";
+import {
+  Save,
+  Plus,
+  Eye,
+  ExternalLink,
+  Hand,
+  Sun,
+  Moon,
+  LogOut,
+} from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { TextGenerator } from "@/components/sections/TextGenerator";
 import { ImageGallery } from "@/components/images/ImageGallery";
 import { CSSEditor } from "@/components/editor/CSSEditor";
-import { GitHubPanel } from "@/components/github/GitHubPanel";
+import { DatabaseBackup } from "@/components/backup/DatabaseBackup";
+import { PasswordAuth } from "@/components/auth/PasswordAuth";
 import "../top.scss";
 import "../top.scss";
 
@@ -50,8 +60,6 @@ const createDefaultSection = (type: string): Section => {
         html: "<h2>セクションタイトル</h2><p>ここにテキストを入力します。</p>",
         image: "",
         imageAspectRatio: "auto",
-        imageAspectRatio: "auto",
-        imageAspectRatio: "auto",
       };
     case "cards":
       return {
@@ -79,6 +87,10 @@ const createDefaultSection = (type: string): Section => {
 };
 
 export default function EditorPage() {
+  // 認証状態
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
+
   // ページデータの状態
   const [page, setPage] = useState<Page>({
     header: {
@@ -167,8 +179,38 @@ export default function EditorPage() {
   // 追加: レスポンシブ用state
   const [sectionListOpen, setSectionListOpen] = useState(false);
 
+  // 認証チェック
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        // 開発時の認証スキップチェック
+        if (process.env.NEXT_PUBLIC_SKIP_AUTH === "true") {
+          console.log("🚫 フロントエンド認証をスキップしています");
+          setIsAuthenticated(true);
+          setAuthChecked(true);
+          return;
+        }
+
+        const response = await fetch("/api/auth/check");
+        if (response.ok) {
+          const { authenticated } = await response.json();
+          setIsAuthenticated(authenticated);
+        }
+      } catch (error) {
+        console.error("認証チェックエラー:", error);
+        setIsAuthenticated(false);
+      } finally {
+        setAuthChecked(true);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
   // 初期データの読み込み
   useEffect(() => {
+    if (!isAuthenticated || !authChecked) return;
+
     const fetchData = async () => {
       try {
         // 復元されたデータがあるか確認
@@ -254,7 +296,7 @@ export default function EditorPage() {
     };
 
     fetchData();
-  }, []);
+  }, [isAuthenticated, authChecked]);
 
   // ヘッダーの更新
   const updateHeader = (header: Header) => {
@@ -378,6 +420,18 @@ export default function EditorPage() {
     }
   };
 
+  // ログアウト
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+      setIsAuthenticated(false);
+      toast.success("ログアウトしました");
+    } catch (error) {
+      console.error("ログアウトエラー:", error);
+      toast.error("ログアウトに失敗しました");
+    }
+  };
+
   // タイプに応じた編集コンポーネントを表示
   const renderEditor = () => {
     switch (activeMenuTab) {
@@ -392,8 +446,8 @@ export default function EditorPage() {
             onUpdate={updateCustomCSS}
           />
         );
-      case "github":
-        return <GitHubPanel page={page} />;
+      case "backup":
+        return <DatabaseBackup />;
       case "ai-generator":
         return (
           <TextGenerator
@@ -449,6 +503,29 @@ export default function EditorPage() {
 
   // 追加: 画面幅監視
 
+  // 認証チェック中
+  if (!authChecked) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-gray-900"></div>
+          <p className="mt-4">認証確認中...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // 認証されていない場合
+  if (!isAuthenticated) {
+    return (
+      <PasswordAuth
+        onAuthenticated={() => setIsAuthenticated(true)}
+        title="ポートフォリオCMS - 企業様向け"
+        subtitle="編集機能をご利用いただくため、パスワードを入力してください"
+      />
+    );
+  }
+
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -469,7 +546,7 @@ export default function EditorPage() {
           style={{ minHeight: "var(--header-height)" }}
         >
           <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-light font-jost">/editor</h1>
+            <h1 className="font-jost text-3xl font-light">/editor</h1>
             <button
               aria-label="ダークモード切替"
               className="ml-2 border-none bg-transparent p-1 outline-none focus:outline-none"
@@ -499,6 +576,10 @@ export default function EditorPage() {
             <Button onClick={savePage} disabled={isSaving}>
               <Save className="h-4 w-4" />
               {isSaving ? "保存中..." : "保存"}
+            </Button>
+            <Button variant="outline" onClick={handleLogout}>
+              <LogOut className="h-4 w-4" />
+              ログアウト
             </Button>
           </div>
         </div>
@@ -559,7 +640,7 @@ export default function EditorPage() {
                   画像一覧
                 </TabsTrigger>
                 <TabsTrigger
-                  value="github"
+                  value="backup"
                   className="min-w-[70px] rounded-none border-none bg-transparent p-2 text-left lg:w-full lg:p-0"
                 >
                   バックアップ
@@ -581,7 +662,7 @@ export default function EditorPage() {
             </Tabs>
           </div>
           {/* セクションリスト */}
-          <div className=" w-full border-b   lg:min-w-[170px] lg:max-w-[18rem]  lg:overflow-y-auto lg:border-b-0 lg:border-r  p-4">
+          <div className=" w-full border-b   p-4 lg:min-w-[170px]  lg:max-w-[18rem] lg:overflow-y-auto lg:border-b-0  lg:border-r">
             <div className=" flex w-full items-center gap-2">
               <h2 className="text-sm font-medium">
                 セクション ({page.sections.length})
@@ -607,7 +688,7 @@ export default function EditorPage() {
             {/* PC時は常時リスト表示、SP時は開閉 */}
             <div
               className={
-                "w-full mt-4 " +
+                "mt-4 w-full " +
                 (sectionListOpen ? "" : "hidden") +
                 " lg:block lg:w-full"
               }
