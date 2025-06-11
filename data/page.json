@@ -1,49 +1,67 @@
 {
   "header": {
-"html": "<div class=\" mx-auto px-4 py-4 flex justify-between items-center\">\n    <div class=\"logo\">\n      <a href=\"/\" class=\"text-xl font-bold\">サイト名</a>\n    </div>\n    <nav>\n      <ul class=\"flex space-x-6\">\n        <li><a href=\"#\" class=\"hover:text-primary\">ホーム</a></li>\n        <li><a href=\"#\" class=\"hover:text-primary\">会社概要</a></li>\n        <li><a href=\"#\" class=\"hover:text-primary\">サービス</a></li>\n        <li><a href=\"#\" class=\"hover:text-primary\">お問い合わせ</a></li>\n      </ul>\n    </nav>\n  </div>"
+    "html": "\n  <div class=\"container mx-auto px-4 py-4 flex justify-between items-center\">\n    <div class=\"logo\">\n      <a href=\"/\" class=\"text-xl font-bold\">サイト名</a>\n    </div>\n    <nav>\n      <ul class=\"flex space-x-6\">\n        <li><a href=\"#\" class=\"hover:text-primary\">ホーム</a></li>\n        <li><a href=\"#\" class=\"hover:text-primary\">会社概要</a></li>\n        <li><a href=\"#\" class=\"hover:text-primary\">サービス</a></li>\n        <li><a href=\"#\" class=\"hover:text-primary\">お問い合わせ</a></li>\n      </ul>\n    </nav>\n  </div>\n"
   },
   "footer": {
-"html": "<div class=\"container mx-auto px-4 py-8\">\n    <div class=\"grid grid-cols-1 md:grid-cols-3 gap-8\">\n      <div>\n        <h3 class=\"text-lg font-semibold mb-4\">会社名</h3>\n        <p>〒123-4567<br />東京都○○区△△ 1-2-3</p>\n        <p>TEL: 03-1234-5678</p>\n      </div>\n      <div>\n        <h3 class=\"text-lg font-semibold mb-4\">リンク</h3>\n        <ul class=\"space-y-2\">\n          <li><a href=\"#\" class=\"hover:underline\">ホーム</a></li>\n          <li><a href=\"#\" class=\"hover:underline\">会社概要</a></li>\n          <li><a href=\"#\" class=\"hover:underline\">サービス</a></li>\n          <li><a href=\"#\" class=\"hover:underline\">お問い合わせ</a></li>\n        </ul>\n      </div>\n      <div>\n        <h3 class=\"text-lg font-semibold mb-4\">SNS</h3>\n        <div class=\"flex space-x-4\">\n          <a href=\"#\" class=\"hover:text-primary\">Twitter</a>\n          <a href=\"#\" class=\"hover:text-primary\">Facebook</a>\n          <a href=\"#\" class=\"hover:text-primary\">Instagram</a>\n        </div>\n      </div>\n    </div>\n    <div class=\"border-t border-gray-700 mt-8 pt-4 text-center\">\n      <p>© 2024 会社名. All rights reserved.</p>\n    </div>\n  </div>"
-},
+    "html": "\n  <div class=\"container mx-auto px-4 py-8\">\n    <div class=\"grid grid-cols-1 md:grid-cols-3 gap-8\">\n      <div>\n        <h3 class=\"text-lg font-semibold mb-4\">会社名</h3>\n        <p>〒123-4567<br />東京都○○区△△ 1-2-3</p>\n        <p>TEL: 03-1234-5678</p>\n      </div>\n      <div>\n        <h3 class=\"text-lg font-semibold mb-4\">リンク</h3>\n        <ul class=\"space-y-2\">\n          <li><a href=\"#\" class=\"hover:underline\">ホーム</a></li>\n          <li><a href=\"#\" class=\"hover:underline\">会社概要</a></li>\n          <li><a href=\"#\" class=\"hover:underline\">サービス</a></li>\n          <li><a href=\"#\" class=\"hover:underline\">お問い合わせ</a></li>\n        </ul>\n      </div>\n      <div>\n        <h3 class=\"text-lg font-semibold mb-4\">SNS</h3>\n        <div class=\"flex space-x-4\">\n          <a href=\"#\" class=\"hover:text-primary\">Twitter</a>\n          <a href=\"#\" class=\"hover:text-primary\">Facebook</a>\n          <a href=\"#\" class=\"hover:text-primary\">Instagram</a>\n        </div>\n      </div>\n    </div>\n    <div class=\"border-t border-gray-700 mt-8 pt-4 text-center\">\n      <p>© 2024 会社名. All rights reserved.</p>\n    </div>\n  </div>"
+  },
+  "customCSS": "/* カスタムCSSの例 */\n/* ヘッダーのスタイルをカスタマイズ */\n\nheader {\n  background-color: blue;\n  border-bottom: 1px solid #e9ecef;\n}\n\nheader a {\n  color: #343a40;\n}\n\nheader a:hover {\n  color: #007bff;\n  text-decoration: none;\n}\n",
   "sections": [
     {
-      "id": "section-1684123456-abc123",
+      "id": "section-544",
       "layout": "mainVisual",
-"class": "MainVisual",
+      "class": "MainVisual",
       "bgImage": "",
-      "name": "メインビジュアル",
-"image": "",
-      "html": "<h1>CMSデモサイト</h1><p>バックアップと復元機能のデモンストレーション</p>"
+      "name": "",
+      "image": "https://dvcaumqooopebexajsdw.supabase.co/storage/v1/object/public/cms-images/images/6e2a8a6e-e372-4e02-b59f-619e244a86f2.jpg",
+      "imageClass": "",
+      "textClass": "",
+      "html": "<h1>エイチワンタイトル</h1><br>\n<p>テキストテキストテキストテキストテキスト</p>",
+      "imageAspectRatio": "381/187"
     },
     {
-      "id": "section-1684123457-def456",
+      "id": "section-545",
       "layout": "imgText",
-"class": "ImgText",
+      "class": "ImgText",
       "bgImage": "",
-      "name": "画像テキスト",
-      "image": "",
-      "html": "<h2>GitHub連携によるバックアップ</h2><p>CMSの編集内容はGitHubリポジトリにバックアップされます。バックアップは日時付きのブランチとして保存され、いつでも復元できます。</p>"
+      "name": "",
+      "image": "https://dvcaumqooopebexajsdw.supabase.co/storage/v1/object/public/cms-images/images/6e2a8a6e-e372-4e02-b59f-619e244a86f2.jpg",
+      "imageClass": "aspect-[5/2]",
+      "textClass": "",
+      "html": "<h2>タイトル</h2><br>\n<p>テキストテキストテキストテキストテキスト</p>",
+      "imageAspectRatio": "381/187"
     },
     {
-      "id": "section-1684123458-ghi789",
+      "id": "section-546",
       "layout": "cards",
-"class": "Cards",
-      "name": "カード",
+      "class": "Cards",
+      "bgImage": "",
+      "name": "",
       "cards": [
         {
-          "html": "<h3>簡単バックアップ</h3><p>ワンクリックでバックアップを作成できます。</p>",
-          "image": ""
+          "image": "https://dvcaumqooopebexajsdw.supabase.co/storage/v1/object/public/cms-images/images/a3de58f3-48ad-4827-a91d-605950a60dad.png",
+          "imageClass": "",
+          "textClass": "",
+          "html": "<h3>新しいカード</h3><p>ここにカードの内容を入力してください。</p>",
+          "imageAspectRatio": "4/3"
         },
         {
-          "html": "<h3>バージョン管理</h3><p>過去のバージョンを日時で管理できます。</p>",
-          "image": ""
-        },
-        {
-          "html": "<h3>簡単復元</h3><p>必要なときにバックアップから復元できます。</p>",
-          "image": ""
+          "image": "https://dvcaumqooopebexajsdw.supabase.co/storage/v1/object/public/cms-images/images/54592ffa-148b-4444-b580-49bdaa32574d.jpg",
+          "imageClass": "",
+          "textClass": "",
+          "html": "<h3>新しいカード</h3><p>ここにカードの内容を入力してください。</p>",
+          "imageAspectRatio": "146/69"
         }
       ]
+    },
+    {
+      "id": "section-547",
+      "layout": "form",
+      "class": "Form",
+      "bgImage": "",
+      "name": "",
+      "html": "<h2>お問い合わせ</h2><p>製品に関するご質問やご要望がございましたら、下記フォームよりお気軽にお問い合わせください。</p>",
+      "endpoint": "/api/contact"
     }
-  ],
-"customCSS": ".MainVisual {\n  background-color: #f0f8ff;\n  padding: 4rem 0;\n}\n\n.ImgText {\n  padding: 3rem 0;\n  background-color: #ffffff;\n}\n\n.Cards {\n  padding: 3rem 0;\n  background-color: #f5f5f5;\n}"
+  ]
 }
