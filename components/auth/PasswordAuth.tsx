@@ -78,10 +78,10 @@ export function PasswordAuth({
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4">
       <Card className="w-full max-w-md p-8 shadow-lg">
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-600">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-600">
             <Lock className="h-8 w-8 text-white" />
           </div>
           <h1 className="mb-2 text-2xl font-bold text-gray-900">{title}</h1>

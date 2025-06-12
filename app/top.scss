@@ -8,7 +8,9 @@
 @layer base {
         :root {
                 --section-mt: 6rem;
+
         }
+
         main {
                 >*+* {
                         margin-top: var(--section-mt);
@@ -16,7 +18,11 @@
         }
 }
 
-.container {
-        padding-inline: unset;
-        
+*,::before,::after {
+        --tw-ring-color: hsla(215, 25%, 27%, 0.2);
 }
+
+        .container {
+                padding-inline: unset;
+
+        }

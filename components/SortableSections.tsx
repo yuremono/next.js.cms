@@ -70,51 +70,45 @@ const SortableItem = ({
 
 	// セクションタイプに応じたアイコンを取得
 	const getSectionIcon = (section: Section) => {
-		switch (section.layout) {
-			case "mainVisual":
-				return (
-					<ImageIcon className="w-4 text-blue-500 mr-2 flex-shrink-0" />
-				);
-			case "imgText":
-				return (
-					<Copy className=" w-4 text-green-500 mr-2 flex-shrink-0" />
-				);
-			case "cards":
-				return (
-					<LayoutGrid className="w-4 text-yellow-500 mr-2 flex-shrink-0" />
-				);
-			case "form":
-				return (
-					<Mail className=" w-4 text-purple-500 mr-2 flex-shrink-0" />
-				);
-			default:
-				return null;
-		}
-	};
+    switch (section.layout) {
+      case "mainVisual":
+        return <ImageIcon className="mr-2 w-4 flex-shrink-0 text-slate-500" />;
+      case "imgText":
+        return <Copy className=" mr-2 w-4 flex-shrink-0 text-green-500" />;
+      case "cards":
+        return (
+          <LayoutGrid className="mr-2 w-4 flex-shrink-0 text-yellow-500" />
+        );
+      case "form":
+        return <Mail className=" mr-2 w-4 flex-shrink-0 text-purple-500" />;
+      default:
+        return null;
+    }
+  };
 
-	const {
-		attributes,
-		listeners,
-		setNodeRef,
-		transform,
-		transition,
-		isDragging,
-	} = useSortable({
-		id: section.id,
-	});
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: section.id,
+  });
 
-	const style = {
-		transform: CSS.Transform.toString(transform),
-		transition,
-		opacity: isDragging ? 0.5 : 1,
-	};
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
 
-	return (
+  return (
     <Card
       ref={setNodeRef}
       style={style}
       className={`rounded-lg p-2 ${
-        isActive ? "border-blue-500 " : "hover:border-gray-300"
+        isActive ? "border-slate-500 " : "hover:border-gray-300"
       } mb-2 cursor-pointer transition-colors`}
       onClick={onSelect}
     >

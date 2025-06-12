@@ -8,9 +8,13 @@ import "../app/top.scss";
 
 interface PageRendererProps {
   page: Page;
+  showEditorButton?: boolean;
 }
 
-export function PageRenderer({ page }: PageRendererProps) {
+export function PageRenderer({
+  page,
+  showEditorButton = false,
+}: PageRendererProps) {
   const renderSection = (section: Section, index: number) => {
     const sectionClass = section.class || "";
     const bgStyle = section.bgImage
@@ -96,40 +100,35 @@ export function PageRenderer({ page }: PageRendererProps) {
             className={`Cards ${sectionClass}`}
             style={bgStyle}
           >
-            <div className="container mx-auto ">
-              <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-                {section.cards.map((card, idx) => (
-                  <div
-                    key={idx}
-                    className="overflow-hidden rounded-lg bg-white shadow-lg"
-                  >
-                    {card.image && (
-                      <div
-                        className={`relative w-full ${card.imageClass || ""}`}
-                        style={{
-                          aspectRatio: card.imageAspectRatio || "auto",
-                          minHeight: card.imageAspectRatio ? "auto" : "200px",
-                        }}
-                      >
-                        <Image
-                          src={card.image}
-                          alt={`Card ${idx + 1}`}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                    )}
-                    <div className="p-6">
-                      <div
-                        className={`content ${card.textClass || ""}`}
-                        dangerouslySetInnerHTML={{
-                          __html: card.html,
-                        }}
+            <div className="CardsContainer">
+              {section.cards.map((card, idx) => (
+                <div key={idx}>
+                  {card.image && (
+                    <div
+                      className={`relative w-full ${card.imageClass || ""}`}
+                      style={{
+                        aspectRatio: card.imageAspectRatio || "auto",
+                        minHeight: card.imageAspectRatio ? "auto" : "200px",
+                      }}
+                    >
+                      <Image
+                        src={card.image}
+                        alt={`Card ${idx + 1}`}
+                        fill
+                        className="object-cover"
                       />
                     </div>
+                  )}
+                  <div className="p-6">
+                    <div
+                      className={`content ${card.textClass || ""}`}
+                      dangerouslySetInnerHTML={{
+                        __html: card.html,
+                      }}
+                    />
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           </section>
         );
@@ -201,7 +200,7 @@ export function PageRenderer({ page }: PageRendererProps) {
                 </div>
                 <button
                   type="submit"
-                  className="rounded bg-blue-900 px-4 py-2 font-medium text-white"
+                  className="rounded bg-slate-700 px-4 py-2 font-medium text-white"
                 >
                   送信
                 </button>
@@ -222,10 +221,23 @@ export function PageRenderer({ page }: PageRendererProps) {
 
   return (
     <>
-      <header
-        className="header"
-        dangerouslySetInnerHTML={{ __html: page.header.html }}
-      />
+      {/* カスタムCSS */}
+      {page.customCSS && (
+        <style dangerouslySetInnerHTML={{ __html: page.customCSS }} />
+      )}
+      <header className="header relative">
+        <div dangerouslySetInnerHTML={{ __html: page.header.html }} />
+        {showEditorButton && (
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 transform">
+            <a
+              href="/editor"
+              className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow"
+            >
+              エディタを開く
+            </a>
+          </div>
+        )}
+      </header>
       <main className="min-h-screen">
         {page.sections.map((section, index) => renderSection(section, index))}
       </main>

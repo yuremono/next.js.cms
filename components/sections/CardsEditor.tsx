@@ -71,7 +71,7 @@ const SortableCardItem = ({
       ref={setNodeRef}
       style={style}
       className={`rounded-lg p-2 ${
-        isActive ? "border-blue-500 " : "hover:border-gray-300"
+        isActive ? "border-slate-500 " : "hover:border-gray-300"
       } mb-2 cursor-pointer transition-colors`}
       onClick={onSelect}
     >

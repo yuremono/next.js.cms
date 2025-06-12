@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Page } from "@/types";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
-import { CustomCSSLoader } from "@/components/CustomCSSLoader";
+
 import "./top.scss";
 
 // デフォルトページデータ（APIから取得できない場合のフォールバック）
@@ -259,32 +259,11 @@ export default async function Home() {
     );
   }
 
-  // ヘッダーにエディタを開くボタンを追加
-  const modifiedHeader = {
-    html: pageData.header.html
-      .replace(
-        '<div class="container mx-auto px-4 py-4 flex justify-between items-center">',
-        `<div class="container mx-auto px-4 py-4 flex justify-between items-center">
-				<div class="flex items-center gap-4">`
-      )
-      .replace(
-        "</nav>",
-        `</nav>
-			<div class="flex items-center">
-				<a href="/editor" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground shadow h-10 px-4 py-2 ml-4">エディタを開く</a>
-			</div>`
-      ),
-  };
-
-  const modifiedPageData = {
-    ...pageData,
-    header: modifiedHeader,
-  };
+  // エディタボタンはPageRendererコンポーネント側で制御
 
   return (
     <>
-      <CustomCSSLoader />
-      <PageRenderer page={modifiedPageData} />
+      <PageRenderer page={pageData} showEditorButton={true} />
     </>
   );
 }

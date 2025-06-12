@@ -13,28 +13,26 @@ export function TextGenerator({
 	onSelect,
 }: TextGeneratorProps) {
 	return (
-		<div className="space-y-6">
-			<div className="space-y-2">
-				<Label htmlFor="prompt">AIテキスト生成プロンプト</Label>
-				<p id="prompt">{prompt}</p>
-			</div>
-			{generatedText && (
-				<Card className="p-4">
-					<div className="space-y-4">
-						<div className="max-h-96 overflow-y-auto">
-							<p className="whitespace-pre-wrap">
-								{generatedText}
-							</p>
-						</div>
-						<button
-							onClick={() => onSelect(generatedText)}
-							className="px-4 py-2 bg-blue-900 text-white rounded font-medium"
-						>
-							このテキストを使用
-						</button>
-					</div>
-				</Card>
-			)}
-		</div>
-	);
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <Label htmlFor="prompt">AIテキスト生成プロンプト</Label>
+        <p id="prompt">{prompt}</p>
+      </div>
+      {generatedText && (
+        <Card className="p-4">
+          <div className="space-y-4">
+            <div className="max-h-96 overflow-y-auto">
+              <p className="whitespace-pre-wrap">{generatedText}</p>
+            </div>
+            <button
+              onClick={() => onSelect(generatedText)}
+              className="rounded bg-slate-700 px-4 py-2 font-medium text-white"
+            >
+              このテキストを使用
+            </button>
+          </div>
+        </Card>
+      )}
+    </div>
+  );
 }
