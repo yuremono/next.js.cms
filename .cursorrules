@@ -1,0 +1,116 @@
+# Cursor AI 開発ルール
+
+## プロジェクト概要
+Next.js 14 + TypeScript + Tailwind CSS で構築されたCMSシステム。
+スプリットスクリーンエディタ、認証機能、データベースバックアップを搭載。
+
+## 開発方針
+
+### TypeScript
+- 厳格な型定義を維持
+- `types/index.ts` で型を集約管理
+- Props interface は必須
+- `any` 型の使用は避ける
+
+### CSS設計
+- Tailwind CSS + CSS Variables のハイブリッド
+- `globals.css` でCMS固有のスタイル定義
+- CSS変数 `--cms-*` でレイアウト制御
+- メディアクエリは最小限に抑制
+
+### コンポーネント設計
+- 単一責任の原則
+- 再利用可能な設計
+- shadcn/ui コンポーネントを優先使用
+- Props の型安全性を重視
+
+### ファイル命名規則
+- コンポーネント: PascalCase (`PageRenderer.tsx`)
+- ユーティリティ: camelCase (`image-utils.ts`)
+- API Routes: kebab-case (`/api/auth/login`)
+
+## 重要なファイル
+
+### 核となるコンポーネント
+- `components/PageRenderer.tsx`: ページレンダリングの中核
+- `app/editor/page.tsx`: エディタのメイン画面
+- `app/globals.css`: CSS変数とCMSスタイル
+
+### 型定義
+- `types/index.ts`: 全ての型定義
+- セクション型: `TextSection`, `ImgTextSection`, `CardsSection`, `FormSection`
+
+### API設計
+- `app/api/page/route.ts`: ページデータのCRUD
+- `app/api/auth/`: 認証関連API
+- `app/api/backup/`: バックアップ機能
+
+## CSS変数システム
+
+### カラーシステム
+```css
+--primary: hsl(215, 25%, 27%);     /* Blue-gray メイン */
+--ring: hsl(215, 25%, 35%);        /* フォーカスリング */
+```
+
+### レイアウト制御
+```css
+--cms-base: 1400px;    /* コンテナ幅 */
+--cms-col: 3;          /* カラム数 */
+--cms-gap: 6vmin;      /* レスポンシブgap */
+```
+
+## 開発時の注意点
+
+### 1. 画像処理
+- Base64形式で保存
+- aspect-ratio でCLS防止
+- Next.js Image コンポーネント使用
+
+### 2. 認証
+- セッションベース認証
+- `lib/auth.ts` で管理
+- 自動ログアウト機能
+
+### 3. データベース
+- SQLite (better-sqlite3)
+- `lib/database.ts` で操作
+- 自動バックアップ機能
+
+### 4. スプリットスクリーンエディタ
+- iframe分離でCSS競合回避
+- PostMessage通信
+- リサイザブルパネル
+
+## コード品質
+
+### ESLint/Prettier
+- 自動フォーマット有効
+- TypeScript strict モード
+- unused variables の警告
+
+### パフォーマンス
+- Next.js Image 最適化
+- CSS-in-JS は避けてCSS Variables使用
+- 不要な re-render を防止
+
+## 禁止事項
+- `any` 型の使用
+- inline styles の多用
+- 直接的な DOM 操作
+- 未定義の CSS クラス使用
+
+## 推奨事項
+- CSS Variables での動的スタイリング
+- TypeScript の型推論活用
+- shadcn/ui コンポーネント優先
+- 関数型コンポーネント使用
+
+## デバッグ
+- React DevTools 使用
+- console.log は本番前に削除
+- エラーハンドリングの徹底
+
+---
+
+このルールに従って、型安全で保守性の高いコードを心がけてください。 
