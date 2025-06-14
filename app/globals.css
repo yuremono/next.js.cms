@@ -347,7 +347,9 @@
 
 /* WorkspaceLayoutのコンテナクエリ - デスクトップレイアウト（834px以上） */
 @container workspace (width >= 834px) {
-
+        button.SectionSelect{
+                display: none;
+        }
   
   .TabsPanel {
     flex-direction: column;

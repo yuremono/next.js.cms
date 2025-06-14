@@ -651,6 +651,12 @@ export default function EditorPage() {
     setIsSaving(true);
     const startTime = Date.now();
 
+    // プログレス付きトーストを表示
+    const toastId = toast.loading("保存中...", {
+      description: "データベースに保存しています",
+      duration: Infinity, // 手動で閉じるまで表示
+    });
+
     try {
       const response = await fetch("/api/page", {
         method: "POST",
@@ -667,17 +673,22 @@ export default function EditorPage() {
       const result = await response.json();
       const clientDuration = Date.now() - startTime;
 
-      // パフォーマンス情報を含むトースト
-      if (result.performance) {
-        toast.success(
-          `ページが保存されました (${clientDuration}ms) - サーバー処理: ${result.performance.duration}`
-        );
-      } else {
-        toast.success("ページが保存されました");
-      }
+      // 成功トーストに更新
+      toast.success("保存完了！", {
+        id: toastId,
+        description: result.performance
+          ? `処理時間: ${clientDuration}ms (サーバー: ${result.performance.duration}) | 操作: 削除${result.performance.operations?.deleted || 0}件, 更新${result.performance.operations?.updated || 0}件, 追加${result.performance.operations?.inserted || 0}件`
+          : `処理時間: ${clientDuration}ms`,
+        duration: 4000,
+      });
     } catch (error) {
       console.error("保存エラー:", error);
-      toast.error("保存に失敗しました");
+      toast.error("保存に失敗しました", {
+        id: toastId,
+        description:
+          error instanceof Error ? error.message : "不明なエラーが発生しました",
+        duration: 5000,
+      });
     } finally {
       setIsSaving(false);
     }
@@ -952,7 +963,7 @@ export default function EditorPage() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="lg:hidden"
+                  className="SectionSelect"
                   onClick={() => setSectionListOpen((v) => !v)}
                 >
                   選択
