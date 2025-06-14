@@ -294,6 +294,9 @@ export async function POST(req: NextRequest) {
   if (!checkAuth()) {
     return NextResponse.json({ error: "認証が必要です" }, { status: 401 });
   }
+  
+  const startTime = Date.now(); // パフォーマンス測定開始
+
   try {
     const pageData = await req.json();
 
@@ -321,8 +324,8 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // トランザクション開始
-    const { data: page, error: pageError } = await supabase
+    // 1. ページ本体の保存（並列処理の準備）
+    const pagePromise = supabase
       .from("pages")
       .upsert({
         id: 1,
@@ -333,74 +336,86 @@ export async function POST(req: NextRequest) {
       .select()
       .single();
 
+    // 2. 既存セクション取得（並列実行）
+    const existingSectionsPromise = supabase
+      .from("sections")
+      .select("id, type")
+      .eq("page_id", 1);
+
+    // 並列実行
+    const [{ data: page, error: pageError }, { data: existingSections }] =
+      await Promise.all([pagePromise, existingSectionsPromise]);
+
     if (pageError) {
       return NextResponse.json({ error: "ページ保存失敗" }, { status: 500 });
     }
 
-    // 既存のセクションを取得
-    const { data: existingSections } = await supabase
-      .from("sections")
-      .select("id, type")
-      .eq("page_id", page.id);
-
-    // 既存のセクションを削除
+    // 3. 既存セクションの一括削除（並列化）
     if (existingSections && existingSections.length > 0) {
-      // 各セクションタイプごとに削除
-      for (const section of existingSections) {
-        if (section.type === "mainVisual") {
-          await supabase
-            .from("main_visual_sections")
-            .delete()
-            .eq("section_id", section.id);
-        } else if (section.type === "imgText") {
-          await supabase
-            .from("img_text_sections")
-            .delete()
-            .eq("section_id", section.id);
-        } else if (section.type === "cards") {
-          // カードを先に削除
-          await supabase
-            .from("cards")
-            .delete()
-            .eq("cards_section_id", section.id);
-          await supabase
-            .from("cards_sections")
-            .delete()
-            .eq("section_id", section.id);
-        } else if (section.type === "form") {
-          await supabase
-            .from("form_sections")
-            .delete()
-            .eq("section_id", section.id);
-        } else if (section.type === "group-start") {
-          await supabase
-            .from("group_start_sections")
-            .delete()
-            .eq("section_id", section.id);
-        } else if (section.type === "group-end") {
-          await supabase
-            .from("group_end_sections")
-            .delete()
-            .eq("section_id", section.id);
+      const deletePromises = [];
+
+      // セクションタイプごとにグループ化
+      const sectionsByType = existingSections.reduce(
+        (acc, section) => {
+          if (!acc[section.type]) acc[section.type] = [];
+          acc[section.type].push(section.id);
+          return acc;
+        },
+        {} as Record<string, number[]>
+      );
+
+      // 各タイプごとに一括削除
+      for (const [type, ids] of Object.entries(sectionsByType)) {
+        if (type === "mainVisual") {
+          deletePromises.push(
+            supabase.from("main_visual_sections").delete().in("section_id", ids)
+          );
+        } else if (type === "imgText") {
+          deletePromises.push(
+            supabase.from("img_text_sections").delete().in("section_id", ids)
+          );
+        } else if (type === "cards") {
+          deletePromises.push(
+            supabase.from("cards").delete().in("cards_section_id", ids),
+            supabase.from("cards_sections").delete().in("section_id", ids)
+          );
+        } else if (type === "form") {
+          deletePromises.push(
+            supabase.from("form_sections").delete().in("section_id", ids)
+          );
+        } else if (type === "group-start") {
+          deletePromises.push(
+            supabase.from("group_start_sections").delete().in("section_id", ids)
+          );
+        } else if (type === "group-end") {
+          deletePromises.push(
+            supabase.from("group_end_sections").delete().in("section_id", ids)
+          );
         }
       }
 
-      // セクション本体を削除
-      await supabase.from("sections").delete().eq("page_id", page.id);
+      // セクション本体の削除も追加
+      deletePromises.push(
+        supabase.from("sections").delete().eq("page_id", page.id)
+      );
+
+      // 全削除を並列実行
+      await Promise.all(deletePromises);
     }
 
-    // 新しいセクションを保存
-    for (const [i, section] of pageData.sections.entries()) {
-      // sections共通
-      const { data: sec, error: secError } = await supabase
+    // 4. 新しいセクションの一括挿入
+    if (pageData.sections.length > 0) {
+      // セクション本体を一括挿入
+      const sectionsToInsert = pageData.sections.map((section, i) => ({
+        page_id: page.id,
+        type: section.layout,
+        position: i,
+      }));
+
+      const { data: insertedSections, error: secError } = await supabase
         .from("sections")
-        .insert({
-          page_id: page.id,
-          type: section.layout,
-          position: i,
-        })
-        .select()
-        .single();
+        .insert(sectionsToInsert)
+        .select();
 
       if (secError) {
         return NextResponse.json(
@@ -409,82 +424,113 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      // typeごとに固有テーブルも保存
-      if (section.layout === "mainVisual") {
-        await supabase.from("main_visual_sections").insert({
-          section_id: sec.id,
-          class: section.class,
-          bg_image: section.bgImage,
-          name: section.name,
-          image: section.image ?? null,
-          image_class: section.imageClass ?? null,
-          text_class: section.textClass ?? null,
-          html: section.html,
-          image_aspect_ratio: section.imageAspectRatio ?? "auto",
-        });
-      }
-      if (section.layout === "imgText") {
-        await supabase.from("img_text_sections").insert({
-          section_id: sec.id,
-          class: section.class,
-          bg_image: section.bgImage,
-          name: section.name,
-          image: section.image ?? null,
-          image_class: section.imageClass ?? null,
-          text_class: section.textClass ?? null,
-          html: section.html,
-          image_aspect_ratio: section.imageAspectRatio ?? "auto",
-        });
-      }
-      if (section.layout === "cards") {
-        await supabase.from("cards_sections").insert({
-          section_id: sec.id,
-          class: section.class,
-          bg_image: section.bgImage,
-          name: section.name,
-        });
-        // cards本体
-        for (const [j, card] of (section.cards ?? []).entries()) {
-          await supabase.from("cards").insert({
-            cards_section_id: sec.id,
-            image: card.image ?? null,
-            image_class: card.imageClass ?? null,
-            text_class: card.textClass ?? null,
-            html: card.html,
-            position: j,
-            image_aspect_ratio: card.imageAspectRatio ?? "auto",
+      // 5. セクション詳細の並列挿入
+      const detailPromises = [];
+
+      for (const [i, section] of pageData.sections.entries()) {
+        const sectionId = insertedSections[i].id;
+
+        if (section.layout === "mainVisual") {
+          detailPromises.push(
+            supabase.from("main_visual_sections").insert({
+              section_id: sectionId,
+              class: section.class,
+              bg_image: section.bgImage,
+              name: section.name,
+              image: section.image ?? null,
+              image_class: section.imageClass ?? null,
+              text_class: section.textClass ?? null,
+              html: section.html,
+              image_aspect_ratio: section.imageAspectRatio ?? "auto",
+            })
+          );
+        } else if (section.layout === "imgText") {
+          detailPromises.push(
+            supabase.from("img_text_sections").insert({
+              section_id: sectionId,
+              class: section.class,
+              bg_image: section.bgImage,
+              name: section.name,
+              image: section.image ?? null,
+              image_class: section.imageClass ?? null,
+              text_class: section.textClass ?? null,
+              html: section.html,
+              image_aspect_ratio: section.imageAspectRatio ?? "auto",
+            })
+          );
+        } else if (section.layout === "cards") {
+          // カードセクション
+          const cardSectionPromise = supabase.from("cards_sections").insert({
+            section_id: sectionId,
+            class: section.class,
+            bg_image: section.bgImage,
+            name: section.name,
           });
+
+          detailPromises.push(cardSectionPromise);
+
+          // カード本体（セクション挿入後に実行）
+          if (section.cards && section.cards.length > 0) {
+            const cardsToInsert = section.cards.map((card, j) => ({
+              cards_section_id: sectionId,
+              image: card.image ?? null,
+              image_class: card.imageClass ?? null,
+              text_class: card.textClass ?? null,
+              html: card.html,
+              position: j,
+              image_aspect_ratio: card.imageAspectRatio ?? "auto",
+            }));
+
+            detailPromises.push(supabase.from("cards").insert(cardsToInsert));
+          }
+        } else if (section.layout === "form") {
+          detailPromises.push(
+            supabase.from("form_sections").insert({
+              section_id: sectionId,
+              class: section.class,
+              bg_image: section.bgImage,
+              name: section.name,
+              html: section.html,
+              endpoint: section.endpoint,
+            })
+          );
+        } else if (section.layout === "group-start") {
+          detailPromises.push(
+            supabase.from("group_start_sections").insert({
+              section_id: sectionId,
+              class: section.class,
+              bg_image: section.bgImage,
+              name: section.name,
+              scope_styles: section.scopeStyles,
+            })
+          );
+        } else if (section.layout === "group-end") {
+          detailPromises.push(
+            supabase.from("group_end_sections").insert({
+              section_id: sectionId,
+              class: section.class,
+              bg_image: section.bgImage,
+            })
+          );
         }
       }
-      if (section.layout === "form") {
-        await supabase.from("form_sections").insert({
-          section_id: sec.id,
-          class: section.class,
-          bg_image: section.bgImage,
-          name: section.name,
-          html: section.html,
-          endpoint: section.endpoint,
-        });
-      }
-      if (section.layout === "group-start") {
-        await supabase.from("group_start_sections").insert({
-          section_id: sec.id,
-          class: section.class,
-          bg_image: section.bgImage,
-          name: section.name,
-          scope_styles: section.scopeStyles,
-        });
-      }
-      if (section.layout === "group-end") {
-        await supabase.from("group_end_sections").insert({
-          section_id: sec.id,
-          class: section.class,
-          bg_image: section.bgImage,
-        });
-      }
+
+      // 全詳細挿入を並列実行
+      await Promise.all(detailPromises);
     }
 
-    return NextResponse.json({ success: true });
+    const endTime = Date.now();
+    const duration = endTime - startTime;
+
+    console.log(`保存処理完了: ${duration}ms`);
+
+    return NextResponse.json({
+      success: true,
+      performance: {
+        duration: `${duration}ms`,
+        sections: pageData.sections.length,
+      },
+    });
   } catch (error) {
     console.error("保存エラー:", error);
     return NextResponse.json(

@@ -649,6 +649,7 @@ export default function EditorPage() {
   // ページデータの保存
   const savePage = async () => {
     setIsSaving(true);
+    const startTime = Date.now();
 
     try {
       const response = await fetch("/api/page", {
@@ -663,7 +664,17 @@ export default function EditorPage() {
         throw new Error("保存に失敗しました");
       }
 
-      toast.success("ページが保存されました");
+      const result = await response.json();
+      const clientDuration = Date.now() - startTime;
+
+      // パフォーマンス情報を含むトースト
+      if (result.performance) {
+        toast.success(
+          `ページが保存されました (${clientDuration}ms) - サーバー処理: ${result.performance.duration}`
+        );
+      } else {
+        toast.success("ページが保存されました");
+      }
     } catch (error) {
       console.error("保存エラー:", error);
       toast.error("保存に失敗しました");
