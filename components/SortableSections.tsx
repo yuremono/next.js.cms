@@ -64,7 +64,7 @@ const getGroupColor = (
 
   return {
     border: `hsl(${hue}, ${saturation}%, ${lightness}%)`, // ボーダー色
-    bgWithAlpha: `hsla(${hue}, ${saturation}%, ${lightness}%, 0.2)`, // ボーダー色の20%透明度
+    bgWithAlpha: `hsla(${hue}, ${saturation}%, ${lightness}%, 0.3)`, // ボーダー色の30%透明度
     text: `hsl(${hue}, ${saturation}%, ${lightness - 20}%)`, // テキストは少し濃く
   };
 };
