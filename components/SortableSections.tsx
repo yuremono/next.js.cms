@@ -1,6 +1,6 @@
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Section } from "@/types";
+import { toast } from "sonner";
 import {
   Trash2,
   ImageIcon,
@@ -32,33 +32,6 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import React, { useState } from "react";
 
-// ダミーセクション用のコンポーネント
-const DummyDropTarget = ({
-  dummySection,
-  isDragging,
-}: {
-  dummySection: Section;
-  isDragging: boolean;
-}) => {
-  const { setNodeRef } = useSortable({ id: dummySection.id });
-
-  return (
-    <li
-      key={dummySection.id}
-      style={{
-        height: isDragging ? "2.5rem" : "1px",
-        opacity: 0,
-        pointerEvents: isDragging ? "auto" : "none",
-        marginTop: isDragging ? "-3rem" : "0", // ドラッグ時のみ上のアイテムを覆い隠す
-        zIndex: isDragging ? 10 : 0,
-        position: "relative",
-      }}
-    >
-      <div ref={setNodeRef} style={{ height: "100%", width: "100%" }} />
-    </li>
-  );
-};
-
 interface SortableSectionsProps {
   sections: Section[];
   activeSectionIndex: number | null;
@@ -69,6 +42,32 @@ interface SortableSectionsProps {
   onGroupToggle?: (groupId: string) => void;
   expandedGroups?: Set<string>;
 }
+
+// グループIDから一意の色を生成する関数
+const getGroupColor = (
+  groupId: string
+): { border: string; bgWithAlpha: string; text: string } => {
+  // グループIDのハッシュ値を計算
+  let hash = 0;
+  for (let i = 0; i < groupId.length; i++) {
+    const char = groupId.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash = hash & hash; // 32bit整数に変換
+  }
+
+  // ハッシュ値から色相を決定（0-360度）
+  const hue = Math.abs(hash) % 360;
+
+  // 彩度と明度を固定して、統一感のある色を生成
+  const saturation = 45; // 控えめな彩度
+  const lightness = 65; // ボーダー用の明度
+
+  return {
+    border: `hsl(${hue}, ${saturation}%, ${lightness}%)`, // ボーダー色
+    bgWithAlpha: `hsla(${hue}, ${saturation}%, ${lightness}%, 0.2)`, // ボーダー色の20%透明度
+    text: `hsl(${hue}, ${saturation}%, ${lightness - 20}%)`, // テキストは少し濃く
+  };
+};
 
 // 終了タグ専用のコンポーネント
 const GroupEndBar = ({
@@ -84,23 +83,29 @@ const GroupEndBar = ({
 }) => {
   const { setNodeRef, transform, transition, isDragging } = useSortable({
     id: section.id,
-    disabled: true, // ドラッグを無効化
+    disabled: false, // ドロップターゲットとして有効化
   });
+
+  // グループIDから色を生成
+  const groupColors = getGroupColor(section.id);
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
+    pointerEvents: "none" as const, // クリックを無効化
   };
 
   return (
     <div
       ref={setNodeRef}
-      style={{ ...style, pointerEvents: "none" }}
-      className={`mb-2 h-1 cursor-pointer rounded-full bg-blue-400 transition-colors ${
-        isActive ? "bg-blue-600" : "hover:bg-blue-500"
+      style={{
+        ...style,
+        backgroundColor: groupColors.border,
+      }}
+      className={`mb-2 h-1 rounded-full transition-colors ${
+        isActive ? "opacity-100" : "opacity-70"
       }`}
-      onClick={onSelect}
     />
   );
 };
@@ -117,6 +122,7 @@ const SortableItem = ({
   isCollapsed = false,
   onToggleCollapse,
   isEmptyGroup = false,
+  groupColors,
 }: {
   section: Section;
   index: number;
@@ -128,6 +134,11 @@ const SortableItem = ({
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
   isEmptyGroup?: boolean;
+  groupColors?: {
+    border: string;
+    bgWithAlpha: string;
+    text: string;
+  };
 }) => {
   // セクションタイプに応じて表示名を取得
   const getSectionTitle = (section: Section) => {
@@ -210,12 +221,24 @@ const SortableItem = ({
   };
 
   return (
-    <Card
+    <div
       ref={setNodeRef}
-      style={style}
-      className={`rounded-lg p-2 ${
-        isActive ? "border-slate-500 " : "hover:border-gray-300"
-      } ${isChild ? "ml-8 border-l-2 border-l-blue-300" : ""} mb-2 cursor-pointer transition-colors`}
+      style={{
+        ...style,
+        ...(isGroupStart && groupColors
+          ? {
+              backgroundColor: groupColors.bgWithAlpha,
+            }
+          : {}),
+        ...(isChild && groupColors
+          ? {
+              borderLeftColor: groupColors.border,
+            }
+          : {}),
+      }}
+      className={`rounded-lg border bg-card p-2 text-card-foreground shadow-sm ${
+        isActive ? "border-slate-500" : "hover:border-gray-300"
+      } ${isChild ? "ml-4 border-l-2" : ""} mb-2 cursor-pointer transition-colors`}
       onClick={onSelect}
     >
       <div className="flex items-center justify-between">
@@ -257,7 +280,7 @@ const SortableItem = ({
           )}
         </div>
       </div>
-    </Card>
+    </div>
   );
 };
 
@@ -276,16 +299,7 @@ export default function SortableSections({
     new Set()
   );
 
-  // ダミーセクションを追加（ドラッグ&ドロップの最後の位置確保用）
-  const dummySection: Section = {
-    id: "__dummy_end__",
-    layout: "mainVisual",
-    class: "",
-    html: "",
-  };
-
-  // ダミーセクションを含む配列を作成
-  const sectionsWithDummy = [...sections, dummySection];
+  // ダミーセクションは使用しない（シンプルなアプローチに変更）
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -312,31 +326,49 @@ export default function SortableSections({
     }
 
     const oldIndex = sections.findIndex((section) => section.id === active.id);
-    let newIndex = sectionsWithDummy.findIndex(
-      (section) => section.id === over.id
-    );
-
-    // ダミーセクションにドロップした場合は最後の位置に移動
-    if (over.id === "__dummy_end__") {
-      newIndex = sections.length;
-    } else {
-      // sectionsWithDummyのインデックスをsectionsのインデックスに変換
-      // ダミーセクションは最後にあるので、newIndexがsections.lengthより小さい場合はそのまま
-      if (newIndex >= sections.length) {
-        newIndex = sections.length;
-      }
-    }
+    let newIndex = sections.findIndex((section) => section.id === over.id);
 
     if (oldIndex !== -1 && newIndex !== -1) {
       const draggedSection = sections[oldIndex];
 
-      // グループ開始タグの場合は、グループ全体を移動
+      // 上から下への移動時の調整：ドロップ先が自分より下の場合、+1する
+      if (oldIndex < newIndex) {
+        newIndex = Math.min(newIndex + 1, sections.length);
+      }
+
+      // グループ内グループを制限：グループをグループ内にドロップすることを禁止
       if (draggedSection.layout === "group-start") {
+        // ドロップ先がグループ内かチェック
+        if (isInsideGroup(newIndex)) {
+          toast.error("グループをグループ内に移動することはできません");
+          return;
+        }
         handleGroupMove(oldIndex, newIndex);
       } else {
+        // 通常のセクションの場合
         onSectionMove(oldIndex, newIndex);
       }
     }
+  };
+
+  // 指定されたインデックスがグループ内かどうかをチェック
+  const isInsideGroup = (index: number): boolean => {
+    for (let i = index - 1; i >= 0; i--) {
+      if (sections[i].layout === "group-start") {
+        // グループ開始が見つかった場合、対応する終了があるかチェック
+        for (let j = i + 1; j < sections.length; j++) {
+          if (sections[j].layout === "group-end") {
+            // 終了が見つかり、indexがその範囲内にある場合はグループ内
+            return index > i && index < j;
+          }
+        }
+        return true; // 終了が見つからない場合もグループ内とみなす
+      } else if (sections[i].layout === "group-end") {
+        // 終了タグが先に見つかった場合はグループ外
+        return false;
+      }
+    }
+    return false;
   };
 
   // グループ全体を移動する関数
@@ -415,7 +447,6 @@ export default function SortableSections({
 
       if (section.layout === "group-start") {
         // グループ開始を見つけたら、対応する終了まで探す
-        const groupStartSection = section;
         const groupSections = [];
         let groupEndIndex = -1;
 
@@ -446,6 +477,7 @@ export default function SortableSections({
               isCollapsed={isCollapsed}
               onToggleCollapse={() => toggleGroupCollapse(section.id)}
               isEmptyGroup={groupSections.length === 0}
+              groupColors={getGroupColor(section.id)}
             />
           </li>
         );
@@ -455,6 +487,9 @@ export default function SortableSections({
           groupSections.forEach(
             ({ section: groupSection, index: groupIndex }) => {
               const isGroupSectionActive = activeSectionIndex === groupIndex;
+              // グループの色を取得
+              const groupColors = getGroupColor(section.id);
+
               result.push(
                 <li key={groupSection.id}>
                   <SortableItem
@@ -468,6 +503,7 @@ export default function SortableSections({
                     isCollapsed={false}
                     onToggleCollapse={() => {}}
                     isEmptyGroup={false}
+                    groupColors={groupColors}
                   />
                 </li>
               );
@@ -508,6 +544,7 @@ export default function SortableSections({
               isCollapsed={false}
               onToggleCollapse={() => {}}
               isEmptyGroup={false}
+              groupColors={getGroupColor(section.id)}
             />
           </li>
         );
@@ -527,6 +564,7 @@ export default function SortableSections({
               isCollapsed={false}
               onToggleCollapse={() => {}}
               isEmptyGroup={false}
+              groupColors={getGroupColor(section.id)}
             />
           </li>
         );
@@ -550,17 +588,11 @@ export default function SortableSections({
       onDragEnd={handleDragEnd}
     >
       <SortableContext
-        items={sectionsWithDummy.map((section) => section.id)}
+        items={sections.map((section) => section.id)}
         strategy={verticalListSortingStrategy}
       >
         <ul role="list" aria-label="セクション一覧">
           {renderItems()}
-
-          {/* ダミーセクション（拡大されたドロップターゲット） */}
-          <DummyDropTarget
-            dummySection={dummySection}
-            isDragging={!!activeId}
-          />
 
           {sections.length === 0 && (
             <li>
@@ -589,6 +621,7 @@ export default function SortableSections({
               isCollapsed={false}
               onToggleCollapse={() => {}}
               isEmptyGroup={false}
+              groupColors={getGroupColor(draggedSection.id)}
             />
           </div>
         ) : null}
