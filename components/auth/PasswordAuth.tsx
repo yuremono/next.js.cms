@@ -107,7 +107,7 @@ export function PasswordAuth({
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-500 hover:text-gray-700"
+                className="absolute right-3 top-1/2 -translate-y-1/2 transform text-muted-foreground hover:text-foreground"
                 disabled={isLoading}
               >
                 {showPassword ? (
@@ -136,7 +136,7 @@ export function PasswordAuth({
         </form>
 
         <div className="mt-8 text-center">
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-muted-foreground">
             このシステムは企業様向けのポートフォリオCMSです。
             <br />
             パスワードをお持ちでない場合は、担当者にお問い合わせください。

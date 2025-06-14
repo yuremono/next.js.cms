@@ -90,7 +90,7 @@ export function MainVisualEditor({ section, onUpdate }: MainVisualEditorProps) {
     <div className="MainVisualEditor h-full space-y-6">
       <Card className="flex  h-full flex-col rounded-sm p-4">
         <h3 className="mb-4 text-lg font-medium">メインビジュアル設定</h3>
-        <div className="space-y-2">
+        <div className="space-y-4">
           <div className="flex items-center gap-4">
             <Label className="" htmlFor="MainVisual-name">
               セクション名

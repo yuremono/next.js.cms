@@ -240,6 +240,32 @@ export async function GET() {
           html: fs?.html ?? "",
           endpoint: fs?.endpoint ?? "",
         });
+      } else if (section.type === "group-start") {
+        const { data: gs } = await supabase
+          .from("group_start_sections")
+          .select("*")
+          .eq("section_id", section.id)
+          .single();
+        sectionResults.push({
+          id: `section-${section.id}`,
+          layout: "group-start",
+          class: gs?.class ?? "",
+          bgImage: gs?.bg_image ?? "",
+          name: gs?.name ?? "グループ",
+          scopeStyles: gs?.scope_styles ?? "",
+        });
+      } else if (section.type === "group-end") {
+        const { data: ge } = await supabase
+          .from("group_end_sections")
+          .select("*")
+          .eq("section_id", section.id)
+          .single();
+        sectionResults.push({
+          id: `section-${section.id}`,
+          layout: "group-end",
+          class: ge?.class ?? "",
+          bgImage: ge?.bg_image ?? "",
+        });
       }
     }
 
@@ -346,6 +372,16 @@ export async function POST(req: NextRequest) {
             .from("form_sections")
             .delete()
             .eq("section_id", section.id);
+        } else if (section.type === "group-start") {
+          await supabase
+            .from("group_start_sections")
+            .delete()
+            .eq("section_id", section.id);
+        } else if (section.type === "group-end") {
+          await supabase
+            .from("group_end_sections")
+            .delete()
+            .eq("section_id", section.id);
         }
       }
 
@@ -428,6 +464,22 @@ export async function POST(req: NextRequest) {
           name: section.name,
           html: section.html,
           endpoint: section.endpoint,
+        });
+      }
+      if (section.layout === "group-start") {
+        await supabase.from("group_start_sections").insert({
+          section_id: sec.id,
+          class: section.class,
+          bg_image: section.bgImage,
+          name: section.name,
+          scope_styles: section.scopeStyles,
+        });
+      }
+      if (section.layout === "group-end") {
+        await supabase.from("group_end_sections").insert({
+          section_id: sec.id,
+          class: section.class,
+          bg_image: section.bgImage,
         });
       }
     }

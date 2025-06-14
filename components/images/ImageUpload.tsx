@@ -131,7 +131,7 @@ export function ImageUpload({
           variant="outline"
           type="button"
           onClick={() => setIsGalleryOpen(true)}
-          className="flex items-center gap-4 mt-1"
+          className="mt-1 flex items-center gap-4"
         >
           <ImageIcon className="h-4 w-4" />
           アップロード済み画像から選択
@@ -157,6 +157,7 @@ export function ImageUpload({
             size="icon"
             className="absolute right-2 top-2"
             onClick={removeImage}
+            aria-label="画像を削除"
           >
             <X className="h-4 w-4" />
           </Button>

@@ -50,7 +50,9 @@ export default function PreviewPage() {
         <style dangerouslySetInnerHTML={{ __html: page.customCSS }} />
       )}
 
+      <main>
       <PageRenderer page={page} />
+      </main>
     </>
   );
 }

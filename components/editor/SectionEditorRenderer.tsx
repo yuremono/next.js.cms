@@ -3,6 +3,7 @@ import { MainVisualEditor } from "@/components/sections/MainVisualEditor";
 import { ImgTextEditor } from "@/components/sections/ImgTextEditor";
 import { CardsEditor } from "@/components/sections/CardsEditor";
 import { FormEditor } from "@/components/sections/FormEditor";
+import { GroupEditor } from "@/components/sections/GroupEditor";
 import { Alert } from "@/components/ui/alert";
 
 interface SectionEditorRendererProps {
@@ -49,6 +50,23 @@ export function SectionEditorRenderer({
       return (
         <div className="SectionEditorRenderer">
           <FormEditor section={section} onUpdate={onUpdate} />
+        </div>
+      );
+    case "group-start":
+      return (
+        <div className="SectionEditorRenderer">
+          <GroupEditor section={section} onUpdate={onUpdate} />
+        </div>
+      );
+    case "group-end":
+      return (
+        <div className="SectionEditorRenderer">
+          <Alert>
+            <p>グループ終了タグ - 設定項目はありません</p>
+            <p className="text-sm text-muted-foreground mt-2">
+              このタグはグループの終了を示します。対応する開始タグで設定を行ってください。
+            </p>
+          </Alert>
         </div>
       );
     default:

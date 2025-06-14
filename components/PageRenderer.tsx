@@ -15,7 +15,82 @@ export function PageRenderer({
   page,
   showEditorButton = false,
 }: PageRendererProps) {
-  const renderSection = (section: Section, index: number) => {
+  // グループ構造を解析してレンダリング
+  const renderSectionsWithGroups = () => {
+    const result = [];
+    let i = 0;
+    
+    while (i < page.sections.length) {
+      const section = page.sections[i];
+      
+      if (section.layout === "group-start") {
+        // グループ開始を見つけたら、対応する終了まで探す
+        const groupStartSection = section as any;
+        const groupSections = [];
+        let groupEndIndex = -1;
+        
+        // 対応する終了タグを探す
+        for (let j = i + 1; j < page.sections.length; j++) {
+          if (page.sections[j].layout === "group-end") {
+            groupEndIndex = j;
+            break;
+          } else if (page.sections[j].layout !== "group-start") {
+            // 通常のセクションをグループに追加
+            groupSections.push(page.sections[j]);
+          }
+        }
+        
+        if (groupEndIndex !== -1) {
+          // グループとして出力
+          const sectionClass = groupStartSection.class || "";
+          const bgStyle = groupStartSection.bgImage
+            ? { backgroundImage: `url(${groupStartSection.bgImage})` }
+            : {};
+          const scopeStyles = groupStartSection.scopeStyles || "";
+          
+          result.push(
+            <article
+              key={`group-${i}`}
+              className={sectionClass}
+              style={{ ...bgStyle }}
+              {...(scopeStyles ? { style: scopeStyles } : {})}
+            >
+              {groupSections.map((groupSection, idx) => 
+                renderSection(groupSection, `${i}-${idx}`)
+              )}
+            </article>
+          );
+          
+          // グループ全体をスキップ
+          i = groupEndIndex + 1;
+        } else {
+          // 対応する終了タグがない場合は警告として出力
+          result.push(
+            <div key={i} className="bg-red-100 border border-red-400 p-4 text-red-700">
+              警告: グループ開始タグに対応する終了タグがありません
+            </div>
+          );
+          i++;
+        }
+      } else if (section.layout === "group-end") {
+        // 対応する開始タグがない終了タグ
+        result.push(
+          <div key={i} className="bg-red-100 border border-red-400 p-4 text-red-700">
+            警告: 対応する開始タグがない終了タグです
+          </div>
+        );
+        i++;
+      } else {
+        // 通常のセクション
+        result.push(renderSection(section, i));
+        i++;
+      }
+    }
+    
+    return result;
+  };
+
+  const renderSection = (section: Section, index: number | string) => {
     const sectionClass = section.class || "";
     const bgStyle = section.bgImage
       ? { backgroundImage: `url(${section.bgImage})` }
@@ -60,12 +135,12 @@ export function PageRenderer({
         return (
           <section
             key={index}
-            className={`ImgText
-                 ${sectionClass}`}
+            className={`ImgText ${sectionClass}`}
             style={bgStyle}
           >
-            <div className="container mx-auto ">
+            <div className="container mx-auto">
               <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-2">
+                <div>
                 {section.image && (
                   <div
                     className={`relative w-full ${section.imageClass || ""}`}
@@ -81,7 +156,8 @@ export function PageRenderer({
                     />
                   </div>
                 )}
-                <div className={section.image ? "md:w-1/2" : "w-full"}>
+                </div>
+                <div className={!section.image ? "w-full" : ""}>
                   <div
                     className={`content ${section.textClass || ""}`}
                     dangerouslySetInnerHTML={{
@@ -208,6 +284,10 @@ export function PageRenderer({
             </div>
           </section>
         );
+      // group-start と group-end は個別レンダリングでは処理しない
+      case "group-start":
+      case "group-end":
+        return null;
       default:
         return (
           <section key={index} className="unknown-section">
@@ -239,7 +319,7 @@ export function PageRenderer({
         )}
       </header>
       <main className="min-h-screen">
-        {page.sections.map((section, index) => renderSection(section, index))}
+        {renderSectionsWithGroups()}
       </main>
       <footer
         className="footer"

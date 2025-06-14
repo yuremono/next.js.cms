@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 export async function GET(request: NextRequest) {
   try {
     const cookieStore = cookies();
-    const authCookie = cookieStore.get("cms-auth");
+    const authCookie = (await cookieStore).get("cms-auth");
 
     const authenticated = authCookie?.value === "authenticated";
 

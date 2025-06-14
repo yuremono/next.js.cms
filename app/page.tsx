@@ -222,6 +222,32 @@ export default async function Home() {
                 html: fs?.html ?? "",
                 endpoint: fs?.endpoint ?? "",
               });
+            } else if (section.type === "group-start") {
+              const { data: gs } = await supabase
+                .from("group_start_sections")
+                .select("*")
+                .eq("section_id", section.id)
+                .single();
+              sectionResults.push({
+                id: `section-${section.id}`,
+                layout: "group-start",
+                class: gs?.class ?? "",
+                bgImage: gs?.bg_image ?? "",
+                name: gs?.name ?? "グループ",
+                scopeStyles: gs?.scope_styles ?? "",
+              });
+            } else if (section.type === "group-end") {
+              const { data: ge } = await supabase
+                .from("group_end_sections")
+                .select("*")
+                .eq("section_id", section.id)
+                .single();
+              sectionResults.push({
+                id: `section-${section.id}`,
+                layout: "group-end",
+                class: ge?.class ?? "",
+                bgImage: ge?.bg_image ?? "",
+              });
             }
           }
 

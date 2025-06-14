@@ -103,7 +103,7 @@ export function BackgroundImageUpload({
           variant="outline"
           type="button"
           onClick={() => setIsGalleryOpen(true)}
-          className="flex items-center gap-2 mt-1"
+          className="mt-1 flex items-center gap-2"
         >
           <ImageIcon className="h-4 w-4" />
           アップロード済み画像から選択
@@ -128,6 +128,7 @@ export function BackgroundImageUpload({
               size="icon"
               className="absolute right-2 top-2"
               onClick={removeImage}
+              aria-label="背景画像を削除"
             >
               <X className="h-4 w-4" />
             </Button>

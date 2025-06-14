@@ -6,6 +6,13 @@ import { BackgroundImageUpload } from "@/components/images/BackgroundImageUpload
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ImgTextSection } from "@/types";
 import { getImageAspectRatio } from "@/lib/image-utils";
 
@@ -90,7 +97,7 @@ export function ImgTextEditor({ section, onUpdate }: ImgTextEditorProps) {
     <div className="ImgTextEditor h-full space-y-6">
       <Card className="flex  h-full flex-col rounded-sm p-4">
         <h3 className="mb-4 text-lg font-medium">画像テキストセクション設定</h3>
-        <div className="space-y-2">
+        <div className="space-y-4">
           <div className="flex items-center gap-4">
             <Label className="" htmlFor="imgtext-name">
               セクション名
@@ -103,6 +110,7 @@ export function ImgTextEditor({ section, onUpdate }: ImgTextEditorProps) {
               className="flex-1"
             />
           </div>
+
           <div className="flex items-center gap-4">
             <Label className="" htmlFor="imgtext-class">
               セクションクラス
@@ -115,6 +123,7 @@ export function ImgTextEditor({ section, onUpdate }: ImgTextEditorProps) {
               className="flex-1"
             />
           </div>
+
           <ImageUpload
             initialImage={section.image}
             initialClass={section.imageClass || ""}
@@ -122,11 +131,13 @@ export function ImgTextEditor({ section, onUpdate }: ImgTextEditorProps) {
             onClassChange={handleImageClassChange}
             label="画像クラス"
           />
+
           <BackgroundImageUpload
             initialImage={section.bgImage}
             onImageChange={handleBgImageChange}
             label="背景画像"
           />
+
           <div className="flex items-center gap-4">
             <Label className="" htmlFor="imgtext-text-class">
               テキストクラス
@@ -139,12 +150,16 @@ export function ImgTextEditor({ section, onUpdate }: ImgTextEditorProps) {
               className="flex-1"
             />
           </div>
-          <RichTextEditor
-            compact={true}
-            content={section.html}
-            onChange={handleHtmlChange}
-            placeholder="ここにHTMLを入力..."
-          />
+
+          <div className="space-y-2">
+            <Label>コンテンツ</Label>
+            <RichTextEditor
+              compact={true}
+              content={section.html}
+              onChange={handleHtmlChange}
+              placeholder="ここにHTMLを入力..."
+            />
+          </div>
         </div>
       </Card>
     </div>

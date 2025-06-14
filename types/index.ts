@@ -11,13 +11,13 @@ export interface BaseSection {
   class: string;
   bgImage?: string;
   id: string;
+  groupId?: string; // 所属グループID（グループ化用）
 }
 
 export interface MainVisualSection extends BaseSection {
   layout: "mainVisual";
   image?: string;
   imageClass?: string;
-  imageAspectRatio?: string; // 画像比率 (例: "4/3", "16/9")
   imageAspectRatio?: string; // 画像比率 (例: "4/3", "16/9")
   textClass?: string;
   html: string;
@@ -43,9 +43,9 @@ export interface Card {
 }
 
 export interface CardsSection extends BaseSection {
-	layout: "cards";
-	cards: Card[];
-	name?: string;
+  layout: "cards";
+  cards: Card[];
+  name?: string;
 }
 
 export interface FormSection extends BaseSection {
@@ -56,28 +56,48 @@ export interface FormSection extends BaseSection {
   textClass?: string;
 }
 
-export type Section =
-	| MainVisualSection
-	| ImgTextSection
-	| CardsSection
-	| FormSection;
-
-export interface Page {
-	header: Header;
-	footer: Footer;
-	sections: Section[];
-	customCSS?: string;
+// グループ開始タグ
+export interface GroupStartSection extends BaseSection {
+  layout: "group-start";
+  name: string; // グループ名
+  scopeStyles?: string; // CSS変数スタイル（例: "--gap: 2rem; --bg-color: #f0f0f0;"）
 }
 
-export function isSection(obj: any): obj is Section {
-	return (
-		obj &&
-		typeof obj === "object" &&
-		typeof obj.layout === "string" &&
-		typeof obj.class === "string" &&
-		(obj.layout === "mainVisual" ||
-			obj.layout === "imgText" ||
-			obj.layout === "cards" ||
-			obj.layout === "form")
-	);
+// グループ終了タグ
+export interface GroupEndSection extends BaseSection {
+  layout: "group-end";
+}
+
+export type Section =
+  | MainVisualSection
+  | ImgTextSection
+  | CardsSection
+  | FormSection
+  | GroupStartSection
+  | GroupEndSection;
+
+export interface Page {
+  header: Header;
+  footer: Footer;
+  sections: Section[];
+  customCSS?: string;
+}
+
+export function isSection(obj: unknown): obj is Section {
+  if (!obj || typeof obj !== "object" || obj === null) {
+    return false;
+  }
+
+  const section = obj as Record<string, unknown>;
+
+  return (
+    typeof section.layout === "string" &&
+    typeof section.class === "string" &&
+    (section.layout === "mainVisual" ||
+      section.layout === "imgText" ||
+      section.layout === "cards" ||
+      section.layout === "form" ||
+      section.layout === "group-start" ||
+      section.layout === "group-end")
+  );
 }

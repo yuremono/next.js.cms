@@ -11,7 +11,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Footer, Header, Page, Section } from "@/types";
 import { HeaderEditor } from "@/components/sections/HeaderEditor";
 import { FooterEditor } from "@/components/sections/FooterEditor";
-import { SortableSections } from "@/components/SortableSections";
+import SortableSections from "@/components/SortableSections";
 import { SectionSelector } from "@/components/SectionSelector";
 import { SectionEditorRenderer } from "@/components/editor/SectionEditorRenderer";
 import { PageRenderer } from "@/components/PageRenderer";
@@ -37,6 +37,7 @@ import { ImageGallery } from "@/components/images/ImageGallery";
 import { CSSEditor } from "@/components/editor/CSSEditor";
 import { DatabaseBackup } from "@/components/backup/DatabaseBackup";
 import { PasswordAuth } from "@/components/auth/PasswordAuth";
+import { AccessibilityPanel } from "@/components/AccessibilityPanel";
 import "../top.scss";
 import "../top.scss";
 
@@ -85,6 +86,19 @@ const createDefaultSection = (type: string): Section => {
         class: "Form",
         html: "<h2>お問い合わせ</h2><p>以下のフォームよりお問い合わせください。</p>",
         endpoint: "/api/contact",
+      };
+    case "group-start":
+      return {
+        id,
+        layout: "group-start",
+        class: "GroupStart",
+        name: "新しいグループ",
+      };
+    case "group-end":
+      return {
+        id,
+        layout: "group-end",
+        class: "GroupEnd",
       };
     default:
       throw new Error(`未対応のセクションタイプ: ${type}`);
@@ -192,10 +206,13 @@ export default function EditorPage() {
   }, [theme]);
 
   // 選択中のメニュータブ
-  const [activeMenuTab, setActiveMenuTab] = useState<string>("sections");
+  const [activeMenuTab, setActiveMenuTab] = useState<string>("header");
 
   // セクション追加ダイアログの状態
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
+
+  // グループ展開状態の管理
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
   // プレビューモードの状態
   const [previewMode, setPreviewMode] = useState(false);
@@ -462,6 +479,19 @@ export default function EditorPage() {
     setActiveMenuTab("edit");
   };
 
+  // グループの展開・折りたたみ
+  const handleGroupToggle = (groupId: string) => {
+    setExpandedGroups((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(groupId)) {
+        newSet.delete(groupId);
+      } else {
+        newSet.add(groupId);
+      }
+      return newSet;
+    });
+  };
+
   // セクションの並び替え
   const moveSection = (fromIndex: number, toIndex: number) => {
     if (
@@ -498,7 +528,29 @@ export default function EditorPage() {
   // セクションの削除
   const deleteSection = (index: number) => {
     setPage((prev) => {
-      const newSections = prev.sections.filter((_, i) => i !== index);
+      const sectionToDelete = prev.sections[index];
+      let newSections = [...prev.sections];
+
+      // グループ開始タグの場合は、対応する終了タグも同時削除
+      if (sectionToDelete.layout === "group-start") {
+        // 対応する終了タグを探す
+        let groupEndIndex = -1;
+        for (let i = index + 1; i < newSections.length; i++) {
+          if (newSections[i].layout === "group-end") {
+            groupEndIndex = i;
+            break;
+          }
+        }
+
+        if (groupEndIndex !== -1) {
+          // 終了タグから削除（インデックスがずれないように後ろから）
+          newSections = newSections.filter((_, i) => i !== groupEndIndex);
+        }
+      }
+
+      // 対象のセクションを削除
+      newSections = newSections.filter((_, i) => i !== index);
+
       return { ...prev, sections: newSections };
     });
 
@@ -512,19 +564,85 @@ export default function EditorPage() {
   // セクションの追加
   const addSection = (type: string) => {
     try {
-      const newSection = createDefaultSection(type);
+      if (type === "group") {
+        // グループの場合は開始タグと終了タグを連続で追加
+        const groupStartSection = createDefaultSection("group-start");
+        const groupEndSection = createDefaultSection("group-end");
 
-      setPage((prev) => {
-        const newSections = [...prev.sections, newSection];
-        return { ...prev, sections: newSections };
-      });
+        setPage((prev) => {
+          const newSections = [...prev.sections];
 
-      // 新しく追加したセクションを選択
-      setActiveSectionIndex(page.sections.length);
-      setActiveMenuTab("edit");
-      setIsSelectorOpen(false);
+          // 選択中のセクションがある場合はその下に、ない場合は最後に追加
+          const insertIndex =
+            activeSectionIndex !== null
+              ? activeSectionIndex + 1
+              : newSections.length;
+
+          // 開始タグと終了タグを連続で挿入
+          newSections.splice(
+            insertIndex,
+            0,
+            groupStartSection,
+            groupEndSection
+          );
+          return { ...prev, sections: newSections };
+        });
+
+        // 開始タグを選択
+        const newIndex =
+          activeSectionIndex !== null
+            ? activeSectionIndex + 1
+            : page.sections.length;
+
+        setActiveSectionIndex(newIndex);
+        setActiveMenuTab("edit");
+        setIsSelectorOpen(false);
+      } else {
+        // 通常のセクション追加
+        const newSection = createDefaultSection(type);
+
+        setPage((prev) => {
+          const newSections = [...prev.sections];
+
+          // 選択中のセクションがある場合はその下に、ない場合は最後に追加
+          const insertIndex =
+            activeSectionIndex !== null
+              ? activeSectionIndex + 1
+              : newSections.length;
+
+          newSections.splice(insertIndex, 0, newSection);
+          return { ...prev, sections: newSections };
+        });
+
+        // 新しく追加したセクションを選択
+        const newIndex =
+          activeSectionIndex !== null
+            ? activeSectionIndex + 1
+            : page.sections.length;
+
+        setActiveSectionIndex(newIndex);
+        setActiveMenuTab("edit");
+        setIsSelectorOpen(false);
+      }
     } catch (error) {
       console.error("セクションの追加に失敗しました", error);
+    }
+  };
+
+  // セクション配列を直接更新する関数（ドラッグ&ドロップグループ化用）
+  const updateSections = (newSections: Section[]) => {
+    setPage((prevPage) => ({
+      ...prevPage,
+      sections: newSections,
+    }));
+    // 選択インデックスを調整（削除された場合に備えて）
+    if (
+      activeSectionIndex !== null &&
+      activeSectionIndex >= newSections.length
+    ) {
+      setActiveSectionIndex(
+        newSections.length > 0 ? newSections.length - 1 : null
+      );
     }
   };
 
@@ -602,9 +720,12 @@ export default function EditorPage() {
         return <ImageGallery />;
       case "edit":
         if (activeSectionIndex !== null && page.sections[activeSectionIndex]) {
+          const currentSection = page.sections[activeSectionIndex];
+
+          // 通常のセクションエディター
           return (
             <SectionEditorRenderer
-              section={page.sections[activeSectionIndex]}
+              section={currentSection}
               onUpdate={(updatedSection) =>
                 updateSection(activeSectionIndex, updatedSection)
               }
@@ -613,7 +734,7 @@ export default function EditorPage() {
         }
         return (
           <div className="p-8 text-center">
-            <p className="mb-4 text-gray-500">
+            <p className="mb-4 text-muted-foreground">
               編集するセクションを選択するか、新しいセクションを追加してください。
             </p>
             <Button onClick={() => setIsSelectorOpen(true)}>
@@ -731,386 +852,227 @@ export default function EditorPage() {
         <div className="relative flex-1 overflow-auto">
           <PageRenderer page={page} />
         </div>
-      ) : splitScreenMode ? (
-        // Split-screen モード
-        <div className="flex h-[calc(100vh-80px)] flex-1 overflow-hidden">
-          {/* 左パネル: エディター */}
-          <div
-            className="flex flex-col border-r"
-            style={{ width: `${leftPanelWidth}%` }}
-          >
-            {leftPanelWidth <= 40 ? (
-              // 40%以下でSPレイアウト
-              <div className="flex h-full flex-col">
-                {/* モバイル風タブリスト */}
-                <div className="relative overflow-x-auto border-b px-2 pb-1 pt-2">
-                  <Tabs
-                    value={activeMenuTab}
-                    onValueChange={setActiveMenuTab}
-                    className="w-max min-w-full"
-                  >
-                    <TabsList className="flex min-w-full flex-row items-center gap-1 whitespace-nowrap rounded-none bg-transparent p-0 text-xs">
-                      <TabsTrigger
-                        value="header"
-                        className="min-w-[50px] rounded-none border-none bg-transparent p-1 text-left"
-                      >
-                        ヘッダー
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="footer"
-                        className="min-w-[50px] rounded-none border-none bg-transparent p-1 text-left"
-                      >
-                        フッター
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="css-editor"
-                        className="min-w-[40px] rounded-none border-none bg-transparent p-1 text-left"
-                      >
-                        CSS
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="ai-generator"
-                        className="min-w-[30px] rounded-none border-none bg-transparent p-1 text-left"
-                      >
-                        AI
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="image-gallery"
-                        className="min-w-[40px] rounded-none border-none bg-transparent p-1 text-left"
-                      >
-                        画像
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="backup"
-                        className="min-w-[60px] rounded-none border-none bg-transparent p-1 text-left"
-                      >
-                        バックアップ
-                      </TabsTrigger>
-                    </TabsList>
-                  </Tabs>
-                </div>
-                {/* セクションリスト（開閉式）*/}
-                <div className="border-b p-2">
-                  <div className="flex items-center gap-1">
-                    <h2 className="text-xs font-medium">
-                      セクション ({page.sections.length})
-                    </h2>
-                    <Button
-                      size="sm"
-                      onClick={() => setIsSelectorOpen(true)}
-                      className="ml-auto h-6 px-1"
-                    >
-                      <Plus className="h-3 w-3" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setSectionListOpen((v) => !v)}
-                      className="h-6 px-1 text-xs"
-                    >
-                      選択
-                    </Button>
-                  </div>
-                  <div className={"mt-2 " + (sectionListOpen ? "" : "hidden")}>
-                    <SortableSections
-                      sections={page.sections}
-                      activeSectionIndex={activeSectionIndex}
-                      onSectionClick={handleSectionClick}
-                      onSectionMove={moveSection}
-                      onSectionDelete={deleteSection}
-                    />
-                  </div>
-                </div>
-                {/* エディター本体 */}
-                <div className="flex-1 overflow-y-auto p-2">
-                  {renderEditor()}
-                </div>
-              </div>
-            ) : (
-              // 通常のデスクトップレイアウト
-              <div className="flex h-full flex-col">
-                <div className="border-b p-2">
-                  <h3 className="text-sm font-medium">エディター</h3>
-                </div>
-                <div className="flex flex-1 overflow-hidden">
-                  {/* エディター用のサイドバー */}
-                  <div className="flex w-48 flex-col overflow-hidden border-r">
-                    {/* 左端: タブリスト */}
-                    <div className="border-b p-2">
-                      <Tabs
-                        value={activeMenuTab}
-                        onValueChange={setActiveMenuTab}
-                        className="w-full"
-                      >
-                        <TabsList className="flex flex-col items-start gap-2 bg-transparent p-0">
-                          <TabsTrigger
-                            value="header"
-                            className="w-full justify-start rounded-none border-none bg-transparent p-2 text-left"
-                          >
-                            ヘッダー
-                          </TabsTrigger>
-                          <TabsTrigger
-                            value="footer"
-                            className="w-full justify-start rounded-none border-none bg-transparent p-2 text-left"
-                          >
-                            フッター
-                          </TabsTrigger>
-                          <TabsTrigger
-                            value="css-editor"
-                            className="w-full justify-start rounded-none border-none bg-transparent p-2 text-left"
-                          >
-                            CSS追加
-                          </TabsTrigger>
-                          <TabsTrigger
-                            value="ai-generator"
-                            className="w-full justify-start rounded-none border-none bg-transparent p-2 text-left"
-                          >
-                            AIで生成
-                          </TabsTrigger>
-                          <TabsTrigger
-                            value="image-gallery"
-                            className="w-full justify-start rounded-none border-none bg-transparent p-2 text-left"
-                          >
-                            画像一覧
-                          </TabsTrigger>
-                          <TabsTrigger
-                            value="backup"
-                            className="w-full justify-start rounded-none border-none bg-transparent p-2 text-left"
-                          >
-                            バックアップ
-                          </TabsTrigger>
-                        </TabsList>
-                      </Tabs>
-                    </div>
-                    {/* セクションリスト */}
-                    <div className="flex-1 overflow-y-auto p-2">
-                      <div className="flex items-center gap-2">
-                        <h2 className="text-xs font-medium">
-                          セクション ({page.sections.length})
-                        </h2>
-                        <Button
-                          size="sm"
-                          onClick={() => setIsSelectorOpen(true)}
-                          className="ml-auto"
-                        >
-                          <Plus className="h-3 w-3" />
-                        </Button>
-                      </div>
-                      <div className="mt-2">
-                        <SortableSections
-                          sections={page.sections}
-                          activeSectionIndex={activeSectionIndex}
-                          onSectionClick={handleSectionClick}
-                          onSectionMove={moveSection}
-                          onSectionDelete={deleteSection}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  {/* エディター本体 */}
-                  <div className="flex-1 overflow-y-auto p-4">
-                    {renderEditor()}
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-          {/* リサイザー */}
-          <div
-            data-resizer="true"
-            className={`group relative w-1 cursor-col-resize bg-gray-300 transition-colors hover:bg-slate-400 ${
-              isResizing ? "bg-slate-500" : ""
-            }`}
-            onMouseDown={handleMouseDown}
-          >
-            {/* リサイズハンドル装飾 */}
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-60 transition-opacity group-hover:opacity-100">
-              <GripVertical className="h-5  text-gray-600 group-hover:text-slate-600" />
-            </div>
-          </div>
-          {/* 右パネル: プレビュー */}
-          <div
-            ref={setRightPanelRef}
-            className="flex flex-col"
-            style={{ width: `${100 - leftPanelWidth}%` }}
-          >
-            <div className="border-b p-2">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium">プレビュー</h3>
-                <div className="flex items-center gap-2">
-                  {/* ビューポート選択 */}
-                  <div className="flex items-center gap-1">
-                    {Object.entries(widthPresets).map(([key, preset]) => {
-                      const IconComponent = preset.icon;
-                      return (
-                        <Button
-                          key={key}
-                          size="sm"
-                          variant={
-                            previewWidthRatio === parseInt(key)
-                              ? "default"
-                              : "outline"
-                          }
-                          onClick={() =>
-                            setPreviewWidthRatio(parseInt(key) as 100 | 70 | 40)
-                          }
-                          className="h-7 px-2"
-                          title={preset.label}
-                        >
-                          <IconComponent className="h-3 w-3" />
-                        </Button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex-1 overflow-hidden bg-gray-100 p-4">
-              <div className="flex h-full justify-center overflow-auto">
-                <iframe
-                  ref={setIframeRef}
-                  src="/preview"
-                  title="Preview"
-                  style={{
-                    width: rightPanelRef
-                      ? `${(rightPanelRef.offsetWidth - 32) * (previewWidthRatio / 100)}px`
-                      : "100%",
-                    height: "calc(100vh - 120px)", // ヘッダー + プレビューヘッダーを考慮
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "8px",
-                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-                  }}
-                ></iframe>
-              </div>
-            </div>
-          </div>
-        </div>
       ) : (
-        // 通常編集モード
-        <div className="flex flex-1 flex-col overflow-hidden lg:h-[calc(100vh-80px)] lg:flex-row">
-          {/* 左端: タブリスト */}
-          <div className="relative w-full overflow-x-auto border-b  px-2 pb-1 pt-2 lg:w-auto lg:border-b-0 lg:border-r lg:p-4">
-            <Tabs
-              value={activeMenuTab}
-              onValueChange={setActiveMenuTab}
-              className="w-max min-w-full lg:w-full"
+        // 編集モード（通常 + 分割対応）
+        <div className="EditorWorkspace">
+          <div className="WorkspaceLayout">
+            {/* 左端: タブリスト */}
+            <nav
+              className={`TabsPanel ${splitScreenMode ? "split-mode" : ""}`}
+              aria-label="エディタメニュー"
             >
-              <TabsList className="flex min-w-full flex-row items-center gap-2 whitespace-nowrap rounded-none bg-transparent p-0 text-xs lg:flex-col lg:items-start lg:gap-4 lg:whitespace-normal lg:text-base">
-                <TabsTrigger
-                  value="header"
-                  className="min-w-[70px] rounded-none border-none bg-transparent p-2 text-left lg:w-full lg:p-0"
-                >
-                  ヘッダー
-                </TabsTrigger>
-                <TabsTrigger
-                  value="footer"
-                  className="min-w-[70px] rounded-none border-none bg-transparent p-2 text-left lg:w-full lg:p-0"
-                >
-                  フッター
-                </TabsTrigger>
-                <TabsTrigger
-                  value="css-editor"
-                  className="min-w-[70px] rounded-none border-none bg-transparent p-2 text-left lg:w-full lg:p-0"
-                >
-                  CSS追加
-                </TabsTrigger>
-                <TabsTrigger
-                  value="ai-generator"
-                  className="min-w-[70px] rounded-none border-none bg-transparent p-2 text-left lg:w-full lg:p-0"
-                >
-                  AIで生成
-                </TabsTrigger>
-                <TabsTrigger
-                  value="image-gallery"
-                  className="min-w-[70px] rounded-none border-none bg-transparent p-2 text-left lg:w-full lg:p-0"
-                >
-                  画像一覧
-                </TabsTrigger>
-                <TabsTrigger
-                  value="backup"
-                  className="min-w-[70px] rounded-none border-none bg-transparent p-2 text-left lg:w-full lg:p-0"
-                >
-                  バックアップ
-                </TabsTrigger>
-              </TabsList>
-              {/* Handアイコン */}
-              <div
-                className="pointer-events-none absolute right-2 top-1 flex h-full items-center lg:hidden"
-                style={{ zIndex: 10 }}
+              <Tabs
+                value={activeMenuTab}
+                onValueChange={setActiveMenuTab}
+                className="w-max min-w-full lg:w-full"
               >
+                <TabsList className="TabsList ">
+                  <TabsTrigger
+                    value="header"
+                    className="min-w-[70px] rounded-none border-none bg-transparent p-2 text-left  "
+                  >
+                    ヘッダー
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="footer"
+                    className="min-w-[70px] rounded-none border-none bg-transparent p-2 text-left  "
+                  >
+                    フッター
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="css-editor"
+                    className="min-w-[70px] rounded-none border-none bg-transparent p-2 text-left  "
+                  >
+                    CSS追加
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="ai-generator"
+                    className="min-w-[70px] rounded-none border-none bg-transparent p-2 text-left  "
+                  >
+                    AIで生成
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="image-gallery"
+                    className="min-w-[70px] rounded-none border-none bg-transparent p-2 text-left  "
+                  >
+                    画像一覧
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="backup"
+                    className="min-w-[70px] rounded-none border-none bg-transparent p-2 text-left  "
+                  >
+                    バックアップ
+                  </TabsTrigger>
+                </TabsList>
+                {/* Handアイコン */}
                 <div
-                  id="tab-flick-indicator"
-                  className="transition-opacity duration-300"
-                  style={{ opacity: 0 }}
+                  className="pointer-events-none absolute right-2 top-2 flex h-full items-center lg:hidden"
+                  style={{ zIndex: 10 }}
                 >
-                  <Hand className="h-5 w-5 animate-bounce text-gray-400" />
+                  <div
+                    id="tab-flick-indicator"
+                    className="transition-opacity duration-300"
+                    style={{ opacity: 0 }}
+                  >
+                    <Hand className="h-5 w-5 animate-bounce text-gray-400" />
+                  </div>
+                </div>
+              </Tabs>
+            </nav>
+
+            {/* セクションリスト */}
+            <aside
+              className={`SectionPanel ${splitScreenMode ? "split-mode" : ""}`}
+              aria-label="セクション一覧"
+            >
+              <div className="flex w-full items-center gap-2">
+                <h2 className="text-sm font-medium">
+                  セクション ({page.sections.length})
+                </h2>
+
+                <Button
+                  size="sm"
+                  onClick={() => setIsSelectorOpen(true)}
+                  className="ml-auto"
+                >
+                  <Plus className="h-3 w-3" />
+                  追加
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="lg:hidden"
+                  onClick={() => setSectionListOpen((v) => !v)}
+                >
+                  選択
+                </Button>
+              </div>
+              {/* PC時は常時リスト表示、SP時は開閉 */}
+              <div
+                className={
+                  "mt-4 w-full " +
+                  (sectionListOpen ? "" : "hidden") +
+                  " lg:block lg:w-full"
+                }
+              >
+                <SortableSections
+                  sections={
+                    sectionListOpen ||
+                    typeof window === "undefined" ||
+                    window.innerWidth >= 834
+                      ? page.sections
+                      : page.sections.filter((_, i) => i === activeSectionIndex)
+                  }
+                  activeSectionIndex={activeSectionIndex}
+                  onSectionClick={handleSectionClick}
+                  onSectionMove={moveSection}
+                  onSectionDelete={deleteSection}
+                  onSectionsChange={updateSections}
+                  onGroupToggle={handleGroupToggle}
+                  expandedGroups={expandedGroups}
+                />
+              </div>
+            </aside>
+
+            {/* 編集エリア */}
+            <main
+              className={`EditingPanel ${splitScreenMode ? "split-mode" : ""}`}
+            >
+              {renderEditor()}
+            </main>
+          </div>
+
+          {/* 分割モード時のプレビューエリア */}
+          {splitScreenMode && (
+            <>
+              {/* リサイザー */}
+              <div
+                data-resizer="true"
+                className="Resizer group"
+                onMouseDown={handleMouseDown}
+              >
+                {/* リサイズハンドル装飾 */}
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-60 transition-opacity group-hover:opacity-100">
+                  <GripVertical className="h-5  text-gray-600 group-hover:text-slate-600" />
                 </div>
               </div>
-            </Tabs>
-          </div>
-          {/* セクションリスト */}
-          <div className=" w-full border-b   p-4 lg:min-w-[170px]  lg:max-w-[18rem] lg:overflow-y-auto lg:border-b-0  lg:border-r">
-            <div className=" flex w-full items-center gap-2">
-              <h2 className="text-sm font-medium">
-                セクション ({page.sections.length})
-              </h2>
 
-              <Button
-                size="sm"
-                onClick={() => setIsSelectorOpen(true)}
-                className="ml-auto"
+              {/* プレビューパネル */}
+              <div
+                ref={setRightPanelRef}
+                className="PreviewPanel"
+                style={{ width: `${100 - leftPanelWidth}%` }}
               >
-                <Plus className=" h-3 w-3" />
-                追加
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="lg:hidden"
-                onClick={() => setSectionListOpen((v) => !v)}
-              >
-                選択
-              </Button>
-            </div>
-            {/* PC時は常時リスト表示、SP時は開閉 */}
-            <div
-              className={
-                "mt-4 w-full " +
-                (sectionListOpen ? "" : "hidden") +
-                " lg:block lg:w-full"
-              }
-            >
-              <SortableSections
-                sections={
-                  sectionListOpen ||
-                  typeof window === "undefined" ||
-                  window.innerWidth >= 1024
-                    ? page.sections
-                    : page.sections.filter((_, i) => i === activeSectionIndex)
-                }
-                activeSectionIndex={activeSectionIndex}
-                onSectionClick={handleSectionClick}
-                onSectionMove={moveSection}
-                onSectionDelete={deleteSection}
-              />
-            </div>
-          </div>
-          {/* 右: 編集エリア */}
-          <div className="h-[calc(100vh-80px)] flex-1 overflow-y-auto p-6">
-            <div className="flex flex-col">{renderEditor()}</div>
-          </div>
+                <div className="border-b p-2">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-medium">プレビュー</h3>
+                    <div className="flex items-center gap-2">
+                      {/* ビューポート選択 */}
+                      <div className="flex items-center gap-1">
+                        {Object.entries(widthPresets).map(([key, preset]) => {
+                          const IconComponent = preset.icon;
+                          return (
+                            <Button
+                              key={key}
+                              size="sm"
+                              variant={
+                                previewWidthRatio === parseInt(key)
+                                  ? "default"
+                                  : "outline"
+                              }
+                              onClick={() =>
+                                setPreviewWidthRatio(
+                                  parseInt(key) as 100 | 70 | 40
+                                )
+                              }
+                              className="h-7 px-2"
+                              title={preset.label}
+                              aria-label={`プレビュー幅を${preset.label}に設定`}
+                            >
+                              <IconComponent className="h-3 w-3" />
+                            </Button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex-1 overflow-hidden bg-gray-100 p-4">
+                  <div className="flex h-full justify-center overflow-auto">
+                    <iframe
+                      ref={setIframeRef}
+                      src="/preview"
+                      title="Preview"
+                      style={{
+                        width: rightPanelRef
+                          ? `${(rightPanelRef.offsetWidth - 32) * (previewWidthRatio / 100)}px`
+                          : "100%",
+                        height: "calc(100vh - 120px)", // ヘッダー + プレビューヘッダーを考慮
+                        border: "1px solid #e5e7eb",
+                        borderRadius: "8px",
+                        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                      }}
+                    ></iframe>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       )}
 
+      {/* アクセシビリティテストパネル */}
+      <AccessibilityPanel />
+
       {/* セクション追加ダイアログ */}
       <Dialog open={isSelectorOpen} onOpenChange={setIsSelectorOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="">
           <DialogTitle>セクションを追加</DialogTitle>
           <SectionSelector onSelect={addSection} />
         </DialogContent>
       </Dialog>
       {/* タブ横スクロール時のみHandアイコン表示スクリプト */}
-      <script
+      {/* <script
         dangerouslySetInnerHTML={{
           __html: `
 				(function(){
@@ -1126,7 +1088,7 @@ export default function EditorPage() {
 				})();
 				`,
         }}
-      />
+      /> */}
     </div>
   );
 }

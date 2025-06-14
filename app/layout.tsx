@@ -1,6 +1,15 @@
 import type { Metadata } from "next";
+import React from "react";
+import ReactDOM from "react-dom";
 import "./globals.css";
 import { Toaster } from "sonner";
+
+// 開発環境でのみaxe-coreを初期化
+if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
+  import("@axe-core/react").then((axe) => {
+    axe.default(React, ReactDOM, 1000);
+  });
+}
 
 export const metadata: Metadata = {
 	title: "簡易CMS - テンプレートベースのWebサイト構築",

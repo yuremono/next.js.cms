@@ -81,6 +81,9 @@ const SortableCardItem = ({
             {...attributes}
             {...listeners}
             className="mr-2 cursor-grab text-gray-400 hover:text-gray-600"
+            role="button"
+            aria-label={`カード ${index + 1} をドラッグして並び替え`}
+            tabIndex={0}
           >
             <GripVertical className="h-4 w-4 flex-shrink-0" />
           </div>
@@ -91,6 +94,7 @@ const SortableCardItem = ({
             variant="ghost"
             size="icon"
             className="h-7 w-7 text-red-500 hover:text-red-600"
+            aria-label={`カード ${index + 1} を削除`}
             onClick={(e) => {
               e.stopPropagation();
               if (window.confirm("このカードを削除してもよろしいですか？")) {
@@ -251,7 +255,7 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
     <div className="CardsEditor flex-1 space-y-6">
       <Card className="flex h-full flex-col rounded-sm p-4">
         <h3 className="mb-4 text-lg font-medium">カードセクション設定</h3>
-        <div className="flex flex-1 flex-col space-y-2">
+        <div className="flex flex-1 flex-col space-y-4">
           <div className="flex items-center gap-4">
             <Label className="" htmlFor="cards-name">
               セクション名
@@ -294,7 +298,7 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
             </div>
             {section.cards.length === 0 ? (
               <div className="rounded border border-dashed p-8 text-center">
-                <p className="mb-4 text-gray-500">カードがありません</p>
+                <p className="mb-4 text-muted-foreground">カードがありません</p>
                 <Button onClick={addCard}>
                   <Plus className="mr-1 h-4 w-4" />
                   最初のカードを追加
@@ -312,18 +316,23 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
                   strategy={verticalListSortingStrategy}
                 >
                   <div className="flex flex-col gap-4 md:flex-row ">
-                    <div className="space-y-2 md:w-32">
+                    <ul
+                      className="space-y-2 md:w-32"
+                      role="list"
+                      aria-label="カード一覧"
+                    >
                       {section.cards.map((card, index) => (
+                        <li key={`card-${index}`}>
                         <SortableCardItem
-                          key={`card-${index}`}
                           card={card}
                           index={index}
                           isActive={activeCardIndex === index}
                           onSelect={() => setActiveCardIndex(index)}
                           onDelete={() => removeCard(index)}
                         />
+                        </li>
                       ))}
-                    </div>
+                    </ul>
                     {activeCardIndex !== null && (
                       <div className="h-full md:flex-1">
                         <Card className="rounded-sm p-4">
