@@ -17,6 +17,7 @@
                 --font-family-base: "Zen Kaku Gothic New", 'Noto Sans JP', sans-serif;
 
                 /* カラー設定 */
+                --cms-indent: .5rem; /* セクションリストのインデント幅 */
 
                 --background: hsl(0, 0%, 100%);
                 --foreground: hsl(0, 0%, 10%);
@@ -89,9 +90,9 @@
 }
 
 .CardsContainer {
-        --base: var(--cms-base, 1400px);
+        /* --base: var(--cms-base, 1400px); */
         --col: var(--cms-col, 3);
-        --gap: var(--cms-gap, 6vmin);
+        /* --gap: var(--cms-gap, 6vmin); */
         
         max-width: var(--base);
         margin-inline: auto;
@@ -347,13 +348,15 @@
 
 /* WorkspaceLayoutのコンテナクエリ - デスクトップレイアウト（834px以上） */
 @container workspace (width >= 834px) {
+        div.SortableSectionsOuter{
+                display: block;
+        }
         button.SectionSelect{
                 display: none;
         }
   
   .TabsPanel {
     flex-direction: column;
-    /* width: auto; */
     border-bottom: none;
     border-right: 1px solid var(--border);
     max-width: 8rem;
@@ -361,7 +364,6 @@
   
   .TabsList {
     flex-direction: column; /* lg:flex-col */
-    gap: 1rem; /* lg:gap-4 */
     font-size: 1rem; /* lg:text-base */
     line-height: 1.5rem;
   }
@@ -390,4 +392,6 @@
     border-right: 1px solid hsl(var(--border));
   }
 }
+
+/* IDE風セクションリストのインデント - JavaScriptで制御するためCSS削除 */
 

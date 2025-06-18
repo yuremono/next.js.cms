@@ -84,16 +84,16 @@ export function deleteEmptyGroups(sections: Section[]): Section[] {
     .filter(isGroupHeader)
     .map((section) => section.id);
 
-  console.log("All group IDs:", allGroupIds);
+  // All group IDs: ${allGroupIds.join(', ')}
 
   // 空のグループIDを特定
   const emptyGroupIds = allGroupIds.filter((groupId) => {
     const children = getGroupChildren(sections, groupId);
-    console.log(`Group ${groupId} has ${children.length} children:`, children);
+    // Group ${groupId} has ${children.length} children
     return children.length === 0;
   });
 
-  console.log("Empty group IDs to delete:", emptyGroupIds);
+  // Empty group IDs to delete: ${emptyGroupIds.join(', ')}
 
   // 空のグループとそのヘッダーを削除
   const result = sections.filter((section) => {
@@ -106,7 +106,7 @@ export function deleteEmptyGroups(sections: Section[]): Section[] {
     return !shouldDelete;
   });
 
-  console.log("Sections after empty group deletion:", result.length);
+  // Sections after empty group deletion: ${result.length}
   return result;
 }
 

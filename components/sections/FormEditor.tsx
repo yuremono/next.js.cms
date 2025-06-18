@@ -2,94 +2,94 @@
 
 import { RichTextEditor } from "@/components/ui/editor";
 import { BackgroundImageUpload } from "@/components/images/BackgroundImageUpload";
+import { FormField } from "@/components/ui/form-field";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { FormSection } from "@/types";
 
 interface FormEditorProps {
-	section: FormSection;
-	onUpdate: (section: FormSection) => void;
+  section: FormSection;
+  onUpdate: (section: FormSection) => void;
 }
 
 export function FormEditor({ section, onUpdate }: FormEditorProps) {
-	// 直接propsからの値を使用し、内部状態を持たないようにする
+  // 直接propsからの値を使用し、内部状態を持たないようにする
 
-	const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		onUpdate({
-			...section,
-			name: e.target.value,
-		});
-	};
+  const handleNameChange = (value: string) => {
+    onUpdate({
+      ...section,
+      name: value,
+    });
+  };
 
-	const handleHtmlChange = (content: string) => {
-		onUpdate({
-			...section,
-			html: content,
-		});
-	};
+  const handleHtmlChange = (content: string) => {
+    onUpdate({
+      ...section,
+      html: content,
+    });
+  };
 
-	const handleEndpointChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		onUpdate({
-			...section,
-			endpoint: e.target.value,
-		});
-	};
+  const handleEndpointChange = (value: string) => {
+    onUpdate({
+      ...section,
+      endpoint: value,
+    });
+  };
 
-	const handleBgImageChange = (img: string | null) => {
-		onUpdate({
-			...section,
-			bgImage: img || undefined,
-		});
-	};
+  const handleBgImageChange = (img: string | null) => {
+    onUpdate({
+      ...section,
+      bgImage: img || undefined,
+    });
+  };
 
-	const handleClassNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		onUpdate({
-			...section,
-			class: e.target.value,
-		});
-	};
+  const handleClassNameChange = (value: string) => {
+    onUpdate({
+      ...section,
+      class: value,
+    });
+  };
 
-	return (
+  const handleSectionWidthChange = (value: string) => {
+    onUpdate({
+      ...section,
+      sectionWidth: value,
+    });
+  };
+
+  return (
     <div className="FormEditor space-y-6">
       <Card className=" rounded-sm p-4">
         <h3 className="mb-4 text-lg font-medium">フォームセクション設定</h3>
         <div className="space-y-4">
-          <div className="flex items-center gap-4">
-            <Label className="" htmlFor="form-name">
-              セクション名
-            </Label>
-            <Input
-              id="form-name"
-              value={section.name || ""}
-              onChange={handleNameChange}
-              placeholder="例: お問い合わせフォーム"
-            />
-          </div>
-          <div className="flex items-center gap-4">
-            <Label className="" htmlFor="form-class">
-              クラス名
-            </Label>
-            <Input
-              id="form-class"
-              value={section.class}
-              onChange={handleClassNameChange}
-              placeholder="例: Form"
-            />
-          </div>
-          <div className="flex items-center gap-4">
-            <Label className="" htmlFor="form-endpoint">
-              送信先
-              <br />
-              エンドポイント
-            </Label>
-            <Input
-              id="form-endpoint"
-              value={section.endpoint}
-              onChange={handleEndpointChange}
-              placeholder="例: /api/contact"
-            />
-          </div>
+          <FormField
+            id="form-name"
+            label="セクション名"
+            value={section.name || ""}
+            onChange={handleNameChange}
+            placeholder="例: お問い合わせフォーム"
+          />
+          <FormField
+            id="form-class"
+            label="セクションクラス"
+            value={section.class}
+            onChange={handleClassNameChange}
+            placeholder="例: Form"
+          />
+          <FormField
+            id="form-section-width"
+            label="セクション幅"
+            value={section.sectionWidth || ""}
+            onChange={handleSectionWidthChange}
+            placeholder="例: max-w-4xl"
+          />
+          <FormField
+            id="form-endpoint"
+            label="送信先エンドポイント"
+            value={section.endpoint}
+            onChange={handleEndpointChange}
+            placeholder="例: /api/contact"
+          />
           <BackgroundImageUpload
             initialImage={section.bgImage}
             onImageChange={handleBgImageChange}
@@ -98,7 +98,7 @@ export function FormEditor({ section, onUpdate }: FormEditorProps) {
           <div className="space-y-2">
             <Label>コンテンツ</Label>
             <RichTextEditor
-          compact={true}
+              compact={true}
               content={section.html}
               onChange={handleHtmlChange}
               placeholder="ここにHTMLを入力..."

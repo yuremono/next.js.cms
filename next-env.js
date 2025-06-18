@@ -6,4 +6,4 @@ process.env.NEXT_DISABLE_TYPECHECK = "true";
 process.env.DISABLE_ESLINT_PLUGIN = "true";
 process.env.DISABLE_TYPE_CHECKING = "true";
 
-console.log("🚨 リントとTypeScriptチェックは無効化されています");
+  // リントとTypeScriptチェックは無効化されています

@@ -2,7 +2,6 @@ import { PageRenderer } from "@/components/PageRenderer";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Page } from "@/types";
-import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 import "./top.scss";
 
@@ -60,8 +59,8 @@ const DEFAULT_PAGE_DATA: Page = {
     {
       id: "section-default-1",
       layout: "mainVisual",
-      class: "MainVisual ",
-      html: '<h1 class="text-4xl font-bold mb-4">簡易CMSシステム</h1><p class="text-xl">AIによるテキスト生成機能を備えた、テンプレートベースのWebサイト構築システムです。<br>ドラッグ＆ドロップでセクションを追加・入れ替えでき、簡単にWebサイトを編集できます。</p>',
+      class: "MainVisual",
+      html: '<h1 class="text-4xl font-bold mb-4">Next.js CMSデモサイト</h1><p class="text-xl">直感的な編集インターフェースで、簡単にWebサイトを管理できます。</p>',
       image: "",
       imageAspectRatio: "auto",
     },
@@ -69,7 +68,7 @@ const DEFAULT_PAGE_DATA: Page = {
       id: "section-default-2",
       layout: "imgText",
       class: "ImgText",
-      html: '<h2 class="text-2xl font-semibold mb-4">セクションタイトル</h2><p>ここにテキストを入力します。このページは管理画面から自由に編集することができます。画像やテキストの配置、セクションの追加・並べ替えなど、さまざまなカスタマイズが可能です。</p><p class="mt-4">AIテキスト生成機能を使えば、プロフェッショナルな文章を簡単に作成できます。</p>',
+      html: '<h2 class="text-3xl font-semibold mb-4">特徴</h2><p>このCMSは、開発者でなくても簡単にWebサイトのコンテンツを編集できるように設計されています。リアルタイムプレビュー機能により、変更内容をすぐに確認できます。</p>',
       image: "",
       imageAspectRatio: "auto",
     },
@@ -113,161 +112,27 @@ export default async function Home() {
   // ページデータ取得
   let pageData: Page | null = null;
 
-  console.log("環境変数状態:", {
-    supabaseConfigured: isSupabaseConfigured,
-    nodeEnv: process.env.NODE_ENV,
-    buildTime: new Date().toISOString(), // デプロイ確認用
-    version: "1.0.1", // バージョン追加
-  });
-
   try {
-    // APIではなく直接データを取得
-    if (isSupabaseConfigured) {
-      // 1. ページ本体
-      const { data: page, error: pageError } = await supabase
-        .from("pages")
-        .select("*")
-        .eq("id", 1)
-        .single();
-
-      if (pageError || !page) {
-        pageData = DEFAULT_PAGE_DATA;
-      } else {
-        // 2. セクション一覧
-        const { data: sections, error: secError } = await supabase
-          .from("sections")
-          .select("*")
-          .eq("page_id", page.id)
-          .order("position", { ascending: true });
-
-        if (secError) {
-          pageData = DEFAULT_PAGE_DATA;
-        } else {
-          // 3. 各セクションの詳細を取得
-          const sectionResults = [];
-          for (const section of sections) {
-            if (section.type === "mainVisual") {
-              const { data: mv } = await supabase
-                .from("main_visual_sections")
-                .select("*")
-                .eq("section_id", section.id)
-                .single();
-              sectionResults.push({
-                id: `section-${section.id}`,
-                layout: "mainVisual",
-                class: mv?.class ?? "",
-                bgImage: mv?.bg_image ?? "",
-                name: mv?.name ?? "",
-                image: mv?.image ?? "",
-                imageClass: mv?.image_class ?? "",
-                textClass: mv?.text_class ?? "",
-                html: mv?.html ?? "",
-                imageAspectRatio: mv?.image_aspect_ratio ?? "auto",
-              });
-            } else if (section.type === "imgText") {
-              const { data: it } = await supabase
-                .from("img_text_sections")
-                .select("*")
-                .eq("section_id", section.id)
-                .single();
-              sectionResults.push({
-                id: `section-${section.id}`,
-                layout: "imgText",
-                class: it?.class ?? "",
-                bgImage: it?.bg_image ?? "",
-                name: it?.name ?? "",
-                image: it?.image ?? "",
-                imageClass: it?.image_class ?? "",
-                textClass: it?.text_class ?? "",
-                html: it?.html ?? "",
-                imageAspectRatio: it?.image_aspect_ratio ?? "auto",
-              });
-            } else if (section.type === "cards") {
-              const { data: cs } = await supabase
-                .from("cards_sections")
-                .select("*")
-                .eq("section_id", section.id)
-                .single();
-              const { data: cards } = await supabase
-                .from("cards")
-                .select("*")
-                .eq("cards_section_id", section.id)
-                .order("position", { ascending: true });
-              sectionResults.push({
-                id: `section-${section.id}`,
-                layout: "cards",
-                class: cs?.class ?? "",
-                bgImage: cs?.bg_image ?? "",
-                name: cs?.name ?? "",
-                cards: (cards ?? []).map((c) => ({
-                  image: c.image ?? "",
-                  imageClass: c.image_class ?? "",
-                  textClass: c.text_class ?? "",
-                  html: c.html ?? "",
-                  imageAspectRatio: c.image_aspect_ratio ?? "auto",
-                })),
-              });
-            } else if (section.type === "form") {
-              const { data: fs } = await supabase
-                .from("form_sections")
-                .select("*")
-                .eq("section_id", section.id)
-                .single();
-              sectionResults.push({
-                id: `section-${section.id}`,
-                layout: "form",
-                class: fs?.class ?? "",
-                bgImage: fs?.bg_image ?? "",
-                name: fs?.name ?? "",
-                html: fs?.html ?? "",
-                endpoint: fs?.endpoint ?? "",
-              });
-            } else if (section.type === "group-start") {
-              const { data: gs } = await supabase
-                .from("group_start_sections")
-                .select("*")
-                .eq("section_id", section.id)
-                .single();
-              sectionResults.push({
-                id: `section-${section.id}`,
-                layout: "group-start",
-                class: gs?.class ?? "",
-                bgImage: gs?.bg_image ?? "",
-                name: gs?.name ?? "グループ",
-                scopeStyles: gs?.scope_styles ?? "",
-              });
-            } else if (section.type === "group-end") {
-              const { data: ge } = await supabase
-                .from("group_end_sections")
-                .select("*")
-                .eq("section_id", section.id)
-                .single();
-              sectionResults.push({
-                id: `section-${section.id}`,
-                layout: "group-end",
-                class: ge?.class ?? "",
-                bgImage: ge?.bg_image ?? "",
-              });
-            }
-          }
-
-          // 4. 組み立て
-          pageData = {
-            header: { html: page.header_html },
-            footer: { html: page.footer_html },
-            customCSS: page.custom_css,
-            sections: sectionResults,
-          };
-        }
+    // APIエンドポイントからデータを取得
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/page`,
+      {
+        cache: "no-store",
+        headers: {
+          "Cache-Control": "no-cache",
+        },
       }
+    );
+
+    if (response.ok) {
+      pageData = await response.json();
     } else {
-      // Supabase未設定ならデフォルトデータ
-      console.log("Supabase設定なし、デフォルトデータを使用");
+      console.error("APIからのデータ取得に失敗:", response.status);
       pageData = DEFAULT_PAGE_DATA;
     }
   } catch (error) {
     console.error("ページデータの取得に失敗しました", error);
-    pageData = null;
+    pageData = DEFAULT_PAGE_DATA;
   }
 
   // データが取得できなかった場合のデフォルト表示
@@ -284,8 +149,6 @@ export default async function Home() {
       </div>
     );
   }
-
-  // エディタボタンはPageRendererコンポーネント側で制御
 
   return (
     <>

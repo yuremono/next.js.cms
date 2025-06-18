@@ -125,17 +125,11 @@ export async function GET() {
     "Access-Control-Allow-Headers": "Content-Type",
   };
 
-  // 環境変数の状態をログ出力（デバッグ用）
-  console.log("環境変数設定状態:", {
-    supabaseConfigured: isSupabaseConfigured,
-    nodeEnv: process.env.NODE_ENV,
-    appUrl: process.env.NEXT_PUBLIC_APP_URL || "未設定",
-  });
+  // 環境変数設定状態確認済み
 
   try {
     // Supabaseが設定されていない場合はデフォルトデータを返す
     if (!isSupabaseConfigured) {
-      console.log("Supabase設定がないため、デフォルトデータを返します");
       return NextResponse.json(DEFAULT_PAGE_DATA, { headers });
     }
 
@@ -181,6 +175,7 @@ export async function GET() {
           textClass: mv?.text_class ?? "",
           html: mv?.html ?? "",
           imageAspectRatio: mv?.image_aspect_ratio ?? "auto",
+          sectionWidth: mv?.section_width ?? "",
         });
       } else if (section.type === "imgText") {
         const { data: it } = await supabase
@@ -199,6 +194,7 @@ export async function GET() {
           textClass: it?.text_class ?? "",
           html: it?.html ?? "",
           imageAspectRatio: it?.image_aspect_ratio ?? "auto",
+          sectionWidth: it?.section_width ?? "",
         });
       } else if (section.type === "cards") {
         const { data: cs } = await supabase
@@ -206,17 +202,21 @@ export async function GET() {
           .select("*")
           .eq("section_id", section.id)
           .single();
-        const { data: cards } = await supabase
-          .from("cards")
-          .select("*")
-          .eq("cards_section_id", section.id)
-          .order("position", { ascending: true });
+        // カードセクションが存在する場合のみカードを取得
+        const { data: cards } = cs
+          ? await supabase
+              .from("cards")
+              .select("*")
+              .eq("cards_section_id", cs.section_id)
+              .order("position", { ascending: true })
+          : { data: null };
         sectionResults.push({
           id: `section-${section.id}`,
           layout: "cards",
           class: cs?.class ?? "",
           bgImage: cs?.bg_image ?? "",
           name: cs?.name ?? "",
+          sectionWidth: cs?.section_width ?? "",
           cards: (cards ?? []).map((c) => ({
             image: c.image ?? "",
             imageClass: c.image_class ?? "",
@@ -239,6 +239,7 @@ export async function GET() {
           name: fs?.name ?? "",
           html: fs?.html ?? "",
           endpoint: fs?.endpoint ?? "",
+          sectionWidth: fs?.section_width ?? "",
         });
       } else if (section.type === "group-start") {
         const { data: gs } = await supabase
@@ -276,6 +277,7 @@ export async function GET() {
         footer: { html: page.footer_html },
         customCSS: page.custom_css,
         sections: sectionResults,
+        sectionsOrder: page.sections_order || null,
       },
       { headers }
     );
@@ -294,7 +296,7 @@ export async function POST(req: NextRequest) {
   if (!checkAuth()) {
     return NextResponse.json({ error: "認証が必要です" }, { status: 401 });
   }
-  
+
   const startTime = Date.now(); // パフォーマンス測定開始
 
   try {
@@ -332,6 +334,7 @@ export async function POST(req: NextRequest) {
         header_html: pageData.header.html,
         footer_html: pageData.footer.html,
         custom_css: pageData.customCSS,
+        sections_order: pageData.sectionsOrder || null,
       })
       .select()
       .single();
@@ -351,48 +354,114 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "ページ保存失敗" }, { status: 500 });
     }
 
-    // 3. 差分更新の実装 - 変更されたセクションのみ処理
-    const existingMap = new Map(
-      existingSections?.map((s) => [s.position, s]) || []
-    );
+    // 3. 差分更新の実装 - IDベースで処理
+    const existingMap = new Map(existingSections?.map((s) => [s.id, s]) || []);
 
-    const newSections = pageData.sections.map((section, i) => ({
-      ...section,
-      position: i,
-      page_id: page.id,
-    }));
+    // 既存IDのセットを作成（競合チェック用）
+    const existingIds = new Set(existingSections?.map((s) => s.id) || []);
+
+    const newSections = pageData.sections.map((section, i) => {
+      console.log("セクション処理開始:", section.id);
+
+      // セクションIDの処理
+      let sectionId;
+      try {
+        if (section.id.startsWith("section-")) {
+          const idPart = section.id.replace("section-", "");
+          console.log("ID部分:", idPart);
+
+          // 数値のみの場合は数値として、そうでなければハッシュ値を生成
+          if (/^\d+$/.test(idPart)) {
+            sectionId = parseInt(idPart, 10);
+            console.log("数値ID:", sectionId);
+          } else {
+            // 非数値IDの場合、ハッシュ値を生成（簡易版）
+            let hashId = Math.abs(
+              idPart.split("").reduce((a, b) => {
+                a = (a << 5) - a + b.charCodeAt(0);
+                return a & a;
+              }, 0)
+            );
+
+            console.log("ハッシュID生成:", hashId);
+
+            // ID競合を避けるため、既存IDと重複しない値を探す
+            while (existingIds.has(hashId)) {
+              hashId = hashId + 1;
+            }
+            sectionId = hashId;
+            existingIds.add(hashId); // 新しいIDを追加
+            console.log("最終ハッシュID:", sectionId);
+          }
+        } else {
+          sectionId = parseInt(section.id, 10);
+          console.log("直接数値変換:", sectionId);
+        }
+      } catch (error) {
+        console.error("セクションID処理エラー:", error, section.id);
+        throw error;
+      }
+
+      const result = {
+        ...section,
+        id: sectionId,
+        originalId: section.id, // 元のIDも保持
+        position: i,
+        page_id: page.id,
+      };
+
+      console.log("セクション処理完了:", result.id, result.layout);
+      return result;
+    });
 
     // 削除対象、更新対象、新規追加対象を分類
     const toDelete = [];
     const toUpdate = [];
     const toInsert = [];
 
-    // 既存セクションの処理
-    for (const [position, existing] of existingMap) {
-      if (position >= newSections.length) {
-        // 削除対象
-        toDelete.push(existing.id);
+    // 新しいセクションIDのセット
+    const newSectionIds = new Set(newSections.map((s) => s.id));
+
+    // 既存セクションの処理 - 新しいセクションに含まれていないものは削除
+    for (const [id, existing] of existingMap) {
+      if (!newSectionIds.has(id)) {
+        toDelete.push(id);
       }
     }
 
-    // 新しいセクションの処理
-    for (let i = 0; i < newSections.length; i++) {
-      const newSection = newSections[i];
-      const existing = existingMap.get(i);
+    // 新しいセクションの処理 - IDベースで更新/挿入を判定
+    console.log("処理対象セクション数:", newSections.length);
+    console.log("既存セクション数:", existingMap.size);
+
+    for (const newSection of newSections) {
+      console.log("処理中セクション:", newSection.id, newSection.layout);
+      const existing = existingMap.get(newSection.id);
 
       if (existing) {
-        // 更新対象（タイプが変わった場合は削除→挿入）
+        // 既存セクション - 更新対象（タイプが変わった場合は削除→挿入）
         if (existing.type !== newSection.layout) {
+          console.log("タイプ変更による削除→挿入:", newSection.id);
           toDelete.push(existing.id);
-          toInsert.push({ ...newSection, position: i });
+          toInsert.push(newSection);
         } else {
-          toUpdate.push({ id: existing.id, ...newSection, position: i });
+          console.log("更新対象:", newSection.id);
+          toUpdate.push(newSection);
         }
       } else {
-        // 新規追加対象
-        toInsert.push({ ...newSection, position: i });
+        // 新規セクション - 挿入対象
+        console.log("新規挿入:", newSection.id);
+        toInsert.push(newSection);
       }
     }
+
+    console.log(
+      "削除対象:",
+      toDelete.length,
+      "更新対象:",
+      toUpdate.length,
+      "挿入対象:",
+      toInsert.length
+    );
 
     // 4. バルク削除処理（最適化）
     if (toDelete.length > 0) {
@@ -462,14 +531,28 @@ export async function POST(req: NextRequest) {
 
     // 5. バルク更新処理（UPSERT使用）
     if (toUpdate.length > 0) {
+      // sectionsテーブルに存在するフィールドのみを指定
       const sectionsToUpdate = toUpdate.map((section) => ({
         id: section.id,
         page_id: page.id,
         type: section.layout,
         position: section.position,
+        // nameフィールドは含めない（sectionsテーブルには存在しない）
       }));
 
-      await supabase.from("sections").upsert(sectionsToUpdate);
+      console.log("更新対象セクション:", sectionsToUpdate);
+
+      const { error: updateError } = await supabase
+        .from("sections")
+        .upsert(sectionsToUpdate);
+      if (updateError) {
+        console.error("セクション更新エラー:", updateError);
+        console.error("更新データ:", sectionsToUpdate);
+        return NextResponse.json(
+          { error: `セクション更新失敗: ${updateError.message}` },
+          { status: 500 }
+        );
+      }
 
       // セクション詳細の更新（並列処理）
       const updateDetailPromises = [];
@@ -483,6 +566,11 @@ export async function POST(req: NextRequest) {
               bg_image: section.bgImage,
               name: section.name,
               html: section.html,
+              image: section.image ?? null,
+              image_class: section.imageClass ?? null,
+              text_class: section.textClass ?? null,
+              image_aspect_ratio: section.imageAspectRatio ?? "auto",
+              section_width: section.sectionWidth ?? null,
             })
           );
         } else if (section.layout === "imgText") {
@@ -497,8 +585,41 @@ export async function POST(req: NextRequest) {
               image_class: section.imageClass ?? null,
               text_class: section.textClass ?? null,
               image_aspect_ratio: section.imageAspectRatio ?? "auto",
+              section_width: section.sectionWidth ?? null,
             })
           );
+        } else if (section.layout === "cards") {
+          // カードセクション本体の更新
+          updateDetailPromises.push(
+            supabase.from("cards_sections").upsert({
+              section_id: section.id,
+              class: section.class,
+              bg_image: section.bgImage,
+              name: section.name,
+              section_width: section.sectionWidth ?? null,
+            })
+          );
+
+          // 既存のカードを削除してから新しいカードを挿入
+          updateDetailPromises.push(
+            supabase.from("cards").delete().eq("cards_section_id", section.id)
+          );
+
+          // 新しいカードを挿入
+          if (section.cards && section.cards.length > 0) {
+            const cardsToInsert = section.cards.map((card, j) => ({
+              cards_section_id: section.id,
+              image: card.image ?? null,
+              image_class: card.imageClass ?? null,
+              text_class: card.textClass ?? null,
+              html: card.html,
+              position: j,
+              image_aspect_ratio: card.imageAspectRatio ?? "auto",
+            }));
+            updateDetailPromises.push(
+              supabase.from("cards").insert(cardsToInsert)
+            );
+          }
         } else if (section.layout === "form") {
           updateDetailPromises.push(
             supabase.from("form_sections").upsert({
@@ -508,36 +629,75 @@ export async function POST(req: NextRequest) {
               name: section.name,
               html: section.html,
               endpoint: section.endpoint,
+              section_width: section.sectionWidth ?? null,
             })
           );
         } else if (section.layout === "group-start") {
-          updateDetailPromises.push(
-            supabase.from("group_start_sections").upsert({
-              section_id: section.id,
-              class: section.class,
-              bg_image: section.bgImage,
-              name: section.name,
-              scope_styles: section.scopeStyles,
-            })
-          );
+          console.log("🔍 GROUP-START UPSERT:", {
+            section_id: section.id,
+            name: section.name,
+            class: section.class,
+            section_width: section.sectionWidth,
+            scope_styles: section.scopeStyles,
+          });
+          const groupStartPromise = supabase
+            .from("group_start_sections")
+            .upsert(
+              {
+                section_id: section.id,
+                class: section.class,
+                bg_image: section.bgImage,
+                name: section.name,
+                scope_styles: section.scopeStyles,
+                section_width: section.sectionWidth ?? null,
+              },
+              {
+                onConflict: "section_id",
+              }
+            );
+          updateDetailPromises.push(groupStartPromise);
         } else if (section.layout === "group-end") {
-          updateDetailPromises.push(
-            supabase.from("group_end_sections").upsert({
+          console.log("🔍 GROUP-END UPSERT:", {
+            section_id: section.id,
+            class: section.class,
+            section_width: section.sectionWidth,
+          });
+          const groupEndPromise = supabase.from("group_end_sections").upsert(
+            {
               section_id: section.id,
               class: section.class,
               bg_image: section.bgImage,
-            })
+              section_width: section.sectionWidth ?? null,
+            },
+            {
+              onConflict: "section_id",
+            }
           );
+          updateDetailPromises.push(groupEndPromise);
         }
       }
 
-      await Promise.all(updateDetailPromises);
+      const updateResults = await Promise.all(updateDetailPromises);
+
+      // エラーチェック
+      updateResults.forEach((result, index) => {
+        if (result.error) {
+          console.error(`🚨 UPDATE DETAIL ERROR [${index}]:`, result.error);
+        } else {
+          console.log(
+            `✅ UPDATE DETAIL SUCCESS [${index}]:`,
+            result.data?.length || 0,
+            "records"
+          );
+        }
+      });
     }
 
     // 6. バルク挿入処理（最適化）
     if (toInsert.length > 0) {
-      // セクション本体を一括挿入
+      // セクション本体を一括挿入（IDを明示的に指定）
       const sectionsToInsert = toInsert.map((section) => ({
+        id: section.id, // フロントエンドから送信されたIDを使用
         page_id: page.id,
         type: section.layout,
         position: section.position,
@@ -549,8 +709,9 @@ export async function POST(req: NextRequest) {
         .select();
 
       if (secError) {
+        console.error("セクション挿入エラー:", secError);
         return NextResponse.json(
-          { error: "セクション保存失敗" },
+          { error: `セクション保存失敗: ${secError.message}` },
           { status: 500 }
         );
       }
@@ -560,7 +721,7 @@ export async function POST(req: NextRequest) {
       const cardsBulkInsert = [];
 
       for (const [i, section] of toInsert.entries()) {
-        const sectionId = insertedSections[i].id;
+        const sectionId = section.id; // フロントエンドから送信されたIDを直接使用
 
         if (section.layout === "mainVisual") {
           insertDetailPromises.push(
@@ -570,6 +731,11 @@ export async function POST(req: NextRequest) {
               bg_image: section.bgImage,
               name: section.name,
               html: section.html,
+              image: section.image ?? null,
+              image_class: section.imageClass ?? null,
+              text_class: section.textClass ?? null,
+              image_aspect_ratio: section.imageAspectRatio ?? "auto",
+              section_width: section.sectionWidth ?? null,
             })
           );
         } else if (section.layout === "imgText") {
@@ -584,6 +750,7 @@ export async function POST(req: NextRequest) {
               image_class: section.imageClass ?? null,
               text_class: section.textClass ?? null,
               image_aspect_ratio: section.imageAspectRatio ?? "auto",
+              section_width: section.sectionWidth ?? null,
             })
           );
         } else if (section.layout === "cards") {
@@ -594,6 +761,7 @@ export async function POST(req: NextRequest) {
               class: section.class,
               bg_image: section.bgImage,
               name: section.name,
+              section_width: section.sectionWidth ?? null,
             })
           );
 
@@ -619,6 +787,7 @@ export async function POST(req: NextRequest) {
               name: section.name,
               html: section.html,
               endpoint: section.endpoint,
+              section_width: section.sectionWidth ?? null,
             })
           );
         } else if (section.layout === "group-start") {
@@ -629,6 +798,7 @@ export async function POST(req: NextRequest) {
               bg_image: section.bgImage,
               name: section.name,
               scope_styles: section.scopeStyles,
+              section_width: section.sectionWidth ?? null,
             })
           );
         } else if (section.layout === "group-end") {
@@ -637,6 +807,7 @@ export async function POST(req: NextRequest) {
               section_id: sectionId,
               class: section.class,
               bg_image: section.bgImage,
+              section_width: section.sectionWidth ?? null,
             })
           );
         }
@@ -651,6 +822,25 @@ export async function POST(req: NextRequest) {
 
       // 全詳細挿入を並列実行
       await Promise.all(insertDetailPromises);
+    }
+
+    // 7. 全セクションの位置を強制更新（順番を確実に保存）
+    if (newSections.length > 0) {
+      // 各セクションの位置を個別に更新（UPSERTではなくUPDATE使用）
+      const positionUpdatePromises = newSections.map((section) =>
+        supabase
+          .from("sections")
+          .update({ position: section.position })
+          .eq("id", section.id)
+      );
+
+      const positionResults = await Promise.all(positionUpdatePromises);
+
+      // エラーチェック
+      const positionErrors = positionResults.filter((result) => result.error);
+      if (positionErrors.length > 0) {
+        console.error("位置更新エラー:", positionErrors);
+      }
     }
 
     const endTime = Date.now();

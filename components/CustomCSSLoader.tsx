@@ -26,7 +26,6 @@ export function CustomCSSLoader() {
         }
       } catch (error) {
         // custom.cssが存在しない場合は何もしない
-        console.log("custom.css not found");
       }
     };
 

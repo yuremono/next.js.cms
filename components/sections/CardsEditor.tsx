@@ -4,6 +4,7 @@ import { useState } from "react";
 import { RichTextEditor } from "@/components/ui/editor";
 import { ImageUpload } from "@/components/images/ImageUpload";
 import { BackgroundImageUpload } from "@/components/images/BackgroundImageUpload";
+import { FormField } from "@/components/ui/form-field";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 // import { Textarea } from "@/components/ui/textarea";
@@ -228,10 +229,10 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
   );
 
   // クラス名の変更
-  const handleClassNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleClassNameChange = (value: string) => {
     onUpdate({
       ...section,
-      class: e.target.value,
+      class: value,
     });
   };
 
@@ -244,10 +245,18 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
   };
 
   // セクション名の変更
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNameChange = (value: string) => {
     onUpdate({
       ...section,
-      name: e.target.value,
+      name: value,
+    });
+  };
+
+  // セクション幅の変更
+  const handleSectionWidthChange = (value: string) => {
+    onUpdate({
+      ...section,
+      sectionWidth: value,
     });
   };
 
@@ -256,30 +265,27 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
       <Card className="flex h-full flex-col rounded-sm p-4">
         <h3 className="mb-4 text-lg font-medium">カードセクション設定</h3>
         <div className="flex flex-1 flex-col space-y-4">
-          <div className="flex items-center gap-4">
-            <Label className="" htmlFor="cards-name">
-              セクション名
-            </Label>
-            <Input
-              id="cards-name"
-              value={section.name || ""}
-              onChange={handleNameChange}
-              placeholder="例: カード"
-              className="flex-1"
-            />
-          </div>
-          <div className="flex items-center gap-4">
-            <Label className="" htmlFor="cards-class">
-              セクションクラス
-            </Label>
-            <Input
-              id="cards-class"
-              value={section.class}
-              onChange={handleClassNameChange}
-              placeholder="例: Cards py-8"
-              className="flex-1"
-            />
-          </div>
+          <FormField
+            id="cards-name"
+            label="セクション名"
+            value={section.name || ""}
+            onChange={handleNameChange}
+            placeholder="例: カード"
+          />
+          <FormField
+            id="cards-class"
+            label="セクションクラス"
+            value={section.class}
+            onChange={handleClassNameChange}
+            placeholder="例: Cards py-8"
+          />
+          <FormField
+            id="cards-section-width"
+            label="セクション幅"
+            value={section.sectionWidth || ""}
+            onChange={handleSectionWidthChange}
+            placeholder="例: max-w-6xl"
+          />
           <BackgroundImageUpload
             initialImage={section.bgImage}
             onImageChange={handleBgImageChange}
@@ -323,13 +329,13 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
                     >
                       {section.cards.map((card, index) => (
                         <li key={`card-${index}`}>
-                        <SortableCardItem
-                          card={card}
-                          index={index}
-                          isActive={activeCardIndex === index}
-                          onSelect={() => setActiveCardIndex(index)}
-                          onDelete={() => removeCard(index)}
-                        />
+                          <SortableCardItem
+                            card={card}
+                            index={index}
+                            isActive={activeCardIndex === index}
+                            onSelect={() => setActiveCardIndex(index)}
+                            onDelete={() => removeCard(index)}
+                          />
                         </li>
                       ))}
                     </ul>

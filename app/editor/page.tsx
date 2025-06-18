@@ -12,9 +12,17 @@ import { Footer, Header, Page, Section } from "@/types";
 import { HeaderEditor } from "@/components/sections/HeaderEditor";
 import { FooterEditor } from "@/components/sections/FooterEditor";
 import SortableSections from "@/components/SortableSections";
+import IDEStyleSectionList from "@/components/IDEStyleSectionList";
 import { SectionSelector } from "@/components/SectionSelector";
 import { SectionEditorRenderer } from "@/components/editor/SectionEditorRenderer";
 import { PageRenderer } from "@/components/PageRenderer";
+import {
+  sectionsToOrderString,
+  sortSectionsByOrderString,
+  moveSectionInOrderString,
+  addSectionToOrderString,
+  removeSectionFromOrderString,
+} from "@/lib/section-order-utils";
 import {
   Save,
   Plus,
@@ -29,6 +37,7 @@ import {
   Tablet,
   Smartphone,
   GripVertical,
+  Code,
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -189,6 +198,7 @@ export default function EditorPage() {
     },
     sections: [],
     customCSS: "",
+    sectionsOrder: "",
   });
 
   // 選択中のセクションインデックス
@@ -225,6 +235,9 @@ export default function EditorPage() {
 
   // 追加: レスポンシブ用state
   const [sectionListOpen, setSectionListOpen] = useState(false);
+
+  // IDE風UI切り替え状態
+  const [useIDEStyleUI, setUseIDEStyleUI] = useState(true);
 
   // プレビューにデータを送信する関数
   const sendDataToPreview = () => {
@@ -336,7 +349,7 @@ export default function EditorPage() {
       try {
         // 開発時の認証スキップチェック
         if (process.env.NEXT_PUBLIC_SKIP_AUTH === "true") {
-          console.log("🚫 フロントエンド認証をスキップしています");
+          // フロントエンド認証をスキップしています
           setIsAuthenticated(true);
           setAuthChecked(true);
           return;
@@ -435,6 +448,17 @@ export default function EditorPage() {
           });
         }
 
+        // sectionsOrderがある場合は、その順序でセクションをソート
+        if (data.sectionsOrder && data.sections) {
+          data.sections = sortSectionsByOrderString(
+            data.sections,
+            data.sectionsOrder
+          );
+        } else if (data.sections) {
+          // sectionsOrderがない場合は現在の順序から生成
+          data.sectionsOrder = sectionsToOrderString(data.sections);
+        }
+
         setPage(data);
         // セクションが存在する場合は一番上を選択
         if (data.sections && data.sections.length > 0) {
@@ -507,7 +531,21 @@ export default function EditorPage() {
       const newSections = [...prev.sections];
       const [movedSection] = newSections.splice(fromIndex, 1);
       newSections.splice(toIndex, 0, movedSection);
-      return { ...prev, sections: newSections };
+
+      // sectionsOrder文字列も更新
+      const currentOrder =
+        prev.sectionsOrder || sectionsToOrderString(prev.sections);
+      const newOrder = moveSectionInOrderString(
+        currentOrder,
+        fromIndex,
+        toIndex
+      );
+
+      return {
+        ...prev,
+        sections: newSections,
+        sectionsOrder: newOrder,
+      };
     });
 
     if (activeSectionIndex === fromIndex) {
@@ -530,6 +568,9 @@ export default function EditorPage() {
     setPage((prev) => {
       const sectionToDelete = prev.sections[index];
       let newSections = [...prev.sections];
+      const currentOrder =
+        prev.sectionsOrder || sectionsToOrderString(prev.sections);
+      let newOrder = currentOrder;
 
       // グループ開始タグの場合は、対応する終了タグも同時削除
       if (sectionToDelete.layout === "group-start") {
@@ -543,15 +584,26 @@ export default function EditorPage() {
         }
 
         if (groupEndIndex !== -1) {
+          // 終了タグのIDも順序文字列から削除
+          newOrder = removeSectionFromOrderString(
+            newOrder,
+            newSections[groupEndIndex].id
+          );
           // 終了タグから削除（インデックスがずれないように後ろから）
           newSections = newSections.filter((_, i) => i !== groupEndIndex);
         }
       }
 
+      // 対象のセクションのIDを順序文字列から削除
+      newOrder = removeSectionFromOrderString(newOrder, sectionToDelete.id);
       // 対象のセクションを削除
       newSections = newSections.filter((_, i) => i !== index);
 
-      return { ...prev, sections: newSections };
+      return {
+        ...prev,
+        sections: newSections,
+        sectionsOrder: newOrder,
+      };
     });
 
     if (activeSectionIndex === index) {
@@ -585,7 +637,26 @@ export default function EditorPage() {
             groupStartSection,
             groupEndSection
           );
-          return { ...prev, sections: newSections };
+
+          // sectionsOrder文字列も更新
+          const currentOrder =
+            prev.sectionsOrder || sectionsToOrderString(prev.sections);
+          let newOrder = addSectionToOrderString(
+            currentOrder,
+            groupStartSection.id,
+            insertIndex - 1
+          );
+          newOrder = addSectionToOrderString(
+            newOrder,
+            groupEndSection.id,
+            insertIndex
+          );
+
+          return {
+            ...prev,
+            sections: newSections,
+            sectionsOrder: newOrder,
+          };
         });
 
         // 開始タグを選択
@@ -611,7 +682,21 @@ export default function EditorPage() {
               : newSections.length;
 
           newSections.splice(insertIndex, 0, newSection);
-          return { ...prev, sections: newSections };
+
+          // sectionsOrder文字列も更新
+          const currentOrder =
+            prev.sectionsOrder || sectionsToOrderString(prev.sections);
+          const newOrder = addSectionToOrderString(
+            currentOrder,
+            newSection.id,
+            insertIndex - 1
+          );
+
+          return {
+            ...prev,
+            sections: newSections,
+            sectionsOrder: newOrder,
+          };
         });
 
         // 新しく追加したセクションを選択
@@ -631,10 +716,16 @@ export default function EditorPage() {
 
   // セクション配列を直接更新する関数（ドラッグ&ドロップグループ化用）
   const updateSections = (newSections: Section[]) => {
-    setPage((prevPage) => ({
-      ...prevPage,
-      sections: newSections,
-    }));
+    setPage((prevPage) => {
+      // 新しい順序文字列を生成
+      const newOrder = sectionsToOrderString(newSections);
+
+      return {
+        ...prevPage,
+        sections: newSections,
+        sectionsOrder: newOrder,
+      };
+    });
     // 選択インデックスを調整（削除された場合に備えて）
     if (
       activeSectionIndex !== null &&
@@ -893,19 +984,19 @@ export default function EditorPage() {
                     value="header"
                     className="min-w-[70px] rounded-none border-none bg-transparent p-2 text-left  "
                   >
-                    ヘッダー
+                    ヘッダー設定
                   </TabsTrigger>
                   <TabsTrigger
                     value="footer"
                     className="min-w-[70px] rounded-none border-none bg-transparent p-2 text-left  "
                   >
-                    フッター
+                    フッター設定
                   </TabsTrigger>
                   <TabsTrigger
                     value="css-editor"
                     className="min-w-[70px] rounded-none border-none bg-transparent p-2 text-left  "
                   >
-                    CSS追加
+                    カスタムCSS
                   </TabsTrigger>
                   <TabsTrigger
                     value="ai-generator"
@@ -954,6 +1045,16 @@ export default function EditorPage() {
 
                 <Button
                   size="sm"
+                  variant={useIDEStyleUI ? "default" : "outline"}
+                  onClick={() => setUseIDEStyleUI(!useIDEStyleUI)}
+                  title={
+                    useIDEStyleUI ? "通常UIに切り替え" : "IDE風UIに切り替え"
+                  }
+                >
+                  <Code className="h-3 w-3" />
+                </Button>
+                <Button
+                  size="sm"
                   onClick={() => setIsSelectorOpen(true)}
                   className="ml-auto"
                 >
@@ -972,27 +1073,47 @@ export default function EditorPage() {
               {/* PC時は常時リスト表示、SP時は開閉 */}
               <div
                 className={
-                  "mt-4 w-full " +
+                  "SortableSectionsOuter mt-4 w-full " +
                   (sectionListOpen ? "" : "hidden") +
-                  " lg:block lg:w-full"
+                  " "
                 }
               >
-                <SortableSections
-                  sections={
-                    sectionListOpen ||
-                    typeof window === "undefined" ||
-                    window.innerWidth >= 834
-                      ? page.sections
-                      : page.sections.filter((_, i) => i === activeSectionIndex)
-                  }
-                  activeSectionIndex={activeSectionIndex}
-                  onSectionClick={handleSectionClick}
-                  onSectionMove={moveSection}
-                  onSectionDelete={deleteSection}
-                  onSectionsChange={updateSections}
-                  onGroupToggle={handleGroupToggle}
-                  expandedGroups={expandedGroups}
-                />
+                {useIDEStyleUI ? (
+                  <IDEStyleSectionList
+                    sections={
+                      sectionListOpen ||
+                      typeof window === "undefined" ||
+                      window.innerWidth >= 834
+                        ? page.sections
+                        : page.sections.filter(
+                            (_, i) => i === activeSectionIndex
+                          )
+                    }
+                    activeSectionIndex={activeSectionIndex}
+                    onSectionClick={handleSectionClick}
+                    onSectionMove={moveSection}
+                    onSectionDelete={deleteSection}
+                  />
+                ) : (
+                  <SortableSections
+                    sections={
+                      sectionListOpen ||
+                      typeof window === "undefined" ||
+                      window.innerWidth >= 834
+                        ? page.sections
+                        : page.sections.filter(
+                            (_, i) => i === activeSectionIndex
+                          )
+                    }
+                    activeSectionIndex={activeSectionIndex}
+                    onSectionClick={handleSectionClick}
+                    onSectionMove={moveSection}
+                    onSectionDelete={deleteSection}
+                    onSectionsChange={updateSections}
+                    onGroupToggle={handleGroupToggle}
+                    expandedGroups={expandedGroups}
+                  />
+                )}
               </div>
             </aside>
 

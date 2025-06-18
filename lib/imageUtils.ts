@@ -34,29 +34,29 @@ export async function uploadAndOptimizeImage(
 	try {
 		// 環境変数が設定されていない場合はDataURIを使用
 		if (!isSupabaseConfigured) {
-			// DataURLを生成
-			const dataUrl = await new Promise<string>((resolve, reject) => {
-				const reader = new FileReader();
-				reader.onload = () => resolve(reader.result as string);
-				reader.onerror = reject;
-				reader.readAsDataURL(file);
-			});
+      // DataURLを生成
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
 
-			// 一意のIDを生成してイメージマップに保存
-			const imageId = `local-image-${uuidv4()}`;
-			imageStore.set(imageId, dataUrl);
+      // 一意のIDを生成してイメージマップに保存
+      const imageId = `local-image-${uuidv4()}`;
+      imageStore.set(imageId, dataUrl);
 
-			// グローバルキャッシュにも保存
-			if (localImageCache) {
-				localImageCache[imageId] = dataUrl;
-			}
+      // グローバルキャッシュにも保存
+      if (localImageCache) {
+        localImageCache[imageId] = dataUrl;
+      }
 
-			console.log("Local image stored with ID:", imageId);
+      // Local image stored with ID: ${imageId}
 
-			// 直接APIルートを指すURLを返す - 絶対パスを使用
-			const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
-			return `${baseUrl}/api/images/_local/${imageId}`;
-		}
+      // 直接APIルートを指すURLを返す - 絶対パスを使用
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
+      return `${baseUrl}/api/images/_local/${imageId}`;
+    }
 
 		// 以下、Supabaseストレージを使用する場合の処理
 		// ファイル名を一意のものに変更

@@ -6,7 +6,6 @@ const authConfig = require("@/config/auth.config.js");
 export async function checkAuth(request?: NextRequest): Promise<boolean> {
   // 開発時の認証スキップ（設定ファイルまたは環境変数で制御）
   if (authConfig.skipAuthInDev || process.env.SKIP_AUTH === "true") {
-    console.log("🚫 認証をスキップしています（開発モード）");
     return true;
   }
 
@@ -22,8 +21,5 @@ export async function checkAuth(request?: NextRequest): Promise<boolean> {
 
 export async function requireAuth(request?: NextRequest): Promise<boolean> {
   const isAuthenticated = await checkAuth(request);
-  if (!isAuthenticated) {
-    console.log("認証が必要です");
-  }
   return isAuthenticated;
 }

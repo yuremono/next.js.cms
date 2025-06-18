@@ -4,6 +4,7 @@
 
 import { Page, Section } from "@/types";
 import Image from "next/image";
+import { CSSProperties } from "react";
 import "../app/top.scss";
 
 interface PageRendererProps {
@@ -11,24 +12,81 @@ interface PageRendererProps {
   showEditorButton?: boolean;
 }
 
+// CSS変数をカスタムCSSから抽出する関数（現在未使用：CSSファイルから読み込むため）
+/*
+function extractCSSVariables(customCSS: string): {
+  variables: string;
+  remainingCSS: string;
+} {
+  if (!customCSS) return { variables: "", remainingCSS: "" };
+
+  // :root { ... } ブロックを検索
+  const rootRegex = /:root\s*\{([^}]*)\}/g;
+  let variables = "";
+  let remainingCSS = customCSS;
+
+  let match;
+  while ((match = rootRegex.exec(customCSS)) !== null) {
+    const rootContent = match[1];
+    // 設定した変数のみを抽出（--base, --head, --sectionMT, etc.）
+    const variableLines = rootContent.split("\n").filter((line) => {
+      const trimmed = line.trim();
+      return (
+        trimmed &&
+        (trimmed.includes("--base:") ||
+          trimmed.includes("--head:") ||
+          trimmed.includes("--sectionMT:") ||
+          trimmed.includes("--titleAfter:") ||
+          trimmed.includes("--sectionPY:") ||
+          trimmed.includes("--sectionPX:") ||
+          trimmed.includes("--gap:") ||
+          trimmed.includes("--mc:") ||
+          trimmed.includes("--sc:") ||
+          trimmed.includes("--ac:") ||
+          trimmed.includes("--bc:") ||
+          trimmed.includes("--tx:"))
+      );
+    });
+
+    if (variableLines.length > 0) {
+      variables = `:root {\n${variableLines.join("\n")}\n}`;
+    }
+
+    // :rootブロックを残りのCSSから削除
+    remainingCSS = remainingCSS.replace(match[0], "");
+  }
+
+  return { variables: variables.trim(), remainingCSS: remainingCSS.trim() };
+}
+*/
+
 export function PageRenderer({
   page,
   showEditorButton = false,
 }: PageRendererProps) {
+  // CSS変数とカスタムCSSを分離
+  // CSS変数を抽出（コメントアウト：CSSファイルから読み込むため不要）
+  // const { variables, remainingCSS } = extractCSSVariables(page.customCSS || "");
+
   // グループ構造を解析してレンダリング
   const renderSectionsWithGroups = () => {
     const result = [];
     let i = 0;
-    
+
     while (i < page.sections.length) {
       const section = page.sections[i];
-      
+
       if (section.layout === "group-start") {
         // グループ開始を見つけたら、対応する終了まで探す
-        const groupStartSection = section as any;
+        const groupStartSection = section as {
+          layout: "group-start";
+          class?: string;
+          bgImage?: string;
+          scopeStyles?: string;
+        };
         const groupSections = [];
         let groupEndIndex = -1;
-        
+
         // 対応する終了タグを探す
         for (let j = i + 1; j < page.sections.length; j++) {
           if (page.sections[j].layout === "group-end") {
@@ -39,34 +97,39 @@ export function PageRenderer({
             groupSections.push(page.sections[j]);
           }
         }
-        
+
         if (groupEndIndex !== -1) {
           // グループとして出力
           const sectionClass = groupStartSection.class || "";
-          const bgStyle = groupStartSection.bgImage
+          const bgStyle: CSSProperties = groupStartSection.bgImage
             ? { backgroundImage: `url(${groupStartSection.bgImage})` }
             : {};
           const scopeStyles = groupStartSection.scopeStyles || "";
-          
+
           result.push(
             <article
               key={`group-${i}`}
               className={sectionClass}
-              style={{ ...bgStyle }}
-              {...(scopeStyles ? { style: scopeStyles } : {})}
+              style={bgStyle}
+              {...(scopeStyles
+                ? { style: { ...bgStyle, ...JSON.parse(`{${scopeStyles}}`) } }
+                : {})}
             >
-              {groupSections.map((groupSection, idx) => 
+              {groupSections.map((groupSection, idx) =>
                 renderSection(groupSection, `${i}-${idx}`)
               )}
             </article>
           );
-          
+
           // グループ全体をスキップ
           i = groupEndIndex + 1;
         } else {
           // 対応する終了タグがない場合は警告として出力
           result.push(
-            <div key={i} className="bg-red-100 border border-red-400 p-4 text-red-700">
+            <div
+              key={i}
+              className="border border-red-400 bg-red-100 p-4 text-red-700"
+            >
               警告: グループ開始タグに対応する終了タグがありません
             </div>
           );
@@ -75,7 +138,10 @@ export function PageRenderer({
       } else if (section.layout === "group-end") {
         // 対応する開始タグがない終了タグ
         result.push(
-          <div key={i} className="bg-red-100 border border-red-400 p-4 text-red-700">
+          <div
+            key={i}
+            className="border border-red-400 bg-red-100 p-4 text-red-700"
+          >
             警告: 対応する開始タグがない終了タグです
           </div>
         );
@@ -86,7 +152,7 @@ export function PageRenderer({
         i++;
       }
     }
-    
+
     return result;
   };
 
@@ -141,21 +207,21 @@ export function PageRenderer({
             <div className="container mx-auto">
               <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-2">
                 <div>
-                {section.image && (
-                  <div
-                    className={`relative w-full ${section.imageClass || ""}`}
-                    style={{
-                      aspectRatio: section.imageAspectRatio || "auto",
-                    }}
-                  >
-                    <Image
-                      src={section.image}
-                      alt="Section Image"
-                      fill
-                      className="rounded-lg object-cover"
-                    />
-                  </div>
-                )}
+                  {section.image && (
+                    <div
+                      className={`relative w-full ${section.imageClass || ""}`}
+                      style={{
+                        aspectRatio: section.imageAspectRatio || "auto",
+                      }}
+                    >
+                      <Image
+                        src={section.image}
+                        alt="Section Image"
+                        fill
+                        className="rounded-lg object-cover"
+                      />
+                    </div>
+                  )}
                 </div>
                 <div className={!section.image ? "w-full" : ""}>
                   <div
@@ -301,10 +367,6 @@ export function PageRenderer({
 
   return (
     <>
-      {/* カスタムCSS */}
-      {page.customCSS && (
-        <style dangerouslySetInnerHTML={{ __html: page.customCSS }} />
-      )}
       <header className="header relative">
         <div dangerouslySetInnerHTML={{ __html: page.header.html }} />
         {showEditorButton && (
@@ -318,9 +380,7 @@ export function PageRenderer({
           </div>
         )}
       </header>
-      <main className="min-h-screen">
-        {renderSectionsWithGroups()}
-      </main>
+      <main className="min-h-screen">{renderSectionsWithGroups()}</main>
       <footer
         className="footer"
         dangerouslySetInnerHTML={{ __html: page.footer.html }}

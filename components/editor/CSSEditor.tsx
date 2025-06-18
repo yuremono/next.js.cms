@@ -4,57 +4,212 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+
+import { VariableField } from "@/components/ui/variable-field";
+import { VariableColorField } from "@/components/ui/variable-color-field";
+import { ChevronDown } from "lucide-react";
 
 interface CSSEditorProps {
-	initialCSS: string;
-	onUpdate: (css: string) => void;
+  initialCSS: string;
+  onUpdate: (css: string) => void;
+}
+
+interface CSSVariables {
+  // レイアウト関連
+  contentMaxWidth: string;
+  headerHeight: string;
+  sectionSpacing: string;
+  titleMarginBottom: string;
+  sectionPaddingY: string;
+  sectionPaddingX: string;
+  cardGap: string;
+
+  // カラー関連
+  primaryColor: string;
+  secondaryColor: string;
+  accentColor: string;
+  baseColor: string;
+  textColor: string;
 }
 
 export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
   const [css, setCSS] = useState(initialCSS || "");
-  const [isApplying, setIsApplying] = useState(false);
+
+  // CSS変数の状態（デフォルト値なし）
+  const [cssVariables, setCssVariables] = useState<CSSVariables>({
+    contentMaxWidth: "",
+    headerHeight: "",
+    sectionSpacing: "",
+    titleMarginBottom: "",
+    sectionPaddingY: "",
+    sectionPaddingX: "",
+    cardGap: "",
+    primaryColor: "",
+    secondaryColor: "",
+    accentColor: "",
+    baseColor: "",
+    textColor: "",
+  });
+
+  // 変数設定セクションの開閉状態
+  const [isVariablesOpen, setIsVariablesOpen] = useState(false);
 
   // 初期CSSが更新された場合に状態を更新
   useEffect(() => {
-    setCSS(initialCSS || "");
+    if (initialCSS) {
+      // CSS変数を抽出してインプットフィールドに設定
+      const extractedVariables = extractCSSVariables(initialCSS);
+      setCssVariables(extractedVariables);
+
+      // CSS変数部分を除いたCSSを設定
+      const cssWithoutVariables = removeCSSVariables(initialCSS);
+      setCSS(cssWithoutVariables);
+    } else {
+      setCSS("");
+    }
   }, [initialCSS]);
+
+  // CSSからCSS変数を抽出する関数
+  const extractCSSVariables = (cssText: string): CSSVariables => {
+    const variables: CSSVariables = {
+      contentMaxWidth: "",
+      headerHeight: "",
+      sectionSpacing: "",
+      titleMarginBottom: "",
+      sectionPaddingY: "",
+      sectionPaddingX: "",
+      cardGap: "",
+      primaryColor: "",
+      secondaryColor: "",
+      accentColor: "",
+      baseColor: "",
+      textColor: "",
+    };
+
+    // :root { ... } ブロックを検索
+    const rootRegex = /:root\s*\{([^}]*)\}/g;
+    const match = rootRegex.exec(cssText);
+
+    if (match) {
+      const rootContent = match[1];
+
+      // 各CSS変数を抽出
+      const extractValue = (varName: string) => {
+        const regex = new RegExp(`--${varName}\\s*:\\s*([^;]+);`, "i");
+        const match = rootContent.match(regex);
+        return match ? match[1].trim() : "";
+      };
+
+      variables.contentMaxWidth = extractValue("base");
+      variables.headerHeight = extractValue("head");
+      variables.sectionSpacing = extractValue("sectionMT");
+      variables.titleMarginBottom = extractValue("titleAfter");
+      variables.sectionPaddingY = extractValue("sectionPY");
+      variables.sectionPaddingX = extractValue("sectionPX");
+      variables.cardGap = extractValue("gap");
+      variables.primaryColor = extractValue("mc");
+      variables.secondaryColor = extractValue("sc");
+      variables.accentColor = extractValue("ac");
+      variables.baseColor = extractValue("bc");
+      variables.textColor = extractValue("tx");
+    }
+
+    return variables;
+  };
+
+  // CSSからCSS変数部分を削除する関数
+  const removeCSSVariables = (cssText: string): string => {
+    // :root { ... } ブロックを削除
+    const withoutRoot = cssText.replace(/:root\s*\{[^}]*\}\s*/g, "");
+    return withoutRoot.trim();
+  };
 
   // CSSの変更を処理
   const handleCSSChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newCSS = e.target.value;
     setCSS(newCSS);
+
+    // 自動的にページデータを更新
+    updatePageData(newCSS, cssVariables);
   };
 
-  // CSSを適用
-  const applyCSS = async () => {
-    setIsApplying(true);
+  // CSS変数の変更を処理
+  const handleVariableChange = (key: keyof CSSVariables, value: string) => {
+    const newVariables = {
+      ...cssVariables,
+      [key]: value,
+    };
+    setCssVariables(newVariables);
 
+    // 自動的にページデータを更新
+    updatePageData(css, newVariables);
+  };
+
+  // ページデータを更新する共通関数
+  const updatePageData = async (
+    currentCSS: string,
+    currentVariables: CSSVariables
+  ) => {
+    // CSS変数を含めた最終的なCSS
+    const variablesCSS = generateVariablesCSSFromObject(currentVariables);
+    const finalCSS = variablesCSS + currentCSS;
+
+    // 1. ページデータを更新（保存ボタンでデータベースに保存される）
+    onUpdate(finalCSS);
+
+    // 2. プレビュー用のcustom.cssファイルも更新
     try {
-      // 1. データベースの更新
-      onUpdate(css);
-
-      // 2. custom.cssファイルの生成
       const response = await fetch("/api/css", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ css }),
+        body: JSON.stringify({ css: finalCSS }),
       });
 
       if (!response.ok) {
-        throw new Error("CSSファイルの生成に失敗しました");
+        console.warn("プレビュー用CSSファイルの更新に失敗しました");
       }
-
-      toast.success("CSSが更新され、トップページに反映されました");
     } catch (error) {
-      console.error("CSS適用エラー:", error);
-      toast.error("CSSの適用に失敗しました");
-    } finally {
-      setIsApplying(false);
+      console.warn("プレビュー用CSSファイルの更新エラー:", error);
     }
+  };
+
+  // CSS変数をCSS文字列に変換（オブジェクトから）
+  const generateVariablesCSSFromObject = (variables: CSSVariables) => {
+    const variablesList = [];
+
+    if (variables.contentMaxWidth)
+      variablesList.push(`  --base: ${variables.contentMaxWidth};`);
+    if (variables.headerHeight)
+      variablesList.push(`  --head: ${variables.headerHeight};`);
+    if (variables.sectionSpacing)
+      variablesList.push(`  --sectionMT: ${variables.sectionSpacing};`);
+    if (variables.titleMarginBottom)
+      variablesList.push(`  --titleAfter: ${variables.titleMarginBottom};`);
+    if (variables.sectionPaddingY)
+      variablesList.push(`  --sectionPY: ${variables.sectionPaddingY};`);
+    if (variables.sectionPaddingX)
+      variablesList.push(`  --sectionPX: ${variables.sectionPaddingX};`);
+    if (variables.cardGap) variablesList.push(`  --gap: ${variables.cardGap};`);
+    if (variables.primaryColor)
+      variablesList.push(`  --mc: ${variables.primaryColor};`);
+    if (variables.secondaryColor)
+      variablesList.push(`  --sc: ${variables.secondaryColor};`);
+    if (variables.accentColor)
+      variablesList.push(`  --ac: ${variables.accentColor};`);
+    if (variables.baseColor)
+      variablesList.push(`  --bc: ${variables.baseColor};`);
+    if (variables.textColor)
+      variablesList.push(`  --tx: ${variables.textColor};`);
+
+    if (variablesList.length === 0) return "";
+
+    return `:root {
+${variablesList.join("\n")}
+}
+
+`;
   };
 
   return (
@@ -63,49 +218,213 @@ export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
         <h3 className="mb-4 text-lg font-medium">カスタムCSS</h3>
 
         <div className="flex flex-1 flex-col space-y-4">
-          <div className="flex flex-1 flex-col space-y-2">
-            <Label htmlFor="custom-css">カスタムCSSを編集</Label>
-            <Textarea
-              id="custom-css"
-              value={css}
-              onChange={handleCSSChange}
-              className="max-h-[50vh] min-h-32 flex-1 resize-none font-mono text-sm"
-              placeholder="/* ここにカスタムCSSを入力 */
-body {
-  /* 例: 背景色を変更 */
-  /* background-color: #f5f5f5; */
-}
+          {/* 変数を設定 */}
+          <div className="space-y-4">
+            <button
+              type="button"
+              onClick={() => setIsVariablesOpen(!isVariablesOpen)}
+              className="flex w-full items-center  gap-2 text-base font-medium hover:text-primary focus:text-primary focus:outline-none"
+            >
+              <span>変数を設定</span>
+              {isVariablesOpen ? (
+                <ChevronDown className="h-4 w-4 -scale-y-100 " />
+              ) : (
+                <ChevronDown className="h-4 w-4 transition-transform " />
+              )}
+            </button>
 
-/* 例: ヘッダーのスタイル */
-header {
-  /* background-color: #ffffff; */
-  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
-}
+            {/* 折りたたみ可能なコンテンツ */}
+            <div
+              className={`overflow-hidden ${
+                isVariablesOpen
+                  ? "max-h-[2000px] opacity-100"
+                  : "max-h-0 opacity-0"
+              }`}
+              style={{
+                transitionDuration: "900ms",
+                transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+              }}
+            >
+              {/* レイアウト関連 */}
+              <div className="space-y-3">
+                <h5 className="text-sm font-medium text-muted-foreground">
+                  レイアウト設定
+                </h5>
+                <div className="grid grid-cols-2 gap-4  lg:grid-cols-3">
+                  <VariableField
+                    id="content-max-width"
+                    label="コンテンツ基本幅　 --base"
+                    value={cssVariables.contentMaxWidth}
+                    onChange={(value) =>
+                      handleVariableChange("contentMaxWidth", value)
+                    }
+                    placeholder="1200px"
+                  />
+                  <VariableField
+                    id="header-height"
+                    label="ヘッダー高さ　--head"
+                    value={cssVariables.headerHeight}
+                    onChange={(value) =>
+                      handleVariableChange("headerHeight", value)
+                    }
+                    placeholder="80px"
+                  />
+                  <VariableField
+                    id="section-spacing"
+                    label="セクション間タテ余白　--sectionMT"
+                    value={cssVariables.sectionSpacing}
+                    onChange={(value) =>
+                      handleVariableChange("sectionSpacing", value)
+                    }
+                    placeholder="80px"
+                  />
+                  <VariableField
+                    id="title-margin-bottom"
+                    label="タイトル後タテ余白　--titleAfter"
+                    value={cssVariables.titleMarginBottom}
+                    onChange={(value) =>
+                      handleVariableChange("titleMarginBottom", value)
+                    }
+                    placeholder="24px"
+                  />
+                  <VariableField
+                    id="section-padding-y"
+                    label="セクション上下余白　--sectionPY"
+                    value={cssVariables.sectionPaddingY}
+                    onChange={(value) =>
+                      handleVariableChange("sectionPaddingY", value)
+                    }
+                    placeholder="60px"
+                  />
+                  <VariableField
+                    id="section-padding-x"
+                    label="セクション左右余白　--sectionPX"
+                    value={cssVariables.sectionPaddingX}
+                    onChange={(value) =>
+                      handleVariableChange("sectionPaddingX", value)
+                    }
+                    placeholder="20px"
+                  />
+                  <VariableField
+                    id="card-gap"
+                    label="カード間ヨコ余白　--gap"
+                    value={cssVariables.cardGap}
+                    onChange={(value) => handleVariableChange("cardGap", value)}
+                    placeholder="24px"
+                  />
+                </div>
+              </div>
 
-/* 例: フッターのスタイル */
-footer {
-  /* background-color: #333333; */
-  /* color: #ffffff; */
-}"
-            />
+              {/* カラー関連 */}
+              <div className="space-y-3">
+                <h5 className="text-sm font-medium text-muted-foreground">
+                  カラー設定
+                </h5>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  <VariableColorField
+                    id="primary-color"
+                    label="メインカラー　--mc"
+                    value={cssVariables.primaryColor}
+                    onChange={(value) =>
+                      handleVariableChange("primaryColor", value)
+                    }
+                    placeholder="#3b82f6"
+                  />
+                  <VariableColorField
+                    id="secondary-color"
+                    label="サブカラー　--sc"
+                    value={cssVariables.secondaryColor}
+                    onChange={(value) =>
+                      handleVariableChange("secondaryColor", value)
+                    }
+                    placeholder="#64748b"
+                  />
+                  <VariableColorField
+                    id="accent-color"
+                    label="アクセントカラー　--ac"
+                    value={cssVariables.accentColor}
+                    onChange={(value) =>
+                      handleVariableChange("accentColor", value)
+                    }
+                    placeholder="#f59e0b"
+                  />
+                  <VariableColorField
+                    id="base-color"
+                    label="ベースカラー　--bc"
+                    value={cssVariables.baseColor}
+                    onChange={(value) =>
+                      handleVariableChange("baseColor", value)
+                    }
+                    placeholder="#ffffff"
+                  />
+                  <VariableColorField
+                    id="text-color"
+                    label="文字色　--tx"
+                    value={cssVariables.textColor}
+                    onChange={(value) =>
+                      handleVariableChange("textColor", value)
+                    }
+                    placeholder="#1f2937"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
-          <Button onClick={applyCSS} disabled={isApplying}>
-            {isApplying ? "適用中..." : "CSSを適用"}
-          </Button>
+          {/* カスタムCSS編集 */}
+          <div className="flex flex-1 flex-col space-y-4">
+            <div className="flex flex-1 flex-col space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="custom-css">カスタムCSSを編集</Label>
+              </div>
+              <Textarea
+                id="custom-css"
+                value={css}
+                onChange={handleCSSChange}
+                className="max-h-[50vh] min-h-32 flex-1 resize-none font-mono text-sm"
+                placeholder="/* ここにカスタムCSSを入力 */
+/* 変数を使用した例 */
+body {
+  background-color: var(--bc);
+  color: var(--tx);
+}
 
-          <div className="mt-4">
-            <h4 className="mb-2 font-medium">使用方法</h4>
-            <div className="space-y-2 text-sm ">
-              <p>
-                このカスタムCSSはトップページのヘッダー（&lt;head&gt;タグ内）に直接挿入されます。
-              </p>
-              <p>
-                カスタムCSSを使用して、ページ全体の見た目をカスタマイズできます。
-              </p>
-              <p>
-                変更を保存するには「CSSを適用」ボタンをクリックし、ページの「保存」ボタンを押してください。
-              </p>
+header {
+  height: var(--head);
+  background-color: var(--bc);
+}
+
+.section {
+  padding: var(--sectionPY) var(--sectionPX);
+  margin-bottom: var(--sectionMT);
+}
+
+.cards {
+  gap: var(--gap);
+}
+
+/* カスタムスタイルをここに追加 */
+"
+              />
+            </div>
+
+            <div className="mt-4">
+              <h4 className="mb-2 font-medium">使用方法</h4>
+              <div className="space-y-2 text-sm ">
+                <p>
+                  上記の変数設定で基本的なレイアウトとカラーを調整できます。設定した値は自動的に保存・表示されます。
+                </p>
+                <p>
+                  カスタムCSSエリアでは、設定した変数を{" "}
+                  <code className="rounded bg-gray-100 px-1">
+                    var(--変数名)
+                  </code>{" "}
+                  の形式で使用できます。
+                </p>
+                <p>
+                  変更は自動的に反映され、ページの「保存」ボタンでデータベースに保存されます。
+                </p>
+              </div>
             </div>
           </div>
         </div>

@@ -3,8 +3,8 @@
 import { RichTextEditor } from "@/components/ui/editor";
 import { ImageUpload } from "@/components/images/ImageUpload";
 import { BackgroundImageUpload } from "@/components/images/BackgroundImageUpload";
+import { FormField } from "@/components/ui/form-field";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import {
   Select,
@@ -24,10 +24,10 @@ interface ImgTextEditorProps {
 export function ImgTextEditor({ section, onUpdate }: ImgTextEditorProps) {
   // 直接propsからの値を使用し、内部状態を持たないようにする
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNameChange = (value: string) => {
     onUpdate({
       ...section,
-      name: e.target.value,
+      name: value,
     });
   };
 
@@ -72,10 +72,10 @@ export function ImgTextEditor({ section, onUpdate }: ImgTextEditorProps) {
     });
   };
 
-  const handleTextClassChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTextClassChange = (value: string) => {
     onUpdate({
       ...section,
-      textClass: e.target.value,
+      textClass: value,
     });
   };
 
@@ -86,10 +86,17 @@ export function ImgTextEditor({ section, onUpdate }: ImgTextEditorProps) {
     });
   };
 
-  const handleClassNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleClassNameChange = (value: string) => {
     onUpdate({
       ...section,
-      class: e.target.value,
+      class: value,
+    });
+  };
+
+  const handleSectionWidthChange = (value: string) => {
+    onUpdate({
+      ...section,
+      sectionWidth: value,
     });
   };
 
@@ -98,31 +105,34 @@ export function ImgTextEditor({ section, onUpdate }: ImgTextEditorProps) {
       <Card className="flex  h-full flex-col rounded-sm p-4">
         <h3 className="mb-4 text-lg font-medium">画像テキストセクション設定</h3>
         <div className="space-y-4">
-          <div className="flex items-center gap-4">
-            <Label className="" htmlFor="imgtext-name">
-              セクション名
-            </Label>
-            <Input
-              id="imgtext-name"
-              value={section.name || ""}
-              onChange={handleNameChange}
-              placeholder="例: 画像とテキスト"
-              className="flex-1"
-            />
-          </div>
+          <FormField
+            id="imgtext-name"
+            label="セクション名"
+            value={section.name || ""}
+            onChange={handleNameChange}
+            placeholder="例: 画像とテキスト"
+          />
 
-          <div className="flex items-center gap-4">
-            <Label className="" htmlFor="imgtext-class">
-              セクションクラス
-            </Label>
-            <Input
-              id="imgtext-class"
-              value={section.class}
-              onChange={handleClassNameChange}
-              placeholder="例: ImgText"
-              className="flex-1"
-            />
-          </div>
+          <FormField
+            id="imgtext-class"
+            label="セクションクラス"
+            value={section.class}
+            onChange={handleClassNameChange}
+            placeholder="例: ImgText"
+          />
+          <FormField
+            id="imgtext-section-width"
+            label="セクション幅"
+            value={section.sectionWidth || ""}
+            onChange={handleSectionWidthChange}
+            placeholder="例: max-w-6xl"
+          />
+
+          <BackgroundImageUpload
+            initialImage={section.bgImage}
+            onImageChange={handleBgImageChange}
+            label="背景画像"
+          />
 
           <ImageUpload
             initialImage={section.image}
@@ -132,24 +142,13 @@ export function ImgTextEditor({ section, onUpdate }: ImgTextEditorProps) {
             label="画像クラス"
           />
 
-          <BackgroundImageUpload
-            initialImage={section.bgImage}
-            onImageChange={handleBgImageChange}
-            label="背景画像"
+          <FormField
+            id="imgtext-text-class"
+            label="テキストクラス"
+            value={section.textClass || ""}
+            onChange={handleTextClassChange}
+            placeholder="例: text-content"
           />
-
-          <div className="flex items-center gap-4">
-            <Label className="" htmlFor="imgtext-text-class">
-              テキストクラス
-            </Label>
-            <Input
-              id="imgtext-text-class"
-              value={section.textClass || ""}
-              onChange={handleTextClassChange}
-              placeholder="例: text-content"
-              className="flex-1"
-            />
-          </div>
 
           <div className="space-y-2">
             <Label>コンテンツ</Label>

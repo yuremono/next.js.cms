@@ -59,16 +59,7 @@ export function SectionEditorRenderer({
         </div>
       );
     case "group-end":
-      return (
-        <div className="SectionEditorRenderer">
-          <Alert>
-            <p>グループ終了タグ - 設定項目はありません</p>
-            <p className="text-sm text-muted-foreground mt-2">
-              このタグはグループの終了を示します。対応する開始タグで設定を行ってください。
-            </p>
-          </Alert>
-        </div>
-      );
+      return <div className="SectionEditorRenderer"></div>;
     default:
       return (
         <div className="SectionEditorRenderer">

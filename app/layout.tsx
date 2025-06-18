@@ -24,15 +24,18 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="ja" suppressHydrationWarning>
-			<body>
-				{children}
-				<Toaster
-					position="top-right"
-					toastOptions={{ style: { marginTop: "72px" } }}
-				/>
-			</body>
-		</html>
-	);
+    <html lang="ja" suppressHydrationWarning>
+      <head>
+        <link rel="stylesheet" href="/css/custom.css" />
+      </head>
+      <body>
+        {children}
+        <Toaster
+          position="top-right"
+          toastOptions={{ style: { marginTop: "72px" } }}
+        />
+      </body>
+    </html>
+  );
 }
  

@@ -12,6 +12,7 @@ export interface BaseSection {
   bgImage?: string;
   id: string;
   groupId?: string; // 所属グループID（グループ化用）
+  sectionWidth?: string; // セクション幅（例: "max-w-6xl", "container"）
 }
 
 export interface MainVisualSection extends BaseSection {
@@ -81,6 +82,7 @@ export interface Page {
   footer: Footer;
   sections: Section[];
   customCSS?: string;
+  sectionsOrder?: string; // "id1,id2,id3" 形式でセクション順序を管理
 }
 
 export function isSection(obj: unknown): obj is Section {

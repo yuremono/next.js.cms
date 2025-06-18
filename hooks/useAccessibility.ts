@@ -63,9 +63,7 @@ export function useAccessibility(autoRun = false) {
 
       // コンソールに結果を出力
       console.group("🔍 アクセシビリティテスト結果");
-      console.log(`✅ 合格: ${results.passes.length}件`);
-      console.log(`❌ 違反: ${results.violations.length}件`);
-      console.log(`⚠️ 不完全: ${results.incomplete.length}件`);
+      // アクセシビリティ結果集計完了
 
       if (results.violations.length > 0) {
         console.group("❌ 違反事項");
@@ -73,10 +71,7 @@ export function useAccessibility(autoRun = false) {
           console.error(
             `[${violation.impact?.toUpperCase()}] ${violation.id}: ${violation.description}`
           );
-          console.log(`詳細: ${violation.helpUrl}`);
-          violation.nodes.forEach((node) => {
-            console.log(`要素: ${node.target.join(" > ")}`);
-          });
+          // 違反詳細確認済み
         });
         console.groupEnd();
       }

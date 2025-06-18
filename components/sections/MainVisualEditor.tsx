@@ -3,8 +3,7 @@
 import { RichTextEditor } from "@/components/ui/editor";
 import { ImageUpload } from "@/components/images/ImageUpload";
 import { BackgroundImageUpload } from "@/components/images/BackgroundImageUpload";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { FormField } from "@/components/ui/form-field";
 import { Card } from "@/components/ui/card";
 import { MainVisualSection } from "@/types";
 import { getImageAspectRatio } from "@/lib/image-utils";
@@ -17,10 +16,10 @@ interface MainVisualEditorProps {
 export function MainVisualEditor({ section, onUpdate }: MainVisualEditorProps) {
   // 直接propsからの値を使用し、内部状態を持たないようにする
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNameChange = (value: string) => {
     onUpdate({
       ...section,
-      name: e.target.value,
+      name: value,
     });
   };
 
@@ -42,7 +41,6 @@ export function MainVisualEditor({ section, onUpdate }: MainVisualEditorProps) {
           imageAspectRatio: aspectRatio,
         });
       } catch (error) {
-
         onUpdate({
           ...section,
           image: img,
@@ -65,10 +63,17 @@ export function MainVisualEditor({ section, onUpdate }: MainVisualEditorProps) {
     });
   };
 
-  const handleTextClassChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTextClassChange = (value: string) => {
     onUpdate({
       ...section,
-      textClass: e.target.value,
+      textClass: value,
+    });
+  };
+
+  const handleSectionWidthChange = (value: string) => {
+    onUpdate({
+      ...section,
+      sectionWidth: value,
     });
   };
 
@@ -79,10 +84,10 @@ export function MainVisualEditor({ section, onUpdate }: MainVisualEditorProps) {
     });
   };
 
-  const handleClassNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleClassNameChange = (value: string) => {
     onUpdate({
       ...section,
-      class: e.target.value,
+      class: value,
     });
   };
 
@@ -91,30 +96,32 @@ export function MainVisualEditor({ section, onUpdate }: MainVisualEditorProps) {
       <Card className="flex  h-full flex-col rounded-sm p-4">
         <h3 className="mb-4 text-lg font-medium">メインビジュアル設定</h3>
         <div className="space-y-4">
-          <div className="flex items-center gap-4">
-            <Label className="" htmlFor="MainVisual-name">
-              セクション名
-            </Label>
-            <Input
-              id="MainVisual-name"
-              value={section.name || ""}
-              onChange={handleNameChange}
-              placeholder="例: メインビジュアル"
-              className="flex-1"
-            />
-          </div>
-          <div className="flex items-center gap-4">
-            <Label className="" htmlFor="MainVisual-class">
-              セクションクラス
-            </Label>
-            <Input
-              id="MainVisual-class"
-              value={section.class}
-              onChange={handleClassNameChange}
-              placeholder="例: MainVisual "
-              className="flex-1"
-            />
-          </div>
+          <FormField
+            id="MainVisual-name"
+            label="セクション名"
+            value={section.name || ""}
+            onChange={handleNameChange}
+            placeholder="例: メインビジュアル"
+          />
+          <FormField
+            id="MainVisual-class"
+            label="セクションクラス"
+            value={section.class}
+            onChange={handleClassNameChange}
+            placeholder="例: MainVisual"
+          />
+          <FormField
+            id="MainVisual-section-width"
+            label="セクション幅"
+            value={section.sectionWidth || ""}
+            onChange={handleSectionWidthChange}
+            placeholder="例: max-w-7xl"
+          />
+          <BackgroundImageUpload
+            initialImage={section.bgImage}
+            onImageChange={handleBgImageChange}
+            label="背景画像"
+          />
           <ImageUpload
             initialImage={section.image}
             initialClass={section.imageClass || ""}
@@ -122,23 +129,13 @@ export function MainVisualEditor({ section, onUpdate }: MainVisualEditorProps) {
             onClassChange={handleImageClassChange}
             label="画像クラス"
           />
-          <BackgroundImageUpload
-            initialImage={section.bgImage}
-            onImageChange={handleBgImageChange}
-            label="背景画像"
+          <FormField
+            id="MainVisual-text-class"
+            label="テキストクラス"
+            value={section.textClass || ""}
+            onChange={handleTextClassChange}
+            placeholder="例: MainVisual-content text-center"
           />
-          <div className="flex items-center gap-4">
-            <Label className="" htmlFor="MainVisual-text-class">
-              テキストクラス
-            </Label>
-            <Input
-              id="MainVisual-text-class"
-              value={section.textClass || ""}
-              onChange={handleTextClassChange}
-              placeholder="例: MainVisual-content text-center"
-              className="flex-1"
-            />
-          </div>
           <RichTextEditor
             compact={true}
             content={section.html}

@@ -297,7 +297,7 @@ export default function SortableSections({
                     onDelete();
                   }
                 }}
-                className="h-6 w-6 p-0 text-red-500 hover:bg-red-50 hover:text-red-700"
+                className="h-6 w-6 p-0 text-red-700 hover:bg-red-50 hover:text-red-500"
               >
                 <Trash2 className="h-3 w-3" />
               </Button>
