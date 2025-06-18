@@ -1,6 +1,6 @@
 "use client";
 
-import { RichTextEditor } from "@/components/ui/editor";
+import { SimpleHtmlEditor } from "@/components/ui/simple-html-editor";
 import { BackgroundImageUpload } from "@/components/images/BackgroundImageUpload";
 import { FormField } from "@/components/ui/form-field";
 import { Label } from "@/components/ui/label";
@@ -97,10 +97,11 @@ export function FormEditor({ section, onUpdate }: FormEditorProps) {
           />
           <div className="space-y-2">
             <Label>コンテンツ</Label>
-            <RichTextEditor
-              compact={true}
-              content={section.html}
+            <SimpleHtmlEditor
+              value={section.html}
               onChange={handleHtmlChange}
+              autoConvertLineBreaks={true}
+              compact={true}
               placeholder="ここにHTMLを入力..."
             />
           </div>

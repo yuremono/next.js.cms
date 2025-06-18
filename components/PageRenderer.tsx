@@ -83,6 +83,7 @@ export function PageRenderer({
           class?: string;
           bgImage?: string;
           scopeStyles?: string;
+          sectionWidth?: string;
         };
         const groupSections = [];
         let groupEndIndex = -1;
@@ -106,14 +107,26 @@ export function PageRenderer({
             : {};
           const scopeStyles = groupStartSection.scopeStyles || "";
 
+          // グループ幅のCSS変数を追加
+          const groupWidthStyle = groupStartSection.sectionWidth
+            ? { "--base": groupStartSection.sectionWidth }
+            : {};
+
+          // スタイルを統合
+          let combinedGroupStyle = { ...bgStyle, ...groupWidthStyle };
+          if (scopeStyles) {
+            const parsedScopeStyles = JSON.parse(`{${scopeStyles}}`);
+            combinedGroupStyle = {
+              ...combinedGroupStyle,
+              ...parsedScopeStyles,
+            };
+          }
+
           result.push(
             <article
               key={`group-${i}`}
               className={sectionClass}
-              style={bgStyle}
-              {...(scopeStyles
-                ? { style: { ...bgStyle, ...JSON.parse(`{${scopeStyles}}`) } }
-                : {})}
+              style={combinedGroupStyle}
             >
               {groupSections.map((groupSection, idx) =>
                 renderSection(groupSection, `${i}-${idx}`)
@@ -162,32 +175,68 @@ export function PageRenderer({
       ? { backgroundImage: `url(${section.bgImage})` }
       : {};
 
+    // セクション幅のCSS変数を追加
+    const sectionWidthStyle = section.sectionWidth
+      ? { "--base": section.sectionWidth }
+      : {};
+    const combinedStyle = { ...bgStyle, ...sectionWidthStyle };
+
     switch (section.layout) {
       case "mainVisual":
         return (
           <section
             key={index}
             className={`MainVisual ${sectionClass}`}
-            style={bgStyle}
+            style={combinedStyle}
           >
-            <div className=" mx-auto ">
-              {section.image && (
-                <div
-                  className={`relative w-full ${section.imageClass || ""}`}
-                  style={{
-                    aspectRatio: section.imageAspectRatio || "auto",
-                    minHeight: section.imageAspectRatio ? "auto" : "500px",
-                  }}
-                >
-                  <Image
-                    src={section.image}
-                    alt="Main Visual"
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-                </div>
-              )}
+            {section.image && (
+              <div
+                className={`relative w-full ${section.imageClass || ""}`}
+                style={{
+                  aspectRatio: section.imageAspectRatio || "auto",
+                  minHeight: section.imageAspectRatio ? "auto" : "500px",
+                }}
+              >
+                <Image
+                  src={section.image}
+                  alt="Main Visual"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+            )}
+            <div
+              className={`content ${section.textClass || ""}`}
+              dangerouslySetInnerHTML={{
+                __html: section.html,
+              }}
+            />
+          </section>
+        );
+      case "imgText":
+        return (
+          <section
+            key={index}
+            className={`ImgText  grid grid-cols-1 items-center gap-8 md:grid-cols-2 ${sectionClass}`}
+            style={combinedStyle}
+          >
+            {section.image && (
+              <div
+                className={`relative ${section.imageClass || ""}`}
+                style={{
+                  aspectRatio: section.imageAspectRatio || "auto",
+                }}
+              >
+                <Image
+                  src={section.image}
+                  alt="Section Image"
+                  fill
+                  className="rounded-lg object-cover"
+                />
+              </div>
+            )}
+            <div className={!section.image ? "" : ""}>
               <div
                 className={`content ${section.textClass || ""}`}
                 dangerouslySetInnerHTML={{
@@ -197,157 +246,113 @@ export function PageRenderer({
             </div>
           </section>
         );
-      case "imgText":
-        return (
-          <section
-            key={index}
-            className={`ImgText ${sectionClass}`}
-            style={bgStyle}
-          >
-            <div className="container mx-auto">
-              <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-2">
-                <div>
-                  {section.image && (
-                    <div
-                      className={`relative w-full ${section.imageClass || ""}`}
-                      style={{
-                        aspectRatio: section.imageAspectRatio || "auto",
-                      }}
-                    >
-                      <Image
-                        src={section.image}
-                        alt="Section Image"
-                        fill
-                        className="rounded-lg object-cover"
-                      />
-                    </div>
-                  )}
-                </div>
-                <div className={!section.image ? "w-full" : ""}>
-                  <div
-                    className={`content ${section.textClass || ""}`}
-                    dangerouslySetInnerHTML={{
-                      __html: section.html,
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-          </section>
-        );
       case "cards":
         return (
           <section
             key={index}
-            className={`Cards ${sectionClass}`}
-            style={bgStyle}
+            className={`Cards  ${sectionClass}`}
+            style={combinedStyle}
           >
-            <div className="CardsContainer">
-              {section.cards.map((card, idx) => (
-                <div key={idx}>
-                  {card.image && (
-                    <div
-                      className={`relative w-full ${card.imageClass || ""}`}
-                      style={{
-                        aspectRatio: card.imageAspectRatio || "auto",
-                        minHeight: card.imageAspectRatio ? "auto" : "200px",
-                      }}
-                    >
-                      <Image
-                        src={card.image}
-                        alt={`Card ${idx + 1}`}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  )}
-                  <div className="p-6">
-                    <div
-                      className={`content ${card.textClass || ""}`}
-                      dangerouslySetInnerHTML={{
-                        __html: card.html,
-                      }}
+            {section.cards.map((card, idx) => (
+              <div key={idx}>
+                {card.image && (
+                  <div
+                    className={`relative w-full ${card.imageClass || ""}`}
+                    style={{
+                      aspectRatio: card.imageAspectRatio || "auto",
+                      minHeight: card.imageAspectRatio ? "auto" : "200px",
+                    }}
+                  >
+                    <Image
+                      src={card.image}
+                      alt={`Card ${idx + 1}`}
+                      fill
+                      className="object-cover"
                     />
                   </div>
-                </div>
-              ))}
-            </div>
+                )}
+                <div
+                  className={`content ${card.textClass || ""}`}
+                  dangerouslySetInnerHTML={{
+                    __html: card.html,
+                  }}
+                />
+              </div>
+            ))}
           </section>
         );
       case "form":
         return (
           <section
             key={index}
-            className={`Form ${sectionClass}`}
-            style={bgStyle}
+            className={`Form   ${sectionClass}`}
+            style={combinedStyle}
           >
-            <div className="container mx-auto ">
-              <div
-                className={`content mb-8 ${section.textClass || ""}`}
-                dangerouslySetInnerHTML={{
-                  __html: section.html,
-                }}
-              />
-              <form
-                action={section.endpoint || "/api/contact"}
-                method="POST"
-                className="mx-auto max-w-2xl"
+            <div
+              className={`content mb-8 ${section.textClass || ""}`}
+              dangerouslySetInnerHTML={{
+                __html: section.html,
+              }}
+            />
+            <form
+              action={section.endpoint || "/api/contact"}
+              method="POST"
+              className="mx-auto max-w-2xl"
+            >
+              <div className="mb-4">
+                <label htmlFor="name" className="mb-2 block font-medium">
+                  お名前
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  className="w-full rounded border p-2"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="email" className="mb-2 block font-medium">
+                  メールアドレス
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  className="w-full rounded border p-2"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="message" className="mb-2 block font-medium">
+                  メッセージ
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  rows={4}
+                  className="w-full rounded border p-2"
+                  required
+                ></textarea>
+              </div>
+              <div className="mb-4">
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="privacy"
+                    className="mr-2"
+                    required
+                  />
+                  <span>プライバシーポリシーに同意する</span>
+                </label>
+              </div>
+              <button
+                type="submit"
+                className="rounded bg-slate-700 px-4 py-2 font-medium text-white"
               >
-                <div className="mb-4">
-                  <label htmlFor="name" className="mb-2 block font-medium">
-                    お名前
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    className="w-full rounded border p-2"
-                    required
-                  />
-                </div>
-                <div className="mb-4">
-                  <label htmlFor="email" className="mb-2 block font-medium">
-                    メールアドレス
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    className="w-full rounded border p-2"
-                    required
-                  />
-                </div>
-                <div className="mb-4">
-                  <label htmlFor="message" className="mb-2 block font-medium">
-                    メッセージ
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows={4}
-                    className="w-full rounded border p-2"
-                    required
-                  ></textarea>
-                </div>
-                <div className="mb-4">
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      name="privacy"
-                      className="mr-2"
-                      required
-                    />
-                    <span>プライバシーポリシーに同意する</span>
-                  </label>
-                </div>
-                <button
-                  type="submit"
-                  className="rounded bg-slate-700 px-4 py-2 font-medium text-white"
-                >
-                  送信
-                </button>
-              </form>
-            </div>
+                送信
+              </button>
+            </form>
           </section>
         );
       // group-start と group-end は個別レンダリングでは処理しない

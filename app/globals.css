@@ -89,23 +89,15 @@
         field-sizing: content;
 }
 
-.CardsContainer {
-        /* --base: var(--cms-base, 1400px); */
+.Cards {
         --col: var(--cms-col, 3);
-        /* --gap: var(--cms-gap, 6vmin); */
-        
         max-width: var(--base);
         margin-inline: auto;
         display: grid;
         gap: var(--gap);
         grid-template-columns: repeat(auto-fit, minmax(calc(var(--base) / var(--col) - var(--gap)), 1fr));
-        /* align-items: end; */
-        /* place-items: end stretch; */
-        /* place-content: end; */
+        
         > div {
-                /* display: grid; */
-                /* place-content: end stretch; */
-                /* height: 100%; */
                 overflow: hidden;
                 border-radius: 0.5rem;
                 background-color: white;
@@ -114,7 +106,7 @@
 }
 
 
-.CardsContainer > div > div:last-child {
+.Cards > div > div:last-child {
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
@@ -122,10 +114,9 @@
 
 /* 🆕 ImgText セクションのレイアウトパターン */
 .ImgText {
-  --section-py: 6vmin;
-  --section-gap: 6vmin;
   background: var(--background);
-  padding: var(--section-py) 0;
+  padding: var(--sectionPY) var(--sectionPX);
+  gap: var(--gap);
 }
 
 /* テキストオーバーレイレイアウト */

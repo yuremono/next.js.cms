@@ -252,13 +252,13 @@ export default function EditorPage() {
     }
   };
 
-  // pageが変更されたときにプレビューを更新
+  // pageが変更されたときにプレビューを更新（通常プレビュー・分割プレビュー共通）
   useEffect(() => {
-    if (splitScreenMode) {
+    if ((splitScreenMode || previewMode) && iframeRef) {
       const timer = setTimeout(sendDataToPreview, 100);
       return () => clearTimeout(timer);
     }
-  }, [page, splitScreenMode, iframeRef]);
+  }, [page, splitScreenMode, previewMode, iframeRef]);
 
   // プレビューからのメッセージを受信
   useEffect(() => {
@@ -961,9 +961,28 @@ export default function EditorPage() {
       </header>
 
       {previewMode ? (
-        // プレビューモード
-        <div className="relative flex-1 overflow-auto">
-          <PageRenderer page={page} />
+        // プレビューモード - iframe化
+        <div className="relative flex-1 overflow-auto bg-gray-100 p-4">
+          <div className="flex h-full justify-center overflow-auto">
+            <iframe
+              ref={(ref) => {
+                if (ref && !splitScreenMode) {
+                  // 通常プレビューモード用のiframe参照を設定
+                  setIframeRef(ref);
+                }
+              }}
+              src="/preview"
+              title="Preview"
+              style={{
+                width: "100%",
+                height: "calc(100vh - 120px)",
+                border: "1px solid #e5e7eb",
+                borderRadius: "8px",
+                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                backgroundColor: "white",
+              }}
+            />
+          </div>
         </div>
       ) : (
         // 編集モード（通常 + 分割対応）

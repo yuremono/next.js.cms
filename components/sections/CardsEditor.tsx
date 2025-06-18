@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { RichTextEditor } from "@/components/ui/editor";
+import { SimpleHtmlEditor } from "@/components/ui/simple-html-editor";
 import { ImageUpload } from "@/components/images/ImageUpload";
 import { BackgroundImageUpload } from "@/components/images/BackgroundImageUpload";
 import { FormField } from "@/components/ui/form-field";
@@ -395,12 +395,15 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
                                   placeholder="例: card-content"
                                 />
                               </div>
-                              <RichTextEditor
-                                compact={true}
-                                content={section.cards[activeCardIndex]?.html}
+                              <SimpleHtmlEditor
+                                value={
+                                  section.cards[activeCardIndex]?.html || ""
+                                }
                                 onChange={(html) =>
                                   updateCard(activeCardIndex, "html", html)
                                 }
+                                autoConvertLineBreaks={true}
+                                compact={true}
                               />
                             </div>
                           </div>

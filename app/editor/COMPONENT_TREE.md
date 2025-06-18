@@ -56,6 +56,129 @@ app/editor/page.tsx (EditorPage)
     └─ iframe (src="/preview")
 ```
 
+## トップページ構造
+```
+app/page.tsx (Home - Server Component)
+├─ import "./top.scss" (トップページ専用スタイル)
+├─ DEFAULT_PAGE_DATA (フォールバックデータ)
+│   ├─ header.html (デフォルトヘッダー)
+│   ├─ footer.html (デフォルトフッター)
+│   ├─ sections[] (デフォルトセクション配列)
+│   │   ├─ MainVisual セクション
+│   │   ├─ ImgText セクション
+│   │   ├─ Cards セクション
+│   │   └─ Form セクション
+│   └─ customCSS (カスタムCSS)
+├─ データ取得処理
+│   ├─ fetch("/api/page") (APIからページデータ取得)
+│   ├─ エラーハンドリング
+│   └─ フォールバック処理
+└─ レンダリング
+    ├─ エラー画面 (データ取得失敗時)
+    │   ├─ エラーメッセージ
+    │   └─ エディタリンクボタン
+    └─ PageRenderer (メインレンダリング)
+        └─ components/PageRenderer.tsx
+```
+
+## PageRenderer 詳細構造
+```
+components/PageRenderer.tsx (PageRenderer)
+├─ renderSectionsWithGroups() (グループ処理機能)
+│   ├─ グループ開始/終了タグ検出
+│   ├─ ネストされたセクション処理
+│   └─ 通常セクション処理
+├─ renderSection() (個別セクションレンダリング)
+│   ├─ MainVisual セクション
+│   │   ├─ section.class によるCSS制御
+│   │   ├─ section.bgImage による背景画像
+│   │   ├─ section.image によるメイン画像
+│   │   ├─ section.imageClass による画像スタイル
+│   │   ├─ section.textClass によるテキストスタイル
+│   │   └─ section.html による内容表示
+│   ├─ ImgText セクション
+│   │   ├─ Grid レイアウト (md:grid-cols-2)
+│   │   ├─ 画像部分 (Image コンポーネント)
+│   │   │   ├─ aspectRatio 制御
+│   │   │   └─ imageClass によるスタイル
+│   │   └─ テキスト部分
+│   │       ├─ textClass によるスタイル
+│   │       └─ dangerouslySetInnerHTML
+│   ├─ Cards セクション
+│   │   ├─ CardsContainer (CSS Grid)
+│   │   └─ 各カード
+│   │       ├─ カード画像 (Image コンポーネント)
+│   │       │   ├─ aspectRatio 制御
+│   │       │   └─ imageClass によるスタイル
+│   │       └─ カードコンテンツ
+│   │           ├─ textClass によるスタイル
+│   │           └─ dangerouslySetInnerHTML
+│   ├─ Form セクション
+│   │   ├─ section.html によるヘッダー部分
+│   │   └─ フォーム要素
+│   │       ├─ action (section.endpoint)
+│   │       ├─ お名前フィールド
+│   │       ├─ メールアドレスフィールド
+│   │       ├─ メッセージフィールド
+│   │       ├─ プライバシー同意チェックボックス
+│   │       └─ 送信ボタン
+│   └─ Group セクション (group-start/group-end)
+│       ├─ article タグでラップ
+│       ├─ グループのclass属性
+│       ├─ グループの背景画像
+│       ├─ グループのscopeStyles
+│       └─ 内包セクションの再帰レンダリング
+└─ 最終出力構造
+    ├─ header.header (相対位置)
+    │   ├─ dangerouslySetInnerHTML (page.header.html)
+    │   └─ エディタボタン (showEditorButton=true時)
+    │       └─ Link to="/editor"
+    ├─ main.min-h-screen
+    │   └─ renderSectionsWithGroups() の結果
+    └─ footer.footer
+        └─ dangerouslySetInnerHTML (page.footer.html)
+```
+
+## レイアウト構造
+```
+app/layout.tsx (RootLayout)
+├─ メタデータ設定
+│   ├─ title: "簡易CMS - テンプレートベースのWebサイト構築"
+│   ├─ description: "AIによるテキスト生成機能..."
+│   └─ viewport: "width=device-width, initial-scale=1"
+├─ HTML構造
+│   ├─ html[lang="ja", suppressHydrationWarning]
+│   ├─ head
+│   │   └─ link[rel="stylesheet", href="/css/custom.css"]
+│   └─ body
+│       ├─ {children} (ページコンテンツ)
+│       └─ Toaster (通知システム)
+│           ├─ position="top-right"
+│           └─ style.marginTop="72px"
+├─ 開発環境のみ
+│   └─ axe-core (アクセシビリティ検証)
+└─ スタイル読み込み
+    ├─ "./globals.css" (グローバルCSS)
+    └─ "/css/custom.css" (カスタムCSS - 動的生成)
+```
+
+## トップページ専用スタイル
+```
+app/top.scss
+├─ Tailwind CSS ディレクティブ
+│   ├─ @tailwind base
+│   ├─ @tailwind components
+│   └─ @tailwind utilities
+├─ CSS Variables
+│   └─ --section-mt: 6rem (セクション間マージン)
+├─ メインレイアウト
+│   └─ main > * + * { margin-top: var(--section-mt) }
+├─ リング色設定
+│   └─ --tw-ring-color: hsla(215, 25%, 27%, 0.2)
+└─ コンテナ設定
+    └─ .container { padding-inline: unset }
+```
+
 ## 分割プレビュー - タブリスト詳細
 ```
 分割プレビュー
@@ -108,7 +231,7 @@ app/editor/page.tsx (EditorPage)
     │   └─ components/ui/alert.tsx
     └─ components/editor/SectionEditorRenderer.tsx
         ├─ components/sections/MainVisualEditor.tsx
-        │   ├─ components/ui/editor.tsx (RichTextEditor)
+        │   ├─ components/ui/simple-html-editor.tsx (改行自動変換対応)
         │   ├─ components/images/ImageUpload.tsx
         │   ├─ components/images/BackgroundImageUpload.tsx
         │   ├─ components/ui/input.tsx

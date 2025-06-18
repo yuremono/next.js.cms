@@ -1,6 +1,6 @@
 "use client";
 
-import { RichTextEditor } from "@/components/ui/editor";
+import { SimpleHtmlEditor } from "@/components/ui/simple-html-editor";
 import { ImageUpload } from "@/components/images/ImageUpload";
 import { BackgroundImageUpload } from "@/components/images/BackgroundImageUpload";
 import { FormField } from "@/components/ui/form-field";
@@ -40,7 +40,7 @@ export function MainVisualEditor({ section, onUpdate }: MainVisualEditorProps) {
           image: img,
           imageAspectRatio: aspectRatio,
         });
-      } catch (error) {
+      } catch {
         onUpdate({
           ...section,
           image: img,
@@ -136,10 +136,11 @@ export function MainVisualEditor({ section, onUpdate }: MainVisualEditorProps) {
             onChange={handleTextClassChange}
             placeholder="例: MainVisual-content text-center"
           />
-          <RichTextEditor
-            compact={true}
-            content={section.html}
+          <SimpleHtmlEditor
+            value={section.html}
             onChange={handleHtmlChange}
+            autoConvertLineBreaks={true}
+            compact={true}
             placeholder="ここにメインビジュアルのHTMLを入力..."
           />
         </div>
