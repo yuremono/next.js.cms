@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { SimpleHtmlEditor } from "@/components/ui/simple-html-editor";
 
 import { VariableField } from "@/components/ui/variable-field";
 import { VariableColorField } from "@/components/ui/variable-color-field";
@@ -125,8 +125,7 @@ export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
   };
 
   // CSSの変更を処理
-  const handleCSSChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newCSS = e.target.value;
+  const handleCSSChange = (newCSS: string) => {
     setCSS(newCSS);
 
     // 自動的にページデータを更新
@@ -377,12 +376,10 @@ ${variablesList.join("\n")}
               <div className="flex items-center justify-between">
                 <Label htmlFor="custom-css">カスタムCSSを編集</Label>
               </div>
-              <Textarea
-                id="custom-css"
+              <SimpleHtmlEditor
                 value={css}
                 onChange={handleCSSChange}
-                className="max-h-[50vh] min-h-32 flex-1 resize-none font-mono text-sm"
-                placeholder="/* ここにカスタムCSSを入力 */
+                placeholder={`/* ここにカスタムCSSを入力 */
 /* 変数を使用した例 */
 body {
   background-color: var(--bc);
@@ -403,8 +400,12 @@ header {
   gap: var(--gap);
 }
 
-/* カスタムスタイルをここに追加 */
-"
+/* カスタムスタイルをここに追加 */`}
+                compact={true}
+                style={{
+                  minHeight: "20rem",
+                }}
+                className="flex-1 font-mono text-sm"
               />
             </div>
 

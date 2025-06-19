@@ -469,7 +469,10 @@ export function SimpleHtmlEditor({
   );
 
   return (
-    <div className={`simple-html-editor ${className}`} style={style}>
+    <div
+      className={`simple-html-editor ${className} flex flex-col`}
+      style={style}
+    >
       <div className="flex flex-wrap gap-2 rounded-t-md border-b">
         <div className="mb-2 flex flex-wrap gap-1">
           <Button
@@ -617,7 +620,7 @@ export function SimpleHtmlEditor({
       </div>
 
       <div
-        className="min-h-32 rounded-b-md border"
+        className="flex min-h-32 flex-1 flex-col rounded-b-md border"
         style={{ minHeight: "8rem" }}
       >
         {!compact && previewMode ? (
@@ -637,7 +640,7 @@ export function SimpleHtmlEditor({
             value={getDisplayValue()}
             onChange={handleTextareaChange}
             placeholder={placeholder}
-            className="resize-none rounded-b-md border-0 focus:ring-0"
+            className="flex-1 resize-none rounded-b-md border-0 focus:ring-0"
             style={{
               minHeight: "6rem",
               fontSize: "14px",
