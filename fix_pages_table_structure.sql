@@ -25,7 +25,7 @@ INSERT INTO pages (
   sections_order
 ) VALUES (
   1,
-  '<header class="bg-white shadow-sm">
+  '<div class="bg-white shadow-sm">
   <div class="container mx-auto px-4 py-4 flex justify-between items-center">
     <div class="logo">
       <a href="/" class="text-xl font-bold">サイト名</a>
@@ -39,8 +39,8 @@ INSERT INTO pages (
       </ul>
     </nav>
   </div>
-</header>',
-  '<footer class="bg-gray-800 text-white">
+</div>',
+  '<div class="bg-gray-800 text-white">
   <div class="container mx-auto px-4 py-8">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       <div>
@@ -70,7 +70,7 @@ INSERT INTO pages (
       <p>© 2024 会社名. All rights reserved.</p>
     </div>
   </div>
-</footer>',
+</div>',
   ':root {
   --base: 1200px;
   --head: 80px;

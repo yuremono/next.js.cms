@@ -38,7 +38,7 @@ function extractCSSVariables(customCSS: string): {
           trimmed.includes("--sectionMT:") ||
           trimmed.includes("--titleAfter:") ||
           trimmed.includes("--sectionPY:") ||
-          trimmed.includes("--sectionPX:") ||
+          trimmed.includes("--mainBezel:") ||
           trimmed.includes("--gap:") ||
           trimmed.includes("--mc:") ||
           trimmed.includes("--sc:") ||
@@ -372,19 +372,20 @@ export function PageRenderer({
 
   return (
     <>
-      <header className="header relative">
-        <div dangerouslySetInnerHTML={{ __html: page.header.html }} />
-        {showEditorButton && (
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 transform">
-            <a
-              href="/editor"
-              className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow"
-            >
-              エディタを開く
-            </a>
-          </div>
-        )}
-      </header>
+      <header
+        className="header relative"
+        dangerouslySetInnerHTML={{ __html: page.header.html }}
+      />
+      {showEditorButton && (
+        <div className="fixed right-4 top-4 z-50">
+          <a
+            href="/editor"
+            className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow"
+          >
+            エディタを開く
+          </a>
+        </div>
+      )}
       <main className="min-h-screen">{renderSectionsWithGroups()}</main>
       <footer
         className="footer"

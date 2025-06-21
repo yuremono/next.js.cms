@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+"dev": "next dev --turbo",
     "prebuild": "rm -rf .next",
     "build": "DISABLE_ESLINT_PLUGIN=true NEXT_DISABLE_ESLINT=true NEXT_DISABLE_TYPECHECK=true NODE_OPTIONS='--require ./next-env.js' next build --no-lint --no-mangling",
     "start": "next start",

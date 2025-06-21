@@ -147,7 +147,7 @@ export default function EditorPage() {
   // ページデータの状態
   const [page, setPage] = useState<Page>({
     header: {
-      html: `<header class="bg-white shadow-sm">
+      html: `<div class="bg-white shadow-sm">
   <div class=" mx-auto px-4 py-4 flex justify-between items-center">
     <div class="logo">
       <a href="/" class="text-xl font-bold">サイト名</a>
@@ -161,10 +161,10 @@ export default function EditorPage() {
       </ul>
     </nav>
   </div>
-</header>`,
+</div>`,
     },
     footer: {
-      html: `<footer class="bg-gray-800 text-white">
+      html: `<div class="bg-gray-800 text-white">
   <div class="container mx-auto px-4 py-8">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       <div>
@@ -178,7 +178,7 @@ export default function EditorPage() {
           <li><a href="#" class="hover:underline">ホーム</a></li>
           <li><a href="#" class="hover:underline">会社概要</a></li>
           <li><a href="#" class="hover:underline">サービス</a></li>
-          <li><a href="#" class="hover:underline">お問い合わせ</a></li>
+          <li><a href="#" class="hover:text-primary">お問い合わせ</a></li>
         </ul>
       </div>
       <div>
@@ -194,7 +194,7 @@ export default function EditorPage() {
       <p>© 2024 会社名. All rights reserved.</p>
     </div>
   </div>
-</footer>`,
+</div>`,
     },
     sections: [],
     customCSS: "",
@@ -348,22 +348,61 @@ export default function EditorPage() {
     const checkAuth = async () => {
       try {
         // 開発時の認証スキップチェック
-        if (process.env.NEXT_PUBLIC_SKIP_AUTH === "true") {
-          // フロントエンド認証をスキップしています
+        if (
+          process.env.NODE_ENV === "development" &&
+          process.env.NEXT_PUBLIC_REQUIRE_AUTH !== "true"
+        ) {
+          console.log("🔓 認証をスキップしています (開発モード)");
           setIsAuthenticated(true);
           setAuthChecked(true);
           return;
         }
 
-        const response = await fetch("/api/auth/check");
+        // 明示的な認証スキップ設定
+        if (
+          process.env.NEXT_PUBLIC_SKIP_AUTH === "true" ||
+          process.env.SKIP_AUTH === "true"
+        ) {
+          console.log("🔓 認証をスキップしています (環境変数設定)");
+          setIsAuthenticated(true);
+          setAuthChecked(true);
+          return;
+        }
+
+        console.log("🔐 認証チェックを開始...");
+
+        // タイムアウト付きのfetch
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10秒タイムアウト
+
+        const response = await fetch("/api/auth/check", {
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+
         if (response.ok) {
           const { authenticated } = await response.json();
+          console.log("✅ 認証チェック完了:", authenticated);
           setIsAuthenticated(authenticated);
+        } else {
+          console.warn("⚠️ 認証API応答エラー:", response.status);
+          setIsAuthenticated(false);
         }
       } catch (error) {
-        console.error("認証チェックエラー:", error);
-        setIsAuthenticated(false);
+        console.error("❌ 認証チェックエラー:", error);
+
+        // タイムアウトエラーの場合は認証をスキップ
+        if (error.name === "AbortError") {
+          console.warn(
+            "⏰ 認証チェックがタイムアウトしました。認証をスキップします。"
+          );
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+        }
       } finally {
+        console.log("🏁 認証チェック処理完了");
         setAuthChecked(true);
       }
     };
@@ -818,12 +857,20 @@ export default function EditorPage() {
           <TextGenerator
             onSelect={(text) => {
               // テキストを生成して、クリップボードにコピー
+              if (!navigator.clipboard) {
+                toast.error(
+                  "このブラウザではクリップボード機能がサポートされていません"
+                );
+                return;
+              }
+
               navigator.clipboard
                 .writeText(text)
                 .then(() => {
                   toast.success("テキストをクリップボードにコピーしました");
                 })
-                .catch(() => {
+                .catch((error) => {
+                  console.warn("クリップボードコピーに失敗:", error);
                   toast.error("コピーに失敗しました");
                 });
             }}
@@ -913,7 +960,7 @@ export default function EditorPage() {
           className="flex flex-wrap items-center gap-2 px-4 py-2"
           style={{ minHeight: "var(--header-height)" }}
         >
-          <div className="flex items-center gap-4">
+          <div className="flex items-center  gap-4">
             <h1 className="font-jost text-3xl font-light">/editor</h1>
             <button
               aria-label="ダークモード切替"
@@ -927,7 +974,7 @@ export default function EditorPage() {
               )}
             </button>
           </div>
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
             <Link href="/" target="_blank">
               <Button variant="outline">
                 <ExternalLink className=" h-4 w-4" />
@@ -936,10 +983,20 @@ export default function EditorPage() {
             </Link>
             <Button
               variant="outline"
-              onClick={() => setPreviewMode(!previewMode)}
+              onClick={() => {
+                // スプリットモード中にプレビューを開く場合、スプリットモードを自動解除
+                if (!previewMode && splitScreenMode) {
+                  setSplitScreenMode(false);
+                }
+                setPreviewMode(!previewMode);
+              }}
             >
               <Eye className=" h-4 w-4" />
-              {previewMode ? "編集に戻る" : "プレビュー"}
+              {previewMode
+                ? "編集に戻る"
+                : splitScreenMode
+                  ? "プレビュー(分割解除)"
+                  : "プレビュー"}
             </Button>
             <Button
               variant={splitScreenMode ? "default" : "outline"}
@@ -1001,37 +1058,37 @@ export default function EditorPage() {
                 <TabsList className="TabsList ">
                   <TabsTrigger
                     value="header"
-                    className="min-w-[70px] rounded-none border-none bg-transparent p-2 text-left  "
+                    className=" rounded-none border-none bg-transparent p-2 text-left  "
                   >
                     ヘッダー設定
                   </TabsTrigger>
                   <TabsTrigger
                     value="footer"
-                    className="min-w-[70px] rounded-none border-none bg-transparent p-2 text-left  "
+                    className=" rounded-none border-none bg-transparent p-2 text-left  "
                   >
                     フッター設定
                   </TabsTrigger>
                   <TabsTrigger
                     value="css-editor"
-                    className="min-w-[70px] rounded-none border-none bg-transparent p-2 text-left  "
+                    className=" rounded-none border-none bg-transparent p-2 text-left  "
                   >
                     カスタムCSS
                   </TabsTrigger>
                   <TabsTrigger
                     value="ai-generator"
-                    className="min-w-[70px] rounded-none border-none bg-transparent p-2 text-left  "
+                    className=" rounded-none border-none bg-transparent p-2 text-left  "
                   >
                     AIで生成
                   </TabsTrigger>
                   <TabsTrigger
                     value="image-gallery"
-                    className="min-w-[70px] rounded-none border-none bg-transparent p-2 text-left  "
+                    className=" rounded-none border-none bg-transparent p-2 text-left  "
                   >
                     画像一覧
                   </TabsTrigger>
                   <TabsTrigger
                     value="backup"
-                    className="min-w-[70px] rounded-none border-none bg-transparent p-2 text-left  "
+                    className=" rounded-none border-none bg-transparent p-2 text-left  "
                   >
                     バックアップ
                   </TabsTrigger>

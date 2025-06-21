@@ -54,7 +54,7 @@ export async function GET() {
       });
     }
 
-    // カスタムCSSを返す（変数も含む）
+    // カスタムCSSを返す
     const customCSS =
       page.custom_css || "/* カスタムCSSが設定されていません */";
 

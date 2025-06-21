@@ -37,6 +37,22 @@ export function AccessibilityPanel() {
   // キーボードショートカット（Ctrl+Shift+A）
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // エディタなどの入力フィールドがフォーカスされている場合は無視
+      const activeElement = document.activeElement;
+      if (
+        activeElement &&
+        (activeElement.tagName === "TEXTAREA" ||
+          activeElement.tagName === "INPUT" ||
+          activeElement.contentEditable === "true" ||
+          activeElement.closest(".simple-html-editor") ||
+          activeElement.closest(".monaco-editor") ||
+          activeElement.closest("[data-keybinding-context]") ||
+          activeElement.classList.contains("monaco-editor") ||
+          activeElement.classList.contains("view-line"))
+      ) {
+        return;
+      }
+
       if (e.ctrlKey && e.shiftKey && e.key === "A") {
         e.preventDefault();
         if (process.env.NODE_ENV === "development") {

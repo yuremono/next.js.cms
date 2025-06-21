@@ -5,7 +5,7 @@ import { checkAuth } from "@/lib/auth";
 
 const DEFAULT_PAGE_DATA: Page = {
   header: {
-    html: `<header class="bg-white shadow-sm">
+    html: `<div class="bg-white shadow-sm">
   <div class="container mx-auto px-4 py-4 flex justify-between items-center">
     <div class="logo">
       <a href="/" class="text-xl font-bold">サイト名</a>
@@ -19,10 +19,10 @@ const DEFAULT_PAGE_DATA: Page = {
       </ul>
     </nav>
   </div>
-</header>`,
+</div>`,
   },
   footer: {
-    html: `<footer class="bg-gray-800 text-white">
+    html: `<div class="bg-gray-800 text-white">
   <div class="container mx-auto px-4 py-8">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       <div>
@@ -52,7 +52,7 @@ const DEFAULT_PAGE_DATA: Page = {
       <p>© 2024 会社名. All rights reserved.</p>
     </div>
   </div>
-</footer>`,
+</div>`,
   },
   sections: [
     {

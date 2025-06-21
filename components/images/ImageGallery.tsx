@@ -93,15 +93,22 @@ export function ImageGallery() {
 
 	// クリップボードにURLをコピー
 	const copyToClipboard = (url: string) => {
-		navigator.clipboard
-			.writeText(url)
-			.then(() => {
-				toast.success("画像URLをコピーしました");
-			})
-			.catch(() => {
-				toast.error("コピーに失敗しました");
-			});
-	};
+    // Clipboard APIが利用可能かチェック
+    if (!navigator.clipboard) {
+      toast.error("このブラウザではクリップボード機能がサポートされていません");
+      return;
+    }
+
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        toast.success("画像URLをコピーしました");
+      })
+      .catch((error) => {
+        console.warn("クリップボードコピーに失敗:", error);
+        toast.error("コピーに失敗しました");
+      });
+  };
 
 	// 初期データ読み込み
 	useEffect(() => {

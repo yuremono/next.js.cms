@@ -15,21 +15,21 @@ export function CustomCSSLoader() {
       try {
         if (shouldLoadCSS) {
           const response = await fetch("/css/custom.css");
-          if (response.ok) {
-            // 既存のcustom.cssリンクがあれば削除
-            const existingLink = document.querySelector(
+        if (response.ok) {
+          // 既存のcustom.cssリンクがあれば削除
+          const existingLink = document.querySelector(
               'link[href="/css/custom.css"]'
-            );
-            if (existingLink) {
-              existingLink.remove();
-            }
+          );
+          if (existingLink) {
+            existingLink.remove();
+          }
 
-            // 新しいlinkタグを作成
-            const link = document.createElement("link");
-            link.rel = "stylesheet";
+          // 新しいlinkタグを作成
+          const link = document.createElement("link");
+          link.rel = "stylesheet";
             link.href = "/css/custom.css";
-            link.type = "text/css";
-            document.head.appendChild(link);
+          link.type = "text/css";
+          document.head.appendChild(link);
           }
         } else {
           // /editorページでは既存のcustom.cssリンクを削除

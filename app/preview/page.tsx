@@ -46,13 +46,13 @@ export default function PreviewPage() {
   return (
     <>
       {/* カスタムCSS */}
-      {page.customCSS && (
+      {/* {page.customCSS && (
         <style dangerouslySetInnerHTML={{ __html: page.customCSS }} />
-      )}
+      )} */}
 
-      <main>
+      {/* <main> */}
       <PageRenderer page={page} />
-      </main>
+      {/* </main> */}
     </>
   );
 }

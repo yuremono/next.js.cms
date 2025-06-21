@@ -12,6 +12,7 @@ interface SimpleHtmlEditorProps {
   style?: React.CSSProperties;
   compact?: boolean;
   autoConvertLineBreaks?: boolean;
+  commentStyle?: "html" | "css";
 }
 
 export function SimpleHtmlEditor({
@@ -22,6 +23,7 @@ export function SimpleHtmlEditor({
   style = {},
   compact = false,
   autoConvertLineBreaks = false,
+  commentStyle = "html",
 }: SimpleHtmlEditorProps) {
   const [previewMode, setPreviewMode] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -43,7 +45,12 @@ export function SimpleHtmlEditor({
 
   const handleTextareaChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const newValue = e.target.value;
+      const textarea = e.target;
+      const newValue = textarea.value;
+
+      // カーソル位置を保存
+      const cursorStart = textarea.selectionStart;
+      const cursorEnd = textarea.selectionEnd;
 
       if (autoConvertLineBreaks) {
         const htmlValue = convertLineBreaksToHtml(newValue);
@@ -51,11 +58,31 @@ export function SimpleHtmlEditor({
       } else {
         onChange(newValue);
       }
+
+      // React再レンダリング後にカーソル位置を復元
+      requestAnimationFrame(() => {
+        if (textarea && document.activeElement === textarea) {
+          textarea.setSelectionRange(cursorStart, cursorEnd);
+        }
+      });
     },
     [autoConvertLineBreaks, convertLineBreaksToHtml, onChange]
   );
 
-  // 行移動・行複製の実装（先に定義）
+  // カーソル位置を安全に設定するヘルパー関数
+  const setCursorPosition = useCallback(
+    (textarea: HTMLTextAreaElement, start: number, end: number) => {
+      // React の再レンダリング後にカーソル位置を設定
+      requestAnimationFrame(() => {
+        if (textarea && document.activeElement === textarea) {
+          textarea.setSelectionRange(start, end);
+        }
+      });
+    },
+    []
+  );
+
+  // 行移動・行複製の実装
   const moveLines = useCallback(
     (direction: number, duplicate: boolean = false) => {
       const textarea = textareaRef.current;
@@ -92,14 +119,12 @@ export function SimpleHtmlEditor({
         onChange(newValue);
 
         // カーソル位置を調整
-        setTimeout(() => {
-          if (direction === -1) {
-            textarea.setSelectionRange(start, end);
-          } else {
-            const offset = selectedLines.join("\n").length + 1;
-            textarea.setSelectionRange(start + offset, end + offset);
-          }
-        }, 0);
+        if (direction === -1) {
+          setCursorPosition(textarea, start, end);
+        } else {
+          const offset = selectedLines.join("\n").length + 1;
+          setCursorPosition(textarea, start + offset, end + offset);
+        }
       } else {
         // 行移動
         if (
@@ -126,19 +151,23 @@ export function SimpleHtmlEditor({
         onChange(newValue);
 
         // カーソル位置を調整
-        setTimeout(() => {
-          const beforeNewStart = newLines.slice(0, newStartLine).join("\n");
-          const newStart =
-            beforeNewStart.length + (beforeNewStart.length > 0 ? 1 : 0);
-          const newEnd = newStart + selectedLines.join("\n").length;
-          textarea.setSelectionRange(newStart, newEnd);
-        }, 0);
+        const beforeNewStart = newLines.slice(0, newStartLine).join("\n");
+        const newStart =
+          beforeNewStart.length + (beforeNewStart.length > 0 ? 1 : 0);
+        const newEnd = newStart + selectedLines.join("\n").length;
+        setCursorPosition(textarea, newStart, newEnd);
       }
     },
-    [getDisplayValue, onChange, autoConvertLineBreaks, convertLineBreaksToHtml]
+    [
+      getDisplayValue,
+      onChange,
+      autoConvertLineBreaks,
+      convertLineBreaksToHtml,
+      setCursorPosition,
+    ]
   );
 
-  // コメント切り替えの実装
+  // コメント切り替えの実装（改善版）
   const toggleComment = useCallback(() => {
     const textarea = textareaRef.current;
     if (!textarea) return;
@@ -152,18 +181,36 @@ export function SimpleHtmlEditor({
     let newStart: number;
     let newEnd: number;
 
-    if (selectedText.startsWith("<!-- ") && selectedText.endsWith(" -->")) {
-      // コメントを解除
-      const uncommented = selectedText.slice(5, -4);
-      newText = text.substring(0, start) + uncommented + text.substring(end);
-      newStart = start;
-      newEnd = start + uncommented.length;
+    if (commentStyle === "css") {
+      // CSSスタイルのコメント /* */
+      if (selectedText.startsWith("/* ") && selectedText.endsWith(" */")) {
+        // コメントを解除
+        const uncommented = selectedText.slice(3, -3);
+        newText = text.substring(0, start) + uncommented + text.substring(end);
+        newStart = start;
+        newEnd = start + uncommented.length;
+      } else {
+        // コメントを追加
+        const commented = `/* ${selectedText} */`;
+        newText = text.substring(0, start) + commented + text.substring(end);
+        newStart = start;
+        newEnd = start + commented.length;
+      }
     } else {
-      // コメントを追加
-      const commented = `<!-- ${selectedText} -->`;
-      newText = text.substring(0, start) + commented + text.substring(end);
-      newStart = start;
-      newEnd = start + commented.length;
+      // HTMLスタイルのコメント <!-- -->
+      if (selectedText.startsWith("<!-- ") && selectedText.endsWith(" -->")) {
+        // コメントを解除
+        const uncommented = selectedText.slice(5, -4);
+        newText = text.substring(0, start) + uncommented + text.substring(end);
+        newStart = start;
+        newEnd = start + uncommented.length;
+      } else {
+        // コメントを追加
+        const commented = `<!-- ${selectedText} -->`;
+        newText = text.substring(0, start) + commented + text.substring(end);
+        newStart = start;
+        newEnd = start + commented.length;
+      }
     }
 
     const newValue = autoConvertLineBreaks
@@ -171,17 +218,17 @@ export function SimpleHtmlEditor({
       : newText;
     onChange(newValue);
 
-    setTimeout(() => {
-      textarea.setSelectionRange(newStart, newEnd);
-    }, 0);
+    setCursorPosition(textarea, newStart, newEnd);
   }, [
     getDisplayValue,
     onChange,
     autoConvertLineBreaks,
     convertLineBreaksToHtml,
+    commentStyle,
+    setCursorPosition,
   ]);
 
-  // インデントの実装
+  // インデントの実装（改善版）
   const handleIndent = useCallback(() => {
     const textarea = textareaRef.current;
     if (!textarea) return;
@@ -198,9 +245,7 @@ export function SimpleHtmlEditor({
         : newText;
       onChange(newValue);
 
-      setTimeout(() => {
-        textarea.setSelectionRange(start + 4, start + 4);
-      }, 0);
+      setCursorPosition(textarea, start + 4, start + 4);
     } else {
       // 選択範囲の各行をインデント
       const beforeText = text.substring(0, start);
@@ -217,18 +262,17 @@ export function SimpleHtmlEditor({
         : newText;
       onChange(newValue);
 
-      setTimeout(() => {
-        textarea.setSelectionRange(start, start + indentedText.length);
-      }, 0);
+      setCursorPosition(textarea, start, start + indentedText.length);
     }
   }, [
     getDisplayValue,
     onChange,
     autoConvertLineBreaks,
     convertLineBreaksToHtml,
+    setCursorPosition,
   ]);
 
-  // アンインデントの実装
+  // アンインデントの実装（改善版）
   const handleUnindent = useCallback(() => {
     const textarea = textareaRef.current;
     if (!textarea) return;
@@ -249,9 +293,7 @@ export function SimpleHtmlEditor({
           : newText;
         onChange(newValue);
 
-        setTimeout(() => {
-          textarea.setSelectionRange(start - 4, start - 4);
-        }, 0);
+        setCursorPosition(textarea, start - 4, start - 4);
       } else if (beforeCursor.endsWith("\t")) {
         const newText = beforeCursor.slice(0, -1) + afterCursor;
         const newValue = autoConvertLineBreaks
@@ -259,9 +301,7 @@ export function SimpleHtmlEditor({
           : newValue;
         onChange(newValue);
 
-        setTimeout(() => {
-          textarea.setSelectionRange(start - 1, start - 1);
-        }, 0);
+        setCursorPosition(textarea, start - 1, start - 1);
       }
     } else {
       // 選択範囲の各行をアンインデント
@@ -286,15 +326,14 @@ export function SimpleHtmlEditor({
         : newText;
       onChange(newValue);
 
-      setTimeout(() => {
-        textarea.setSelectionRange(start, start + unindentedText.length);
-      }, 0);
+      setCursorPosition(textarea, start, start + unindentedText.length);
     }
   }, [
     getDisplayValue,
     onChange,
     autoConvertLineBreaks,
     convertLineBreaksToHtml,
+    setCursorPosition,
   ]);
 
   // キーボードショートカットのハンドラー
@@ -430,42 +469,30 @@ export function SimpleHtmlEditor({
           break;
       }
 
-      textarea.focus();
+      // 安定したテキスト挿入処理（document.execCommandを使用しない）
+      const currentDisplayValue = getDisplayValue();
+      const newDisplayValue =
+        currentDisplayValue.substring(0, start) +
+        insertText +
+        currentDisplayValue.substring(end);
 
-      textarea.setSelectionRange(start, end);
-
-      if (document.execCommand) {
-        document.execCommand("insertText", false, insertText);
+      if (autoConvertLineBreaks) {
+        const htmlValue = convertLineBreaksToHtml(newDisplayValue);
+        onChange(htmlValue);
       } else {
-        const inputEvent = new InputEvent("beforeinput", {
-          bubbles: true,
-          cancelable: true,
-          inputType: "insertText",
-          data: insertText,
-        });
-
-        if (textarea.dispatchEvent(inputEvent)) {
-          const currentDisplayValue = getDisplayValue();
-          const newDisplayValue =
-            currentDisplayValue.substring(0, start) +
-            insertText +
-            currentDisplayValue.substring(end);
-
-          if (autoConvertLineBreaks) {
-            const htmlValue = convertLineBreaksToHtml(newDisplayValue);
-            onChange(htmlValue);
-          } else {
-            onChange(newDisplayValue);
-          }
-        }
+        onChange(newDisplayValue);
       }
 
-      setTimeout(() => {
-        const newCursorPos = start + cursorOffset;
-        textarea.setSelectionRange(newCursorPos, newCursorPos);
-      }, 0);
+      // カーソル位置を設定
+      setCursorPosition(textarea, start + cursorOffset, start + cursorOffset);
     },
-    [getDisplayValue, onChange, autoConvertLineBreaks, convertLineBreaksToHtml]
+    [
+      getDisplayValue,
+      onChange,
+      autoConvertLineBreaks,
+      convertLineBreaksToHtml,
+      setCursorPosition,
+    ]
   );
 
   return (

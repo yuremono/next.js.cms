@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 
 interface ErrorProps {
@@ -9,7 +9,18 @@ interface ErrorProps {
 }
 
 export default function Error({ error, reset }: ErrorProps) {
+  const [isChunkError, setIsChunkError] = useState(false);
+
   useEffect(() => {
+    // ChunkLoadErrorかどうかを判定
+    const isChunkLoadError =
+      error.name === "ChunkLoadError" ||
+      error.message.includes("ChunkLoadError") ||
+      error.message.includes("Loading chunk") ||
+      error.message.includes("webpack");
+
+    setIsChunkError(isChunkLoadError);
+
     // エラーログをコンソールに出力（本番では適切なログサービスに送信）
     console.error("Application Error:", error);
 
@@ -19,9 +30,58 @@ export default function Error({ error, reset }: ErrorProps) {
         message: error.message,
         stack: error.stack,
         digest: error.digest,
+        isChunkError: isChunkLoadError,
       });
     }
+
+    // ChunkLoadErrorの場合は自動でページをリロード（5秒後）
+    if (isChunkLoadError) {
+      const timer = setTimeout(() => {
+        window.location.reload();
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
   }, [error]);
+
+  // ChunkLoadErrorの場合の専用UI
+  if (isChunkError) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 text-center">
+        <div className="max-w-md space-y-6">
+          <div className="space-y-2">
+            <h1 className="text-4xl font-bold text-orange-500">⚠️</h1>
+            <h2 className="text-2xl font-semibold text-foreground">
+              アプリケーションを更新中
+            </h2>
+            <p className="text-muted-foreground">
+              新しいバージョンが利用可能です。
+              <br />
+              5秒後に自動的にページを更新します...
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
+            <Button
+              onClick={() => window.location.reload()}
+              className="w-full sm:w-auto"
+              aria-label="今すぐページを更新"
+            >
+              今すぐ更新
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => (window.location.href = "/")}
+              className="w-full sm:w-auto"
+              aria-label="ホームページに戻る"
+            >
+              ホームに戻る
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 text-center">

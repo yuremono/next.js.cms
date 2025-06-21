@@ -40,7 +40,10 @@ export function MonacoEditor({
       content !== contentRef.current
     ) {
       const currentValue = editorRef.current.getValue();
-      if (content !== currentValue) {
+      // より厳密な比較：内容が実際に異なる場合のみ更新
+      if (content !== currentValue && content.trim() !== currentValue.trim()) {
+        console.log("Monaco Editor: external content update detected");
+
         // カーソル位置を保存
         const position = editorRef.current.getPosition();
 
@@ -216,10 +219,10 @@ export function MonacoEditor({
         contentRef.current = value;
         onChange(value);
 
-        // ユーザー編集フラグをリセット（次のレンダリングサイクルで）
+        // ユーザー編集フラグをリセット（十分な時間を置く）
         setTimeout(() => {
           isUserEditingRef.current = false;
-        }, 0);
+        }, 100); // 0ms → 100ms に変更
       });
 
       return () => {

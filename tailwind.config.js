@@ -5,6 +5,48 @@ module.exports = {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  safelist: [
+    // CSS変数を使用したTailwindクラス
+    "w-[var(--base)]",
+    "w-[var(--sectionMW)]",
+    "w-[var(--sectionMax)]",
+    "max-w-[var(--sectionMax)]",
+    "min-w-[var(--sectionMax)]",
+    "h-[var(--head)]",
+    "px-[var(--mainBezel)]",
+    "py-[var(--sectionPY)]",
+    "mt-[var(--sectionMT)]",
+    "mb-[var(--titleAfter)]",
+    "gap-[var(--gap)]",
+    // 動的に生成される可能性のあるクラス
+    {
+      pattern: /w-\[var\(--.*\)\]/,
+    },
+    {
+      pattern: /min-w-\[var\(--.*\)\]/,
+    },
+    {
+      pattern: /max-w-\[var\(--.*\)\]/,
+    },
+    {
+      pattern: /h-\[var\(--.*\)\]/,
+    },
+    {
+      pattern: /min-h-\[var\(--.*\)\]/,
+    },
+    {
+      pattern: /max-h-\[var\(--.*\)\]/,
+    },
+    {
+      pattern: /p[xytblr]?-\[var\(--.*\)\]/,
+    },
+    {
+      pattern: /m[xytblr]?-\[var\(--.*\)\]/,
+    },
+    {
+      pattern: /gap-\[var\(--.*\)\]/,
+    },
+  ],
   theme: {
     container: {
       center: true,

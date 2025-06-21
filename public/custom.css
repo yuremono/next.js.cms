@@ -4,7 +4,7 @@
   --sectionMT: 80px;
   --titleAfter: 24px;
   --sectionPY: 60px;
-  --sectionPX: 20px;
+  --mainBezel: 5%;
   --gap: 24px;
   --mc: #3b82f6;
   --sc: #64748b;
@@ -13,11 +13,20 @@
   --tx: #1f2937;
 }
 
+
+
 main>*{
     width:var(--base);
+    max-width:calc(100% - var(--mainBezel)*2);
     margin-inline:auto;
-    +*{margin-top:var(--sectionMT);
+    +*{margin-top:var(--sectionMT);}
 }
+
+/* header>*,footer>*{
+    max-width:calc(100% - var(--mainBezel)*2);
+    margin-inline:auto;
+} */
+
 /* カスタムCSS例 */
 .MainVisual {
   text-align: center;
@@ -39,6 +48,7 @@ main>*{
 .Cards .grid {
   gap: var(--gap);
 }
+
 
 .Form {
   padding: var(--sectionPY) var(--sectionPX);

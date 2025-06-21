@@ -150,10 +150,6 @@ export default async function Home() {
     );
   }
 
-  return (
-    <>
-      <PageRenderer page={pageData} showEditorButton={true} />
-    </>
-  );
+  return <PageRenderer page={pageData} showEditorButton={true} />;
 }
  

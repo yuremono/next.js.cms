@@ -5,6 +5,24 @@ import { Button } from "@/components/ui/button";
 import { Section } from "@/types";
 import { toast } from "sonner";
 import { ImageIcon, LayoutGrid, Mail, Copy, FolderOpen } from "lucide-react";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+  DragStartEvent,
+  DragOverlay,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 // セクションのインデント階層を計算する関数
 const calculateIndentLevel = (
@@ -59,8 +77,30 @@ export default function IDEStyleSectionList({
   );
   const listRef = useRef<HTMLDivElement>(null);
 
+  // ドラッグ&ドロップの状態
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  // ドラッグ&ドロップのセンサー設定
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // 8px移動してからドラッグ開始（誤操作防止）
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
   // セクションタイプに応じた表示名を取得
-  const getSectionTitle = (section: Section) => {
+  const getSectionTitle = (section: Section | null | undefined) => {
+    // sectionがnullまたはundefinedの場合
+    if (!section || typeof section !== "object") {
+      return "不明なセクション";
+    }
+
+    // nameプロパティがある場合
     if ("name" in section && section.name) {
       return section.name;
     }
@@ -84,7 +124,11 @@ export default function IDEStyleSectionList({
   };
 
   // セクションタイプに応じたアイコンを取得
-  const getSectionIcon = (section: Section) => {
+  const getSectionIcon = (section: Section | null | undefined) => {
+    if (!section || typeof section !== "object") {
+      return null;
+    }
+
     switch (section.layout) {
       case "mainVisual":
         return <ImageIcon className="mr-1 w-3 flex-shrink-0 text-slate-500" />;
@@ -126,11 +170,78 @@ export default function IDEStyleSectionList({
     };
   };
 
+  // ドラッグ開始ハンドラー
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+    setIsDragging(true);
+
+    // ドラッグ中はフォーカスモードを一時無効化
+    if (focusMode) {
+      toast.info("ドラッグ中はキーボード操作が無効になります");
+    }
+
+    // モバイルでのスクロール防止（ドラッグ中のみ）
+    document.body.style.touchAction = "none";
+    document.body.style.userSelect = "none";
+  };
+
+  // ドラッグ終了ハンドラー
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    setActiveId(null);
+    setIsDragging(false);
+
+    // スクロール制限を解除
+    document.body.style.touchAction = "";
+    document.body.style.userSelect = "";
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const oldIndex = sections.findIndex((section) => section.id === active.id);
+    const newIndex = sections.findIndex((section) => section.id === over.id);
+
+    if (oldIndex !== -1 && newIndex !== -1) {
+      // 既存のonSectionMoveを使用してセクション移動（トーストなし）
+      onSectionMove(oldIndex, newIndex);
+    }
+  };
+
+  // コンポーネントアンマウント時のクリーンアップ
+  useEffect(() => {
+    return () => {
+      // コンポーネントが破棄される際にtouch-actionを復元
+      document.body.style.touchAction = "";
+      document.body.style.userSelect = "";
+    };
+  }, []);
+
   // キーボードイベントハンドラー
   useEffect(() => {
     if (!focusMode) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      // ドラッグ中はキーボード操作を無効化
+      if (isDragging) return;
+
+      // エディタがフォーカスされている場合はキーボードイベントを無視
+      const activeElement = document.activeElement;
+      if (
+        activeElement &&
+        (activeElement.tagName === "TEXTAREA" ||
+          activeElement.tagName === "INPUT" ||
+          (activeElement as HTMLElement).contentEditable === "true" ||
+          activeElement.closest(".simple-html-editor") ||
+          activeElement.closest(".monaco-editor") ||
+          activeElement.closest("[data-keybinding-context]") || // Monaco Editor内部要素
+          activeElement.classList.contains("monaco-editor") ||
+          activeElement.classList.contains("view-line"))
+      ) {
+        return; // エディタなどの入力フィールドでは何もしない
+      }
+
       if (focusedIndex === null) return;
 
       switch (e.key) {
@@ -238,74 +349,36 @@ export default function IDEStyleSectionList({
         }
         case "Enter": {
           e.preventDefault();
-          // セクション編集画面表示
-          onSectionClick(focusedIndex);
-          setFocusMode(false);
+          // セクションを編集
+          if (focusedIndex !== null) {
+            onSectionClick(focusedIndex);
+          }
           break;
         }
         case "Delete":
         case "Backspace": {
           e.preventDefault();
-          // 複数選択削除対応
-          if (selectedIndices.size > 1) {
+          // 選択されたセクションを削除
+          if (selectedIndices.size > 0) {
             const sortedIndices = Array.from(selectedIndices).sort(
               (a, b) => b - a
             );
-            if (
-              confirm(
-                `選択された${sortedIndices.length}個のセクションを削除してもよろしいですか？`
-              )
-            ) {
-              // 逆順で削除（インデックスの整合性を保つため）
-              sortedIndices.forEach((index) => {
-                onSectionDelete(index);
-              });
-              // フォーカスを調整
-              const remainingCount = sections.length - sortedIndices.length;
-              if (remainingCount > 0) {
-                const newIndex = Math.min(
-                  sortedIndices[sortedIndices.length - 1],
-                  remainingCount - 1
-                );
-                setFocusedIndex(newIndex >= 0 ? newIndex : 0);
-                setSelectedIndices(new Set([newIndex >= 0 ? newIndex : 0]));
-                setLastSelectedIndex(newIndex >= 0 ? newIndex : 0);
-              } else {
-                setFocusedIndex(null);
-                setSelectedIndices(new Set());
-                setLastSelectedIndex(null);
-                setFocusMode(false);
-              }
-              toast.success(
-                `${sortedIndices.length}個のセクションを削除しました`
-              );
-            }
-          } else {
-            // 単一削除
-            const section = sections[focusedIndex];
-            const sectionName = getSectionTitle(section);
-
-            if (confirm(`「${sectionName}」を削除してもよろしいですか？`)) {
-              onSectionDelete(focusedIndex);
-              // フォーカスを調整
-              const newIndex = Math.min(focusedIndex, sections.length - 2);
-              setFocusedIndex(newIndex >= 0 ? newIndex : null);
-              setSelectedIndices(new Set(newIndex >= 0 ? [newIndex] : []));
-              setLastSelectedIndex(newIndex >= 0 ? newIndex : null);
-              if (newIndex < 0) {
-                setFocusMode(false);
-              }
-              toast.success("セクションを削除しました");
-            }
+            sortedIndices.forEach((index) => {
+              onSectionDelete(index);
+            });
+            setSelectedIndices(new Set());
+            setFocusedIndex(null);
           }
           break;
         }
         case "Escape": {
           e.preventDefault();
+          // フォーカスモードを終了
           setFocusMode(false);
           setFocusedIndex(null);
           setSelectedIndices(new Set());
           setLastSelectedIndex(null);
+          toast.info("IDE風フォーカスモード終了");
           break;
         }
       }
@@ -328,21 +401,20 @@ export default function IDEStyleSectionList({
   }, [
     focusMode,
     focusedIndex,
-    sections,
+    selectedIndices,
+    lastSelectedIndex,
+    sections.length,
     onSectionMove,
-    onSectionClick,
     onSectionDelete,
+    isDragging,
   ]);
 
-  // セクションクリック（選択）
+  // セクションクリックハンドラー
   const handleSectionClick = (index: number, e?: React.MouseEvent) => {
-    onSectionClick(index);
     if (focusMode) {
-      // フォーカスモード中なら、フォーカスも移動
-      setFocusedIndex(index);
-
+      // フォーカスモード中の選択処理
       if (e?.shiftKey && lastSelectedIndex !== null) {
-        // Shift+クリック: 範囲選択
+        // 範囲選択
         const start = Math.min(lastSelectedIndex, index);
         const end = Math.max(lastSelectedIndex, index);
         const newSelected = new Set<number>();
@@ -366,16 +438,29 @@ export default function IDEStyleSectionList({
         setLastSelectedIndex(index);
       }
     }
+
+    // フォーカスを設定（フォーカスモード時のみ）
+    if (focusMode) {
+      setFocusedIndex(index);
+    }
+
+    // 親コンポーネントに通知
+    onSectionClick(index);
   };
 
   // セクションダブルクリック（フォーカスモード開始）
   const handleSectionDoubleClick = (index: number) => {
+    const wasAlreadyFocusMode = focusMode;
     setFocusMode(true);
     setFocusedIndex(index);
     setSelectedIndices(new Set([index]));
     setLastSelectedIndex(index);
     onSectionClick(index); // クリックも連動
-    toast.info("IDE風フォーカスモード開始 (Escで終了)");
+
+    // 既にフォーカスモードの場合はトーストを表示しない
+    if (!wasAlreadyFocusMode) {
+      toast.info("IDE風フォーカスモード開始 (Escで終了)");
+    }
   };
 
   // セクションリスト全体のダブルクリック（フォーカスモード開始）
@@ -396,149 +481,206 @@ export default function IDEStyleSectionList({
     }
   };
 
-  return (
-    <div
-      ref={listRef}
-      className={`space-y-1 ${focusMode ? "rounded-md p-2 ring-2 ring-slate-500 ring-opacity-50" : ""}`}
-      onDoubleClick={handleListDoubleClick}
-    >
-      {focusMode && (
-        <div className="fixed bottom-2 left-2 right-2 rounded-md bg-white p-4 text-center text-sm text-gray-700 shadow-lg">
-          IDE風モード: ↑↓で選択, shift+↑↓で複数選択,
-          cmd/ctrl+クリックで個別選択, option+↑↓で移動, Enterで編集,
-          Delete/Backspaceで削除, Escで終了
-          {selectedIndices.size > 1 && (
-            <span className="ml-2 font-medium text-gray-900">
-              ({selectedIndices.size}個選択中)
-            </span>
-          )}
-        </div>
-      )}
+  // ソート可能なセクションアイテムコンポーネント
+  const SortableItem = ({
+    section,
+    index,
+  }: {
+    section: Section;
+    index: number;
+  }) => {
+    const {
+      attributes,
+      listeners,
+      setNodeRef,
+      transform,
+      transition,
+      isDragging: isItemDragging,
+    } = useSortable({ id: section.id });
 
-      {sections.map((section, index) => {
-        const isActive = activeSectionIndex === index;
-        const isFocused = focusMode && focusedIndex === index;
-        const isSelected = selectedIndices.has(index);
-        const isGroupStart = section.layout === "group-start";
-        const isGroupEnd = section.layout === "group-end";
-        const indentLevel = calculateIndentLevel(sections, index);
-        const indentStyle = { marginLeft: `${indentLevel * 0.5}rem` };
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+      opacity: isItemDragging ? 0.5 : 1,
+    };
 
-        // グループstart/endの場合は幅も調整
-        const groupWidthStyle =
-          isGroupStart || isGroupEnd
-            ? {
-                width: `calc(100% - ${indentLevel * 0.5}rem)`,
-              }
-            : {};
+    const isActive = activeSectionIndex === index;
+    const isFocused = focusMode && focusedIndex === index;
+    const isSelected = selectedIndices.has(index);
+    const isGroupStart = section.layout === "group-start";
+    const isGroupEnd = section.layout === "group-end";
+    const indentLevel = calculateIndentLevel(sections, index);
+    const indentStyle = { marginLeft: `${indentLevel * 0.5}rem` };
 
-        // グループ終了タグの場合
-        if (isGroupEnd) {
-          // 対応する開始タグを見つける
-          let startIndex = -1;
-          let groupDepth = 0;
-          for (let i = index - 1; i >= 0; i--) {
-            if (sections[i].layout === "group-end") {
-              groupDepth++;
-            } else if (sections[i].layout === "group-start") {
-              if (groupDepth === 0) {
-                startIndex = i;
-                break;
-              }
-              groupDepth--;
-            }
+    // グループstart/endの場合は幅も調整
+    const groupWidthStyle =
+      isGroupStart || isGroupEnd
+        ? {
+            width: `calc(100% - ${indentLevel * 0.5}rem)`,
           }
+        : {};
 
-          const groupColors =
-            startIndex >= 0
-              ? getGroupColor(sections[startIndex].id)
-              : {
-                  border: "#ccc",
-                  bgWithAlpha: "rgba(204, 204, 204, 0.3)",
-                  text: "#666",
-                };
+    // グループ終了タグの場合
+    if (isGroupEnd) {
+      // 対応する開始タグを見つける
+      let startIndex = -1;
+      let groupDepth = 0;
+      for (let i = index - 1; i >= 0; i--) {
+        if (sections[i].layout === "group-end") {
+          groupDepth++;
+        } else if (sections[i].layout === "group-start") {
+          if (groupDepth === 0) {
+            startIndex = i;
+            break;
+          }
+          groupDepth--;
+        }
+      }
 
-          return (
-            <Button
-              key={section.id}
-              variant={isActive ? "default" : "ghost"}
-              size="sm"
-              className={`h-6 min-w-[50%] justify-start px-2 py-1 text-left font-normal ${
-                isFocused ? "ring-2 ring-slate-400 ring-offset-1" : ""
-              } ${
-                isSelected && focusMode
-                  ? "bg-slate-500/20 ring-1 ring-slate-300"
-                  : ""
-              } border-l-2 font-medium`}
-              style={{
+      const groupColors =
+        startIndex >= 0
+          ? getGroupColor(sections[startIndex].id)
+          : {
+              border: "#ccc",
+              bgWithAlpha: "rgba(204, 204, 204, 0.3)",
+              text: "#666",
+            };
+
+      return (
+        <Button
+          ref={setNodeRef}
+          style={{
+            ...style,
+            ...indentStyle,
+            ...groupWidthStyle,
+            borderLeftColor: groupColors.border,
+            backgroundColor: isActive ? groupColors.bgWithAlpha : undefined,
+            color: isActive ? groupColors.text : undefined,
+            touchAction: "none", // モバイルでのスクロール防止
+          }}
+          {...attributes}
+          {...listeners}
+          variant={isActive ? "default" : "ghost"}
+          size="sm"
+          className={`h-6 min-w-[51%] justify-start px-2 py-1 text-left font-normal ${
+            isFocused ? "ring-2 ring-slate-400 ring-offset-1" : ""
+          } ${
+            isSelected && focusMode
+              ? "bg-slate-500/20 ring-1 ring-slate-300"
+              : ""
+          } border-l-2 font-medium`}
+          onClick={(e) => handleSectionClick(index, e)}
+          onDoubleClick={() => handleSectionDoubleClick(index)}
+          title={`${getSectionTitle(section)} (ダブルクリックでIDE風モード)`}
+          data-layout={section.layout}
+        >
+          <div className="flex min-w-0 flex-1 items-center">
+            <span className="flex-1 truncate">{getSectionTitle(section)}</span>
+            {focusMode && isFocused && (
+              <span className="ml-2 text-xs opacity-75">●</span>
+            )}
+          </div>
+        </Button>
+      );
+    }
+
+    // 通常のセクションとグループ開始タグ
+    const groupColors = isGroupStart ? getGroupColor(section.id) : null;
+
+    return (
+      <Button
+        ref={setNodeRef}
+        style={
+          isGroupStart && groupColors
+            ? {
+                ...style,
                 ...indentStyle,
                 ...groupWidthStyle,
                 borderLeftColor: groupColors.border,
-                backgroundColor: isActive ? groupColors.bgWithAlpha : undefined,
+                backgroundColor: isActive
+                  ? groupColors.bgWithAlpha
+                  : `${groupColors.border}30`, // 30%透明度
                 color: isActive ? groupColors.text : undefined,
-              }}
-              onClick={(e) => handleSectionClick(index, e)}
-              onDoubleClick={() => handleSectionDoubleClick(index)}
-              title={`${getSectionTitle(section)} (ダブルクリックでIDE風モード)`}
-              data-layout={section.layout}
-            >
-              <div className="flex min-w-0 flex-1 items-center">
-                <span className="flex-1 truncate">
-                  {getSectionTitle(section)}
-                </span>
-                {focusMode && isFocused && (
-                  <span className="ml-2 text-xs opacity-75">●</span>
-                )}
-              </div>
-            </Button>
-          );
+                touchAction: "none", // モバイルでのスクロール防止
+              }
+            : {
+                ...style,
+                ...indentStyle,
+                ...groupWidthStyle,
+                touchAction: "none", // モバイルでのスクロール防止
+              }
         }
+        {...attributes}
+        {...listeners}
+        variant={isActive ? "default" : "ghost"}
+        size="sm"
+        className={`h-6 min-w-[51%] justify-start px-2 py-1 text-left font-normal ${
+          isFocused ? "ring-2 ring-slate-400 ring-offset-1" : ""
+        } ${
+          isSelected && focusMode ? "bg-slate-500/20 ring-1 ring-slate-300" : ""
+        } ${isGroupStart ? "border-l-2 font-medium" : ""}`}
+        onClick={(e) => handleSectionClick(index, e)}
+        onDoubleClick={() => handleSectionDoubleClick(index)}
+        title={`${getSectionTitle(section)} (ダブルクリックでIDE風モード)`}
+        data-layout={section.layout}
+      >
+        <div className="flex min-w-0 flex-1 items-center">
+          {getSectionIcon(section)}
+          <span className="flex-1 truncate">{getSectionTitle(section)}</span>
+          {focusMode && isFocused && (
+            <span className="ml-2 text-xs opacity-75">●</span>
+          )}
+        </div>
+      </Button>
+    );
+  };
 
-        // 通常のセクションとグループ開始タグ
-        const groupColors = isGroupStart ? getGroupColor(section.id) : null;
-
-        return (
-          <Button
-            key={section.id}
-            variant={isActive ? "default" : "ghost"}
-            size="sm"
-            className={`h-6 min-w-[50%] justify-start px-2 py-1 text-left font-normal ${
-              isFocused ? "ring-2 ring-slate-400 ring-offset-1" : ""
-            } ${
-              isSelected && focusMode
-                ? "bg-slate-500/20 ring-1 ring-slate-300"
-                : ""
-            } ${isGroupStart ? "border-l-2 font-medium" : ""}`}
-            style={
-              isGroupStart && groupColors
-                ? {
-                    ...indentStyle,
-                    ...groupWidthStyle,
-                    borderLeftColor: groupColors.border,
-                    backgroundColor: isActive
-                      ? groupColors.bgWithAlpha
-                      : `${groupColors.border}30`, // 30%透明度
-                    color: isActive ? groupColors.text : undefined,
-                  }
-                : { ...indentStyle, ...groupWidthStyle }
-            }
-            onClick={(e) => handleSectionClick(index, e)}
-            onDoubleClick={() => handleSectionDoubleClick(index)}
-            title={`${getSectionTitle(section)} (ダブルクリックでIDE風モード)`}
-            data-layout={section.layout}
-          >
-            <div className="flex min-w-0 flex-1 items-center">
-              {getSectionIcon(section)}
-              <span className="flex-1 truncate">
-                {getSectionTitle(section)}
+  return (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
+      <div
+        ref={listRef}
+        className={`space-y-1 ${focusMode ? "rounded-md p-2 ring-2 ring-slate-500 ring-opacity-50" : ""}`}
+        style={{ touchAction: "pan-y" }} // 縦スクロールのみ許可、ドラッグエリアでは上書き
+        onDoubleClick={handleListDoubleClick}
+      >
+        {focusMode && (
+          <div className="fixed bottom-2 left-2 right-2 rounded-md bg-white p-4 text-center text-sm text-gray-700 shadow-lg">
+            IDE風モード: ↑↓で選択, shift+↑↓で複数選択,
+            cmd/ctrl+クリックで個別選択, option+↑↓で移動, Enterで編集,
+            Delete/Backspaceで削除, Escで終了
+            {selectedIndices.size > 1 && (
+              <span className="ml-2 font-medium text-gray-900">
+                ({selectedIndices.size}個選択中)
               </span>
-              {focusMode && isFocused && (
-                <span className="ml-2 text-xs opacity-75">●</span>
-              )}
+            )}
+          </div>
+        )}
+
+        <SortableContext
+          items={sections.map((section) => section.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          {sections.map((section, index) => (
+            <SortableItem key={section.id} section={section} index={index} />
+          ))}
+        </SortableContext>
+
+        <DragOverlay>
+          {activeId ? (
+            <div className="rounded bg-slate-100 p-2 opacity-90 shadow-lg">
+              <span className="text-sm font-medium">
+                {getSectionTitle(sections.find((s) => s.id === activeId))}
+              </span>
             </div>
-          </Button>
-        );
-      })}
-    </div>
+          ) : null}
+        </DragOverlay>
+      </div>
+    </DndContext>
   );
 }
+ 

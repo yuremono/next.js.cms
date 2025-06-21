@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { SimpleHtmlEditor } from "@/components/ui/simple-html-editor";
-
 import { VariableField } from "@/components/ui/variable-field";
 import { VariableColorField } from "@/components/ui/variable-color-field";
 import { ChevronDown } from "lucide-react";
@@ -54,20 +53,24 @@ export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
   // 変数設定セクションの開閉状態
   const [isVariablesOpen, setIsVariablesOpen] = useState(false);
 
+  // デバウンス用のタイマーref
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
   // 初期CSSが更新された場合に状態を更新
   useEffect(() => {
+    setCSS(initialCSS || "");
+    // 初期CSSから変数を抽出してフォームに設定
     if (initialCSS) {
-      // CSS変数を抽出してインプットフィールドに設定
       const extractedVariables = extractCSSVariables(initialCSS);
       setCssVariables(extractedVariables);
-
-      // CSS変数部分を除いたCSSを設定
-      const cssWithoutVariables = removeCSSVariables(initialCSS);
-      setCSS(cssWithoutVariables);
-    } else {
-      setCSS("");
     }
   }, [initialCSS]);
+
+  // CSSの変更を処理
+  const handleCSSChange = (newCSS: string) => {
+    setCSS(newCSS);
+    onUpdate(newCSS);
+  };
 
   // CSSからCSS変数を抽出する関数
   const extractCSSVariables = (cssText: string): CSSVariables => {
@@ -105,7 +108,7 @@ export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
       variables.sectionSpacing = extractValue("sectionMT");
       variables.titleMarginBottom = extractValue("titleAfter");
       variables.sectionPaddingY = extractValue("sectionPY");
-      variables.sectionPaddingX = extractValue("sectionPX");
+      variables.sectionPaddingX = extractValue("mainBezel");
       variables.cardGap = extractValue("gap");
       variables.primaryColor = extractValue("mc");
       variables.secondaryColor = extractValue("sc");
@@ -117,65 +120,8 @@ export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
     return variables;
   };
 
-  // CSSからCSS変数部分を削除する関数
-  const removeCSSVariables = (cssText: string): string => {
-    // :root { ... } ブロックを削除
-    const withoutRoot = cssText.replace(/:root\s*\{[^}]*\}\s*/g, "");
-    return withoutRoot.trim();
-  };
-
-  // CSSの変更を処理
-  const handleCSSChange = (newCSS: string) => {
-    setCSS(newCSS);
-
-    // 自動的にページデータを更新
-    updatePageData(newCSS, cssVariables);
-  };
-
-  // CSS変数の変更を処理
-  const handleVariableChange = (key: keyof CSSVariables, value: string) => {
-    const newVariables = {
-      ...cssVariables,
-      [key]: value,
-    };
-    setCssVariables(newVariables);
-
-    // 自動的にページデータを更新
-    updatePageData(css, newVariables);
-  };
-
-  // ページデータを更新する共通関数
-  const updatePageData = async (
-    currentCSS: string,
-    currentVariables: CSSVariables
-  ) => {
-    // CSS変数を含めた最終的なCSS
-    const variablesCSS = generateVariablesCSSFromObject(currentVariables);
-    const finalCSS = variablesCSS + currentCSS;
-
-    // 1. ページデータを更新（保存ボタンでデータベースに保存される）
-    onUpdate(finalCSS);
-
-    // 2. プレビュー用のcustom.cssファイルも更新
-    try {
-      const response = await fetch("/api/css", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ css: finalCSS }),
-      });
-
-      if (!response.ok) {
-        console.warn("プレビュー用CSSファイルの更新に失敗しました");
-      }
-    } catch (error) {
-      console.warn("プレビュー用CSSファイルの更新エラー:", error);
-    }
-  };
-
-  // CSS変数をCSS文字列に変換（オブジェクトから）
-  const generateVariablesCSSFromObject = (variables: CSSVariables) => {
+  // CSS変数をCSS文字列に変換
+  const generateVariablesCSS = (variables: CSSVariables) => {
     const variablesList = [];
 
     if (variables.contentMaxWidth)
@@ -189,7 +135,7 @@ export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
     if (variables.sectionPaddingY)
       variablesList.push(`  --sectionPY: ${variables.sectionPaddingY};`);
     if (variables.sectionPaddingX)
-      variablesList.push(`  --sectionPX: ${variables.sectionPaddingX};`);
+      variablesList.push(`  --mainBezel: ${variables.sectionPaddingX};`);
     if (variables.cardGap) variablesList.push(`  --gap: ${variables.cardGap};`);
     if (variables.primaryColor)
       variablesList.push(`  --mc: ${variables.primaryColor};`);
@@ -204,11 +150,48 @@ export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
 
     if (variablesList.length === 0) return "";
 
-    return `:root {
-${variablesList.join("\n")}
-}
+    return `:root {\n${variablesList.join("\n")}\n}\n\n`;
+  };
 
-`;
+  // 変数CSSファイル更新（デバウンス）
+  const debouncedUpdateVariablesFile = useCallback(
+    (variables: CSSVariables) => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+
+      debounceTimerRef.current = setTimeout(async () => {
+        try {
+          const variablesCSS = generateVariablesCSS(variables);
+          const response = await fetch("/api/css", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ css: variablesCSS }),
+          });
+
+          if (!response.ok) {
+            console.warn("変数CSSファイルの更新に失敗しました");
+          }
+        } catch (error) {
+          console.warn("変数CSSファイルの更新エラー:", error);
+        }
+      }, 500);
+    },
+    []
+  );
+
+  // CSS変数の変更を処理
+  const handleVariableChange = (key: keyof CSSVariables, value: string) => {
+    const newVariables = {
+      ...cssVariables,
+      [key]: value,
+    };
+    setCssVariables(newVariables);
+
+    // 変数をpublic/custom.cssに保存（カスタムCSSとは独立）
+    debouncedUpdateVariablesFile(newVariables);
   };
 
   return (
@@ -297,7 +280,7 @@ ${variablesList.join("\n")}
                   />
                   <VariableField
                     id="section-padding-x"
-                    label="セクション左右余白　--sectionPX"
+                    label="メイン縁ヨコ幅　--mainBezel"
                     value={cssVariables.sectionPaddingX}
                     onChange={(value) =>
                       handleVariableChange("sectionPaddingX", value)
@@ -379,33 +362,10 @@ ${variablesList.join("\n")}
               <SimpleHtmlEditor
                 value={css}
                 onChange={handleCSSChange}
-                placeholder={`/* ここにカスタムCSSを入力 */
-/* 変数を使用した例 */
-body {
-  background-color: var(--bc);
-  color: var(--tx);
-}
-
-header {
-  height: var(--head);
-  background-color: var(--bc);
-}
-
-.section {
-  padding: var(--sectionPY) var(--sectionPX);
-  margin-bottom: var(--sectionMT);
-}
-
-.cards {
-  gap: var(--gap);
-}
-
-/* カスタムスタイルをここに追加 */`}
+                placeholder="CSSを入力してください..."
+                className="h-80"
+                commentStyle="css"
                 compact={true}
-                style={{
-                  minHeight: "20rem",
-                }}
-                className="flex-1 font-mono text-sm"
               />
             </div>
 
@@ -422,9 +382,7 @@ header {
                   </code>{" "}
                   の形式で使用できます。
                 </p>
-                <p>
-                  変更は自動的に反映され、ページの「保存」ボタンでデータベースに保存されます。
-                </p>
+                <p>変更は「保存」ボタンでデータベースに保存されます。</p>
               </div>
             </div>
           </div>

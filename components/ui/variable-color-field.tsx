@@ -18,6 +18,10 @@ export function VariableColorField({
   placeholder,
   className = "",
 }: VariableColorFieldProps) {
+  // 空文字列や無効な値の場合はデフォルト色を使用
+  const validColorValue =
+    value && value.match(/^#[0-9A-Fa-f]{6}$/) ? value : "#000000";
+
   return (
     <div className={`space-y-2 ${className}`}>
       <Label className="w-full text-sm" htmlFor={id}>
@@ -27,7 +31,7 @@ export function VariableColorField({
         <Input
           id={id}
           type="color"
-          value={value}
+          value={validColorValue}
           onChange={(e) => onChange(e.target.value)}
           className="h-9 w-12 border-2 p-1"
         />
