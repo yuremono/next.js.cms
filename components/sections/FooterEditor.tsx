@@ -18,7 +18,7 @@ export function FooterEditor({ footer, onUpdate }: FooterEditorProps) {
 	  return (
       <div className="FooterEditor flex h-full flex-col space-y-6">
         <Card className="flex flex-1 flex-col rounded-sm p-4">
-          <h3 className="mb-4 text-lg font-medium">フッター設定</h3>
+          <h3 className="mb-4">フッター設定</h3>
           <div className="flex flex-1 flex-col space-y-4">
             <div className="flex flex-1 flex-col space-y-2">
               <Label htmlFor="footer-html">HTMLエディタ</Label>

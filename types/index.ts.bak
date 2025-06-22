@@ -57,15 +57,6 @@ export interface FormSection extends BaseSection {
   textClass?: string;
 }
 
-// Description List セクション
-export interface DescListSection extends BaseSection {
-  layout: "descList";
-  html: string;
-  name?: string; // セクション名
-  title?: string; // H2タイトル
-  dtWidth?: string; // DT幅設定（デフォルト: "20%"）
-}
-
 // グループ開始タグ
 export interface GroupStartSection extends BaseSection {
   layout: "group-start";
@@ -84,8 +75,7 @@ export type Section =
   | CardsSection
   | FormSection
   | GroupStartSection
-  | GroupEndSection
-  | DescListSection;
+  | GroupEndSection;
 
 export interface Page {
   header: Header;
@@ -110,7 +100,6 @@ export function isSection(obj: unknown): obj is Section {
       section.layout === "cards" ||
       section.layout === "form" ||
       section.layout === "group-start" ||
-      section.layout === "group-end" ||
-      section.layout === "descList")
+      section.layout === "group-end")
   );
 }

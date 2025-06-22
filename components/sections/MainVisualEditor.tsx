@@ -94,7 +94,7 @@ export function MainVisualEditor({ section, onUpdate }: MainVisualEditorProps) {
   return (
     <div className="MainVisualEditor h-full space-y-6">
       <Card className="flex  h-full flex-col rounded-sm p-4">
-        <h3 className="mb-4 text-lg font-medium">メインビジュアル設定</h3>
+        <h3 className="mb-4">メインビジュアル設定</h3>
         <div className="space-y-4">
           <FormField
             id="MainVisual-name"

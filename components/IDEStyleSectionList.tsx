@@ -4,7 +4,14 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Section } from "@/types";
 import { toast } from "sonner";
-import { ImageIcon, LayoutGrid, Mail, Copy, FolderOpen } from "lucide-react";
+import {
+  ImageIcon,
+  LayoutGrid,
+  Mail,
+  Copy,
+  FolderOpen,
+  FileText,
+} from "lucide-react";
 import {
   DndContext,
   closestCenter,
@@ -75,6 +82,7 @@ export default function IDEStyleSectionList({
   const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(
     null
   );
+  const [toastShown, setToastShown] = useState(false); // トースト重複防止用
   const listRef = useRef<HTMLDivElement>(null);
 
   // ドラッグ&ドロップの状態
@@ -114,6 +122,8 @@ export default function IDEStyleSectionList({
         return "カード";
       case "form":
         return "お問い合わせフォーム";
+      case "descList":
+        return "DLリスト";
       case "group-start":
         return `<article>${section.name || "グループ開始"}`;
       case "group-end":
@@ -138,10 +148,10 @@ export default function IDEStyleSectionList({
         return <LayoutGrid className="mr-1 w-3 flex-shrink-0 text-blue-500" />;
       case "form":
         return <Mail className="mr-1 w-3 flex-shrink-0 text-orange-500" />;
+      case "descList":
+        return <FileText className="mr-1 w-3 flex-shrink-0 text-cyan-500" />;
       case "group-start":
-        return (
-          <FolderOpen className="mr-1 w-3 flex-shrink-0 text-purple-500" />
-        );
+        return <FolderOpen className="mr-1 w-3 flex-shrink-0 text-current" />;
       case "group-end":
         return null;
       default:
@@ -358,16 +368,28 @@ export default function IDEStyleSectionList({
         case "Delete":
         case "Backspace": {
           e.preventDefault();
-          // 選択されたセクションを削除
+          // 選択されたセクションを削除（確認アラート付き）
           if (selectedIndices.size > 0) {
-            const sortedIndices = Array.from(selectedIndices).sort(
-              (a, b) => b - a
-            );
-            sortedIndices.forEach((index) => {
-              onSectionDelete(index);
-            });
-            setSelectedIndices(new Set());
-            setFocusedIndex(null);
+            const sectionNames = Array.from(selectedIndices)
+              .sort((a, b) => a - b)
+              .map((index) => getSectionTitle(sections[index]))
+              .join(", ");
+
+            const message =
+              selectedIndices.size === 1
+                ? `「${sectionNames}」を削除しますか？`
+                : `${selectedIndices.size}個のセクション（${sectionNames}）を削除しますか？`;
+
+            if (confirm(message)) {
+              const sortedIndices = Array.from(selectedIndices).sort(
+                (a, b) => b - a
+              );
+              sortedIndices.forEach((index) => {
+                onSectionDelete(index);
+              });
+              setSelectedIndices(new Set());
+              setFocusedIndex(null);
+            }
           }
           break;
         }
@@ -378,7 +400,7 @@ export default function IDEStyleSectionList({
           setFocusedIndex(null);
           setSelectedIndices(new Set());
           setLastSelectedIndex(null);
-          toast.info("IDE風フォーカスモード終了");
+          toast.info("フォーカスモード終了");
           break;
         }
       }
@@ -449,7 +471,13 @@ export default function IDEStyleSectionList({
   };
 
   // セクションダブルクリック（フォーカスモード開始）
-  const handleSectionDoubleClick = (index: number) => {
+  const handleSectionDoubleClick = (index: number, e?: React.MouseEvent) => {
+    // イベントバブリングを防ぐ
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+
     const wasAlreadyFocusMode = focusMode;
     setFocusMode(true);
     setFocusedIndex(index);
@@ -457,9 +485,12 @@ export default function IDEStyleSectionList({
     setLastSelectedIndex(index);
     onSectionClick(index); // クリックも連動
 
-    // 既にフォーカスモードの場合はトーストを表示しない
-    if (!wasAlreadyFocusMode) {
-      toast.info("IDE風フォーカスモード開始 (Escで終了)");
+    // 既にフォーカスモードの場合、またはトーストが既に表示済みの場合は表示しない
+    if (!wasAlreadyFocusMode && !toastShown) {
+      toast.info("フォーカスモード開始 (Escで終了)");
+      setToastShown(true);
+      // 少し待ってからトースト表示状態をリセット
+      setTimeout(() => setToastShown(false), 500);
     }
   };
 
@@ -471,12 +502,16 @@ export default function IDEStyleSectionList({
       (e.target as HTMLElement).closest(".space-y-1") === e.currentTarget
     ) {
       const currentIndex = activeSectionIndex !== null ? activeSectionIndex : 0;
-      if (sections.length > 0) {
+      if (sections.length > 0 && !focusMode && !toastShown) {
+        // 既にフォーカスモードまたはトースト表示済みの場合は何もしない
         setFocusMode(true);
         setFocusedIndex(currentIndex);
         setSelectedIndices(new Set([currentIndex]));
         setLastSelectedIndex(currentIndex);
-        toast.info("IDE風フォーカスモード開始 (Escで終了)");
+        toast.info("フォーカスモード開始 (Escで終了)");
+        setToastShown(true);
+        // 少し待ってからトースト表示状態をリセット
+        setTimeout(() => setToastShown(false), 500);
       }
     }
   };
@@ -570,14 +605,14 @@ export default function IDEStyleSectionList({
               : ""
           } border-l-2 font-medium`}
           onClick={(e) => handleSectionClick(index, e)}
-          onDoubleClick={() => handleSectionDoubleClick(index)}
-          title={`${getSectionTitle(section)} (ダブルクリックでIDE風モード)`}
+          onDoubleClick={(e) => handleSectionDoubleClick(index, e)}
+          title={`${getSectionTitle(section)} (ダブルクリックでフォーカスモード)`}
           data-layout={section.layout}
         >
           <div className="flex min-w-0 flex-1 items-center">
             <span className="flex-1 truncate">{getSectionTitle(section)}</span>
             {focusMode && isFocused && (
-              <span className="ml-2 text-xs opacity-75">●</span>
+              <span className="ml-2 text-sm opacity-75">●</span>
             )}
           </div>
         </Button>
@@ -620,15 +655,15 @@ export default function IDEStyleSectionList({
           isSelected && focusMode ? "bg-slate-500/20 ring-1 ring-slate-300" : ""
         } ${isGroupStart ? "border-l-2 font-medium" : ""}`}
         onClick={(e) => handleSectionClick(index, e)}
-        onDoubleClick={() => handleSectionDoubleClick(index)}
-        title={`${getSectionTitle(section)} (ダブルクリックでIDE風モード)`}
+        onDoubleClick={(e) => handleSectionDoubleClick(index, e)}
+        title={`${getSectionTitle(section)} (ダブルクリックでフォーカスモード)`}
         data-layout={section.layout}
       >
         <div className="flex min-w-0 flex-1 items-center">
           {getSectionIcon(section)}
           <span className="flex-1 truncate">{getSectionTitle(section)}</span>
           {focusMode && isFocused && (
-            <span className="ml-2 text-xs opacity-75">●</span>
+            <span className="ml-2 text-sm opacity-75">●</span>
           )}
         </div>
       </Button>
@@ -649,12 +684,12 @@ export default function IDEStyleSectionList({
         onDoubleClick={handleListDoubleClick}
       >
         {focusMode && (
-          <div className="fixed bottom-2 left-2 right-2 rounded-md bg-white p-4 text-center text-sm text-gray-700 shadow-lg">
-            IDE風モード: ↑↓で選択, shift+↑↓で複数選択,
+          <div className="fixed bottom-2 left-2 right-2 rounded-md bg-card p-4 text-center text-sm shadow-lg">
+            フォーカスモード: ↑↓で選択, shift+↑↓で複数選択,
             cmd/ctrl+クリックで個別選択, option+↑↓で移動, Enterで編集,
             Delete/Backspaceで削除, Escで終了
             {selectedIndices.size > 1 && (
-              <span className="ml-2 font-medium text-gray-900">
+              <span className="ml-2 font-medium">
                 ({selectedIndices.size}個選択中)
               </span>
             )}
@@ -672,7 +707,7 @@ export default function IDEStyleSectionList({
 
         <DragOverlay>
           {activeId ? (
-            <div className="rounded bg-slate-100 p-2 opacity-90 shadow-lg">
+            <div className="rounded bg-muted p-2 opacity-90 shadow-lg">
               <span className="text-sm font-medium">
                 {getSectionTitle(sections.find((s) => s.id === activeId))}
               </span>

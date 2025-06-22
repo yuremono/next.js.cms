@@ -63,7 +63,7 @@ export function TextGenerator({ onSelect }: TextGeneratorProps) {
 	return (
     <div className="TextGenerator flex h-full flex-col space-y-6">
       <Card className="flex flex-1 flex-col rounded-sm p-4">
-        <h3 className="mb-4 text-lg font-medium">AIテキスト生成</h3>
+        <h3 className="mb-4">AIテキスト生成</h3>
 
         <div className="flex flex-1 flex-col space-y-4">
           <div className="space-y-2">

@@ -7,6 +7,15 @@
 },
   "sections": [
     {
+"id": "section-desclist-test",
+"layout": "descList",
+"class": "DescList",
+"bgImage": "",
+"name": "商品仕様",
+"dtWidth": "20%",
+"html": "<dl style=\"--dtWidth: 20%\">\n<dt>商品名</dt>\n<dd>テスト商品</dd>\n<dt>価格</dt>\n<dd>1,000円</dd>\n<dt>サイズ</dt>\n<dd>幅20cm × 高さ15cm × 奥行10cm</dd>\n</dl>"
+},
+{
       "id": "section-1684123456-abc123",
       "layout": "mainVisual",
 "class": "MainVisual",

@@ -241,6 +241,23 @@ export async function GET() {
           endpoint: fs?.endpoint ?? "",
           sectionWidth: fs?.section_width ?? "",
         });
+      } else if (section.type === "descList") {
+        const { data: ds } = await supabase
+          .from("desc_list_sections")
+          .select("*")
+          .eq("section_id", section.id)
+          .single();
+        sectionResults.push({
+          id: `section-${section.id}`,
+          layout: "descList",
+          class: ds?.class ?? "",
+          bgImage: ds?.bg_image ?? "",
+          name: ds?.name ?? "",
+          title: ds?.title ?? "",
+          html: ds?.html ?? "",
+          dtWidth: ds?.dt_width ?? "20%",
+          sectionWidth: ds?.section_width ?? "",
+        });
       } else if (section.type === "group-start") {
         const { data: gs } = await supabase
           .from("group_start_sections")
@@ -326,6 +343,9 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // sectionsOrderを現在のセクション順序から再生成
+    const currentSectionsOrder = pageData.sections.map((s) => s.id).join(",");
+
     // 1. ページ本体の保存（並列処理の準備）
     const pagePromise = supabase
       .from("pages")
@@ -334,7 +354,7 @@ export async function POST(req: NextRequest) {
         header_html: pageData.header.html,
         footer_html: pageData.footer.html,
         custom_css: pageData.customCSS,
-        sections_order: pageData.sectionsOrder || null,
+        sections_order: currentSectionsOrder, // 再生成した順序を使用
       })
       .select()
       .single();
@@ -361,19 +381,15 @@ export async function POST(req: NextRequest) {
     const existingIds = new Set(existingSections?.map((s) => s.id) || []);
 
     const newSections = pageData.sections.map((section, i) => {
-      console.log("セクション処理開始:", section.id);
-
       // セクションIDの処理
       let sectionId;
       try {
         if (section.id.startsWith("section-")) {
           const idPart = section.id.replace("section-", "");
-          console.log("ID部分:", idPart);
 
           // 数値のみの場合は数値として、そうでなければハッシュ値を生成
           if (/^\d+$/.test(idPart)) {
             sectionId = parseInt(idPart, 10);
-            console.log("数値ID:", sectionId);
           } else {
             // 非数値IDの場合、ハッシュ値を生成（簡易版）
             let hashId = Math.abs(
@@ -383,19 +399,15 @@ export async function POST(req: NextRequest) {
               }, 0)
             );
 
-            console.log("ハッシュID生成:", hashId);
-
             // ID競合を避けるため、既存IDと重複しない値を探す
             while (existingIds.has(hashId)) {
               hashId = hashId + 1;
             }
             sectionId = hashId;
             existingIds.add(hashId); // 新しいIDを追加
-            console.log("最終ハッシュID:", sectionId);
           }
         } else {
           sectionId = parseInt(section.id, 10);
-          console.log("直接数値変換:", sectionId);
         }
       } catch (error) {
         console.error("セクションID処理エラー:", error, section.id);
@@ -410,7 +422,6 @@ export async function POST(req: NextRequest) {
         page_id: page.id,
       };
 
-      console.log("セクション処理完了:", result.id, result.layout);
       return result;
     });
 
@@ -430,38 +441,22 @@ export async function POST(req: NextRequest) {
     }
 
     // 新しいセクションの処理 - IDベースで更新/挿入を判定
-    console.log("処理対象セクション数:", newSections.length);
-    console.log("既存セクション数:", existingMap.size);
-
     for (const newSection of newSections) {
-      console.log("処理中セクション:", newSection.id, newSection.layout);
       const existing = existingMap.get(newSection.id);
 
       if (existing) {
         // 既存セクション - 更新対象（タイプが変わった場合は削除→挿入）
         if (existing.type !== newSection.layout) {
-          console.log("タイプ変更による削除→挿入:", newSection.id);
           toDelete.push(existing.id);
           toInsert.push(newSection);
         } else {
-          console.log("更新対象:", newSection.id);
           toUpdate.push(newSection);
         }
       } else {
         // 新規セクション - 挿入対象
-        console.log("新規挿入:", newSection.id);
         toInsert.push(newSection);
       }
     }
-
-    console.log(
-      "削除対象:",
-      toDelete.length,
-      "更新対象:",
-      toUpdate.length,
-      "挿入対象:",
-      toInsert.length
-    );
 
     // 4. バルク削除処理（最適化）
     if (toDelete.length > 0) {
@@ -539,8 +534,6 @@ export async function POST(req: NextRequest) {
         position: section.position,
         // nameフィールドは含めない（sectionsテーブルには存在しない）
       }));
-
-      console.log("更新対象セクション:", sectionsToUpdate);
 
       const { error: updateError } = await supabase
         .from("sections")
@@ -632,14 +625,24 @@ export async function POST(req: NextRequest) {
               section_width: section.sectionWidth ?? null,
             })
           );
+        } else if (section.layout === "descList") {
+          const descListPromise = supabase.from("desc_list_sections").upsert(
+            {
+              section_id: section.id,
+              class: section.class,
+              bg_image: section.bgImage,
+              name: section.name,
+              title: section.title,
+              html: section.html,
+              dt_width: section.dtWidth ?? "20%",
+              section_width: section.sectionWidth ?? null,
+            },
+            {
+              onConflict: "section_id",
+            }
+          );
+          updateDetailPromises.push(descListPromise);
         } else if (section.layout === "group-start") {
-          console.log("🔍 GROUP-START UPSERT:", {
-            section_id: section.id,
-            name: section.name,
-            class: section.class,
-            section_width: section.sectionWidth,
-            scope_styles: section.scopeStyles,
-          });
           const groupStartPromise = supabase
             .from("group_start_sections")
             .upsert(
@@ -657,11 +660,6 @@ export async function POST(req: NextRequest) {
             );
           updateDetailPromises.push(groupStartPromise);
         } else if (section.layout === "group-end") {
-          console.log("🔍 GROUP-END UPSERT:", {
-            section_id: section.id,
-            class: section.class,
-            section_width: section.sectionWidth,
-          });
           const groupEndPromise = supabase.from("group_end_sections").upsert(
             {
               section_id: section.id,
@@ -682,13 +680,7 @@ export async function POST(req: NextRequest) {
       // エラーチェック
       updateResults.forEach((result, index) => {
         if (result.error) {
-          console.error(`🚨 UPDATE DETAIL ERROR [${index}]:`, result.error);
-        } else {
-          console.log(
-            `✅ UPDATE DETAIL SUCCESS [${index}]:`,
-            result.data?.length || 0,
-            "records"
-          );
+          console.error(`Update detail error [${index}]:`, result.error);
         }
       });
     }
@@ -699,7 +691,7 @@ export async function POST(req: NextRequest) {
       const sectionsToInsert = toInsert.map((section) => ({
         id: section.id, // フロントエンドから送信されたIDを使用
         page_id: page.id,
-        type: section.layout,
+        type: section.layout, // layoutをtypeとして保存
         position: section.position,
       }));
 
@@ -790,6 +782,19 @@ export async function POST(req: NextRequest) {
               section_width: section.sectionWidth ?? null,
             })
           );
+        } else if (section.layout === "descList") {
+          insertDetailPromises.push(
+            supabase.from("desc_list_sections").insert({
+              section_id: sectionId,
+              class: section.class,
+              bg_image: section.bgImage,
+              name: section.name,
+              title: section.title,
+              html: section.html,
+              dt_width: section.dtWidth ?? "20%",
+              section_width: section.sectionWidth ?? null,
+            })
+          );
         } else if (section.layout === "group-start") {
           insertDetailPromises.push(
             supabase.from("group_start_sections").insert({
@@ -826,6 +831,16 @@ export async function POST(req: NextRequest) {
 
     // 7. 全セクションの位置を強制更新（順番を確実に保存）
     if (newSections.length > 0) {
+      console.log(
+        "🔍 POSITION UPDATE:",
+        newSections.map((s) => ({
+          id: s.id,
+          layout: s.layout,
+          position: s.position,
+          originalId: s.originalId,
+        }))
+      );
+
       // 各セクションの位置を個別に更新（UPSERTではなくUPDATE使用）
       const positionUpdatePromises = newSections.map((section) =>
         supabase
@@ -840,6 +855,12 @@ export async function POST(req: NextRequest) {
       const positionErrors = positionResults.filter((result) => result.error);
       if (positionErrors.length > 0) {
         console.error("位置更新エラー:", positionErrors);
+      } else {
+        console.log(
+          "✅ POSITION UPDATE SUCCESS:",
+          positionResults.length,
+          "sections"
+        );
       }
     }
 

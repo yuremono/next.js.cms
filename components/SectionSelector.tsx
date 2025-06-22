@@ -1,12 +1,19 @@
 import { Card } from "@/components/ui/card";
-import { ImageIcon, LayoutGrid, Mail, Copy, Folder } from "lucide-react";
+import {
+  ImageIcon,
+  LayoutGrid,
+  Mail,
+  Copy,
+  Folder,
+  FileText,
+} from "lucide-react";
 
 interface SectionSelectorProps {
-	onSelect: (sectionType: string) => void;
+  onSelect: (sectionType: string) => void;
 }
 
 export function SectionSelector({ onSelect }: SectionSelectorProps) {
-	const sectionTypes = [
+  const sectionTypes = [
     {
       type: "mainVisual",
       title: "メインビジュアル",
@@ -32,6 +39,12 @@ export function SectionSelector({ onSelect }: SectionSelectorProps) {
       icon: <Mail className="h-10 w-10 text-purple-500" />,
     },
     {
+      type: "descList",
+      title: "DLリスト",
+      description: "項目と説明のペアを表形式で表示するセクション",
+      icon: <FileText className="h-10 w-10 text-cyan-500" />,
+    },
+    {
       type: "group",
       title: "グループ",
       description: "セクションをグループ化するためのコンテナ",
@@ -41,10 +54,8 @@ export function SectionSelector({ onSelect }: SectionSelectorProps) {
 
   return (
     <div className="SectionSelector p-4">
-      <h3 className="mb-4 text-xl font-medium">セクションを追加</h3>
-      <p className="mb-6 text-muted-foreground">
-        追加したいセクションのタイプを選択してください
-      </p>
+      <h3 className="mb-4">セクションを追加</h3>
+      <p className="mb-6">追加したいセクションのタイプを選択してください</p>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {sectionTypes.map((section) => (
@@ -56,9 +67,7 @@ export function SectionSelector({ onSelect }: SectionSelectorProps) {
             <div className="flex flex-col items-center p-4 text-center">
               {section.icon}
               <h4 className="mb-1 mt-3 font-medium">{section.title}</h4>
-              <p className="text-sm text-muted-foreground">
-                {section.description}
-              </p>
+              <p className="text-sm">{section.description}</p>
             </div>
           </Card>
         ))}

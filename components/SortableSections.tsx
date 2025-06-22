@@ -11,6 +11,7 @@ import {
   FolderOpen,
   ChevronDown,
   ChevronRight,
+  FileText,
 } from "lucide-react";
 import {
   DndContext,
@@ -178,6 +179,8 @@ export default function SortableSections({
           return "カード";
         case "form":
           return "お問い合わせフォーム";
+        case "descList":
+          return "DLリスト";
         case "group-start":
           return `<article> ${section.name || "グループ開始"}`;
         case "group-end":
@@ -202,6 +205,8 @@ export default function SortableSections({
           );
         case "form":
           return <Mail className=" mr-1 w-4 flex-shrink-0 text-purple-500" />;
+        case "descList":
+          return <FileText className="mr-1 w-4 flex-shrink-0 text-cyan-500" />;
         case "group-start":
           return (
             <button
@@ -212,9 +217,9 @@ export default function SortableSections({
               className="mr-1 flex h-4 w-4 items-center justify-center rounded hover:bg-gray-100"
             >
               {isCollapsed ? (
-                <ChevronRight className="h-3 w-3 text-blue-500" />
+                <ChevronRight className="h-3 w-3 text-current" />
               ) : (
-                <ChevronDown className="h-3 w-3 text-blue-500" />
+                <ChevronDown className="h-3 w-3 text-current" />
               )}
             </button>
           );

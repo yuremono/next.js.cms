@@ -204,7 +204,7 @@ export function DatabaseBackup() {
   return (
     <div className="flex h-full flex-col space-y-6">
       <Card className="flex flex-1 flex-col rounded-sm p-6">
-        <h3 className="mb-4 text-lg font-medium">データベースバックアップ</h3>
+        <h3 className="mb-4">データベースバックアップ</h3>
 
         <div className="space-y-6">
           <div className="rounded-lg border p-4">

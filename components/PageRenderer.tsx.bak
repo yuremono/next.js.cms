@@ -281,26 +281,6 @@ export function PageRenderer({
             ))}
           </section>
         );
-      case "descList":
-        return (
-          <section
-            key={index}
-            className={`DescList ${sectionClass}`}
-            style={combinedStyle}
-          >
-            {section.title && section.title.trim() && (
-              <h2
-                className="mb-4 text-xl font-semibold"
-                dangerouslySetInnerHTML={{ __html: section.title }}
-              />
-            )}
-            <div
-              dangerouslySetInnerHTML={{
-                __html: section.html,
-              }}
-            />
-          </section>
-        );
       case "form":
         return (
           <section

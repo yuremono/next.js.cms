@@ -15,7 +15,6 @@ Next.js 14 + TypeScript + Tailwind CSS で構築されたCMSシステム。
 ### CSS設計
 - Tailwind CSS + CSS Variables のハイブリッド
 - `globals.css` でCMS固有のスタイル定義
-- CSS変数 `--cms-*` でレイアウト制御
 - メディアクエリは最小限に抑制
 
 ### コンポーネント設計
@@ -28,6 +27,52 @@ Next.js 14 + TypeScript + Tailwind CSS で構築されたCMSシステム。
 - コンポーネント: PascalCase (`PageRenderer.tsx`)
 - ユーティリティ: camelCase (`image-utils.ts`)
 - API Routes: kebab-case (`/api/auth/login`)
+
+### JavaScript/TypeScript命名規則
+**PascalCase（大文字始まり）:**
+- コンポーネント: `DescListEditor`, `MainVisualEditor`
+- 型・インターフェース: `Section`, `DescListSection`
+- クラス: `ARIAManager`, `PerformanceMonitor`
+
+**camelCase（小文字始まり）:**
+- 関数・メソッド: `handleSectionClick`, `getSectionTitle`
+- 変数・プロパティ: `activeSectionIndex`, `isSelected`
+- オブジェクトキー: `sectionWidth`, `textClass`
+
+**kebab-case（ハイフン区切り）:**
+- API Routes: `/api/auth/login`, `/api/backup/restore`
+
+- HTMLのdata属性: `data-section-id`, `data-layout`
+
+### CSS/HTML命名規則
+**className属性（PascalCase統一）:**
+```tsx
+// ✅ 正しい
+<div className="DescListEditor">
+<div className="MainVisualEditor">
+
+// ❌ 避ける
+<div className="desc-list-editor">
+<div className="main-visual-editor">
+```
+
+**プロジェクト特有のCSS（camelCase統一）:**
+プロジェクト独自のCSS変数・クラス名は、Tailwindネイティブと区別するためcamelCaseを使用する。
+
+```css
+/* ✅ プロジェクト特有のCSS変数 */
+--dtWidth: 20%;
+--cardGap: 16px;
+--imageAspect: 16/9;
+
+/* ✅ プロジェクト特有のクラス名 */
+.labelText { font-size: 0.875rem; font-weight: 500; }
+.smallText { font-size: 0.875rem; }
+```
+
+**Tailwindネイティブ活用優先:**
+- Tailwind標準のCSS変数で対応可能な場合は、プロジェクト特有の変数を作成しない
+- 例: `--text-sm`, `--text-base`, `--text-lg` 等のTailwind変数を活用
 
 ## 重要なファイル
 
@@ -53,12 +98,6 @@ Next.js 14 + TypeScript + Tailwind CSS で構築されたCMSシステム。
 --ring: hsl(215, 25%, 35%);        /* フォーカスリング */
 ```
 
-### レイアウト制御
-```css
---cms-base: 1400px;    /* コンテナ幅 */
---cms-col: 3;          /* カラム数 */
---cms-gap: 6vmin;      /* レスポンシブgap */
-```
 
 ## 開発時の注意点
 
@@ -76,6 +115,7 @@ Next.js 14 + TypeScript + Tailwind CSS で構築されたCMSシステム。
 - SQLite (better-sqlite3)
 - `lib/database.ts` で操作
 - 自動バックアップ機能
+- **テーブル数最小化**：新機能も既存構造を活用
 
 ### 4. スプリットスクリーンエディタ
 - iframe分離でCSS競合回避
@@ -105,6 +145,7 @@ Next.js 14 + TypeScript + Tailwind CSS で構築されたCMSシステム。
 - TypeScript の型推論活用
 - shadcn/ui コンポーネント優先
 - 関数型コンポーネント使用
+- **データベーステーブル最小化**
 
 ## デバッグ
 - React DevTools 使用
@@ -113,4 +154,4 @@ Next.js 14 + TypeScript + Tailwind CSS で構築されたCMSシステム。
 
 ---
 
-このルールに従って、型安全で保守性の高いコードを心がけてください。 
+このルールに従って、型安全で保守性の高いコードを心がけてください。

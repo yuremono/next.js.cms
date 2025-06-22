@@ -52,12 +52,7 @@ export function SectionEditorRenderer({
           <FormEditor section={section} onUpdate={onUpdate} />
         </div>
       );
-    case "descList":
-      return (
-        <div className="SectionEditorRenderer">
-          <DescListEditor section={section} onUpdate={onUpdate} />
-        </div>
-      );    case "group-start":
+    case "group-start":
       return (
         <div className="SectionEditorRenderer">
           <GroupEditor section={section} onUpdate={onUpdate} />

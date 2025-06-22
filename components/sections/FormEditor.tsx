@@ -60,7 +60,7 @@ export function FormEditor({ section, onUpdate }: FormEditorProps) {
   return (
     <div className="FormEditor space-y-6">
       <Card className=" rounded-sm p-4">
-        <h3 className="mb-4 text-lg font-medium">フォームセクション設定</h3>
+        <h3 className="mb-4">フォームセクション設定</h3>
         <div className="space-y-4">
           <FormField
             id="form-name"

@@ -54,7 +54,7 @@ export function GroupEditor({ section, onUpdate }: GroupEditorProps) {
   return (
     <div className="GroupEditor h-full space-y-6">
       <Card className="flex h-full flex-col rounded-sm p-4">
-        <h3 className="mb-4 text-lg font-medium">グループ設定</h3>
+        <h3 className="mb-4">グループ設定</h3>
         <div className="space-y-4">
           <FormField
             id="group-name"

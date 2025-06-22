@@ -11,11 +11,11 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Footer, Header, Page, Section } from "@/types";
 import { HeaderEditor } from "@/components/sections/HeaderEditor";
 import { FooterEditor } from "@/components/sections/FooterEditor";
-import SortableSections from "@/components/SortableSections";
+// import SortableSections from "@/components/SortableSections";
 import IDEStyleSectionList from "@/components/IDEStyleSectionList";
 import { SectionSelector } from "@/components/SectionSelector";
 import { SectionEditorRenderer } from "@/components/editor/SectionEditorRenderer";
-import { PageRenderer } from "@/components/PageRenderer";
+
 import {
   sectionsToOrderString,
   sortSectionsByOrderString,
@@ -37,7 +37,6 @@ import {
   Tablet,
   Smartphone,
   GripVertical,
-  Code,
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -96,6 +95,16 @@ const createDefaultSection = (type: string): Section => {
         html: "<h2>お問い合わせ</h2><p>以下のフォームよりお問い合わせください。</p>",
         endpoint: "/api/contact",
       };
+    case "descList":
+      return {
+        id,
+        layout: "descList",
+        class: "DescList",
+        name: "DLリスト",
+        title: "リストタイトル",
+        dtWidth: "20%",
+        html: '<dl style="--dtWidth: 20%">\n<dt>項目1</dt>\n<dd>説明1</dd>\n<dt>項目2</dt>\n<dd>説明2</dd>\n<dt>項目3</dt>\n<dd>説明3</dd>\n</dl>',
+      };
     case "group-start":
       return {
         id,
@@ -150,7 +159,7 @@ export default function EditorPage() {
       html: `<div class="bg-white shadow-sm">
   <div class=" mx-auto px-4 py-4 flex justify-between items-center">
     <div class="logo">
-      <a href="/" class="text-xl font-bold">サイト名</a>
+      <a href="/" class="text-lg font-bold">サイト名</a>
     </div>
     <nav>
       <ul class="flex space-x-6">
@@ -168,12 +177,12 @@ export default function EditorPage() {
   <div class="container mx-auto px-4 py-8">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       <div>
-        <h3 class="text-lg font-semibold mb-4">会社名</h3>
+        <h3 class="text-base font-semibold mb-4">会社名</h3>
         <p>〒123-4567<br />東京都○○区△△ 1-2-3</p>
         <p>TEL: 03-1234-5678</p>
       </div>
       <div>
-        <h3 class="text-lg font-semibold mb-4">リンク</h3>
+        <h3 class="text-base font-semibold mb-4">リンク</h3>
         <ul class="space-y-2">
           <li><a href="#" class="hover:underline">ホーム</a></li>
           <li><a href="#" class="hover:underline">会社概要</a></li>
@@ -182,7 +191,7 @@ export default function EditorPage() {
         </ul>
       </div>
       <div>
-        <h3 class="text-lg font-semibold mb-4">SNS</h3>
+        <h3 class="text-base font-semibold mb-4">SNS</h3>
         <div class="flex space-x-4">
           <a href="#" class="hover:text-primary">Twitter</a>
           <a href="#" class="hover:text-primary">Facebook</a>
@@ -236,8 +245,8 @@ export default function EditorPage() {
   // 追加: レスポンシブ用state
   const [sectionListOpen, setSectionListOpen] = useState(false);
 
-  // IDE風UI切り替え状態
-  const [useIDEStyleUI, setUseIDEStyleUI] = useState(true);
+  // IDE風UI切り替え状態（常にtrueに固定）
+  const useIDEStyleUI = true;
 
   // プレビューにデータを送信する関数
   const sendDataToPreview = () => {
@@ -777,7 +786,37 @@ export default function EditorPage() {
   };
 
   // ページデータの保存
+  // グループの整合性をチェックする関数
+  const validateGroups = (sections: Section[]): boolean => {
+    let groupStack = 0;
+
+    for (const section of sections) {
+      if (section.layout === "group-start") {
+        groupStack++;
+      } else if (section.layout === "group-end") {
+        groupStack--;
+        if (groupStack < 0) {
+          return false; // 閉じタグが開始タグより多い
+        }
+      }
+    }
+
+    return groupStack === 0; // 全てのグループが正しく閉じられている
+  };
+
   const savePage = async () => {
+    // グループの整合性をチェック
+    if (!validateGroups(page.sections)) {
+      toast.error("グループの閉じタグがありません。順番を見直してください", {
+        style: {
+          background: "#ef4444", // 赤色背景
+          color: "#ffffff",
+        },
+        duration: 5000,
+      });
+      return; // 保存をキャンセル
+    }
+
     setIsSaving(true);
     const startTime = Date.now();
 
@@ -852,6 +891,38 @@ export default function EditorPage() {
         );
       case "backup":
         return <DatabaseBackup />;
+      case "dev-notes":
+        return (
+          <div className="h-full space-y-6 ">
+            <div className="space-y-6 rounded-lg border bg-card p-6 shadow-sm ">
+              <h3 className="mb-4">開発メモ</h3>
+              <div className="space-y-4">
+                <h3>
+                  DLリストコンテンツのモード切り替え
+                  <span className="ml-2 inline-block rounded-full bg-muted px-2 py-1 text-sm font-medium">
+                    検討中
+                  </span>
+                </h3>
+                <p className="mt-1 text-sm">
+                  (dl → details(FAQ) / ol(Timeline) / table(比較表)
+                  の切り替え機能)
+                </p>
+              </div>
+              <div className="space-y-4">
+                <h3>
+                  テーブルコンテンツの実装について
+                  <span className="ml-2 inline-block rounded-full bg-muted px-2 py-1 text-sm font-medium">
+                    結論
+                  </span>
+                </h3>
+                <p className="mt-1 text-sm">
+                  CMS内でのテーブル編集機能実装は複雑性が高く、ユーザビリティの観点からも外部サービス（Google
+                  Sheets、Notion、Airtable等）を活用し、iframeで埋め込む方が建設的。既存の高機能なツールを活用することで、開発コストを抑えつつ、より良いユーザー体験を提供できる。
+                </p>
+              </div>
+            </div>
+          </div>
+        );
       case "ai-generator":
         return (
           <TextGenerator
@@ -894,7 +965,7 @@ export default function EditorPage() {
         }
         return (
           <div className="p-8 text-center">
-            <p className="mb-4 text-muted-foreground">
+            <p className="mb-4">
               編集するセクションを選択するか、新しいセクションを追加してください。
             </p>
             <Button onClick={() => setIsSelectorOpen(true)}>
@@ -961,7 +1032,7 @@ export default function EditorPage() {
           style={{ minHeight: "var(--header-height)" }}
         >
           <div className="flex items-center  gap-4">
-            <h1 className="font-jost text-3xl font-light">/editor</h1>
+            <h1 className="fontJost text-3xl font-light">/editor</h1>
             <button
               aria-label="ダークモード切替"
               className="ml-2 border-none bg-transparent p-1 outline-none focus:outline-none"
@@ -1092,6 +1163,12 @@ export default function EditorPage() {
                   >
                     バックアップ
                   </TabsTrigger>
+                  <TabsTrigger
+                    value="dev-notes"
+                    className=" rounded-none border-none bg-transparent p-2 text-left  "
+                  >
+                    開発メモ
+                  </TabsTrigger>
                 </TabsList>
                 {/* Handアイコン */}
                 <div
@@ -1119,6 +1196,7 @@ export default function EditorPage() {
                   セクション ({page.sections.length})
                 </h2>
 
+                {/* 切り替えボタン（不要のためコメントアウト）
                 <Button
                   size="sm"
                   variant={useIDEStyleUI ? "default" : "outline"}
@@ -1129,6 +1207,7 @@ export default function EditorPage() {
                 >
                   <Code className="h-3 w-3" />
                 </Button>
+                */}
                 <Button
                   size="sm"
                   onClick={() => setIsSelectorOpen(true)}
@@ -1154,42 +1233,39 @@ export default function EditorPage() {
                   " "
                 }
               >
-                {useIDEStyleUI ? (
-                  <IDEStyleSectionList
-                    sections={
-                      sectionListOpen ||
-                      typeof window === "undefined" ||
-                      window.innerWidth >= 834
-                        ? page.sections
-                        : page.sections.filter(
-                            (_, i) => i === activeSectionIndex
-                          )
-                    }
-                    activeSectionIndex={activeSectionIndex}
-                    onSectionClick={handleSectionClick}
-                    onSectionMove={moveSection}
-                    onSectionDelete={deleteSection}
-                  />
-                ) : (
-                  <SortableSections
-                    sections={
-                      sectionListOpen ||
-                      typeof window === "undefined" ||
-                      window.innerWidth >= 834
-                        ? page.sections
-                        : page.sections.filter(
-                            (_, i) => i === activeSectionIndex
-                          )
-                    }
-                    activeSectionIndex={activeSectionIndex}
-                    onSectionClick={handleSectionClick}
-                    onSectionMove={moveSection}
-                    onSectionDelete={deleteSection}
-                    onSectionsChange={updateSections}
-                    onGroupToggle={handleGroupToggle}
-                    expandedGroups={expandedGroups}
-                  />
-                )}
+                <IDEStyleSectionList
+                  sections={
+                    sectionListOpen ||
+                    typeof window === "undefined" ||
+                    window.innerWidth >= 834
+                      ? page.sections
+                      : page.sections.filter((_, i) => i === activeSectionIndex)
+                  }
+                  activeSectionIndex={activeSectionIndex}
+                  onSectionClick={handleSectionClick}
+                  onSectionMove={moveSection}
+                  onSectionDelete={deleteSection}
+                />
+                {/* 従来のSortableSections（不要のためコメントアウト）
+                <SortableSections
+                  sections={
+                    sectionListOpen ||
+                    typeof window === "undefined" ||
+                    window.innerWidth >= 834
+                      ? page.sections
+                      : page.sections.filter(
+                          (_, i) => i === activeSectionIndex
+                        )
+                  }
+                  activeSectionIndex={activeSectionIndex}
+                  onSectionClick={handleSectionClick}
+                  onSectionMove={moveSection}
+                  onSectionDelete={deleteSection}
+                  onSectionsChange={updateSections}
+                  onGroupToggle={handleGroupToggle}
+                  expandedGroups={expandedGroups}
+                />
+                */}
               </div>
             </aside>
 

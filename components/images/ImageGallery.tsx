@@ -118,7 +118,7 @@ export function ImageGallery() {
 	  return (
       <div className="flex h-full flex-col space-y-6">
         <Card className="flex flex-1 flex-col rounded-sm p-4">
-          <h3 className="mb-4 text-lg font-medium">画像一覧</h3>
+          <h3 className="mb-4">画像一覧</h3>
 
           <div className="space-y-4">
             {/* アップロードフォーム */}

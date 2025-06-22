@@ -97,7 +97,7 @@ export function ImgTextEditor({ section, onUpdate }: ImgTextEditorProps) {
   return (
     <div className="ImgTextEditor h-full space-y-6">
       <Card className="flex  h-full flex-col rounded-sm p-4">
-        <h3 className="mb-4 text-lg font-medium">画像テキストセクション設定</h3>
+        <h3 className="mb-4">画像テキストセクション設定</h3>
         <div className="space-y-4">
           <FormField
             id="imgtext-name"

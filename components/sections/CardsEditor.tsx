@@ -263,7 +263,7 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
   return (
     <div className="CardsEditor flex-1 space-y-6">
       <Card className="flex h-full flex-col rounded-sm p-4">
-        <h3 className="mb-4 text-lg font-medium">カードセクション設定</h3>
+        <h3 className="mb-4">カードセクション設定</h3>
         <div className="flex flex-1 flex-col space-y-4">
           <FormField
             id="cards-name"

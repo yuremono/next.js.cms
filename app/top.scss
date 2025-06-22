@@ -1,28 +1,28 @@
 /* トップページ専用スタイル */
 /* 入れ子構造のみ使用 */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+// @tailwind base;
+// @tailwind components;
+// @tailwind utilities;
 
 // @layerディレクティブは使用せず、通常のCSSのみ使用
-@layer base {
-        :root {
-                --section-mt: 6rem;
+// @layer base {
+//         :root {
+//                 --section-mt: 6rem;
 
-        }
+//         }
 
-        main {
-                >*+* {
-                        margin-top: var(--section-mt);
-                }
-        }
-}
+//         main {
+//                 >*+* {
+//                         margin-top: var(--section-mt);
+//                 }
+//         }
+// }
 
-*,::before,::after {
-        --tw-ring-color: hsla(215, 25%, 27%, 0.2);
-}
+// *,::before,::after {
+//         --tw-ring-color: hsla(215, 25%, 27%, 0.2);
+// }
 
-        .container {
-                padding-inline: unset;
+//         .container {
+//                 padding-inline: unset;
 
-        }
+//         }

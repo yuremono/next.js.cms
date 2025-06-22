@@ -1,0 +1,54 @@
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+
+// Section Icon取得関数の拡張
+export function getSectionIcon(section: any): string {
+  if (!isSection(section)) return '❓';
+  
+  switch (section.layout) {
+    case "mainVisual":
+      return "🖼️";
+    case "imgText":
+      return "📝";
+    case "cards":
+      return "🎴";
+    case "form":
+      return "📋";
+    case "group-start":
+      return "📦";
+    case "group-end":
+      return "📦";
+    case "descList": // 新しく追加
+      return "📋";
+    default:
+      return "❓";
+  }
+}
+
+// Section Title取得関数の拡張  
+export function getSectionTitle(section: any): string {
+  if (!isSection(section)) return 'セクション';
+  
+  switch (section.layout) {
+    case "mainVisual":
+      return section.name || "メインビジュアル";
+    case "imgText":
+      return section.name || "画像テキスト";
+    case "cards":
+      return section.name || "カード";
+    case "form":
+      return section.name || "フォーム";
+    case "group-start":
+      return section.name || "グループ開始";
+    case "group-end":
+      return "グループ終了";
+    case "descList": // 新しく追加
+      return section.name || "定義リスト";
+    default:
+      return "不明なセクション";
+  }
+}

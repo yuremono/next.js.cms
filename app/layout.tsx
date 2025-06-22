@@ -4,6 +4,7 @@ import ReactDOM from "react-dom";
 import "./globals.css";
 import { Toaster } from "sonner";
 import { CustomCSSLoader } from "@/components/CustomCSSLoader";
+import { StagewiseWrapper } from "@/components/StagewiseWrapper";
 
 // 開発環境でのみaxe-coreを初期化
 if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
@@ -29,6 +30,7 @@ export default function RootLayout({
       <head />
       <body>
         <CustomCSSLoader />
+        <StagewiseWrapper />
         {children}
         <Toaster
           position="top-right"

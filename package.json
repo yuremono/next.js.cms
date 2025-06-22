@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-"dev": "next dev --turbo",
+    "dev": "next dev --turbo",
     "prebuild": "rm -rf .next",
     "build": "DISABLE_ESLINT_PLUGIN=true NEXT_DISABLE_ESLINT=true NEXT_DISABLE_TYPECHECK=true NODE_OPTIONS='--require ./next-env.js' next build --no-lint --no-mangling",
     "start": "next start",
@@ -47,6 +47,8 @@
     "@radix-ui/react-toggle": "1.0.3",
     "@radix-ui/react-toggle-group": "1.0.4",
     "@radix-ui/react-tooltip": "1.0.6",
+    "@stagewise-plugins/react": "0.4.8",
+    "@stagewise/toolbar-next": "0.4.8",
     "@supabase/supabase-js": "^2.49.4",
     "@testing-library/dom": "10.4.0",
     "@types/dompurify": "^3.0.5",

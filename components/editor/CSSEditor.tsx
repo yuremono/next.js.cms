@@ -197,7 +197,7 @@ export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
   return (
     <div className="CSSEditor flex h-full flex-col space-y-6">
       <Card className="flex flex-1 flex-col rounded-sm p-4">
-        <h3 className="mb-4 text-lg font-medium">カスタムCSS</h3>
+        <h3 className="mb-4">カスタムCSS</h3>
 
         <div className="flex flex-1 flex-col space-y-4">
           {/* 変数を設定 */}
