@@ -138,6 +138,12 @@ export function DescListEditor({ section, onUpdate }: DescListEditorProps) {
   };
 
   const addRow = () => {
+    // DLリストアイテム数の上限チェック（メモリ・パフォーマンス対策）
+    if (items.length >= 30) {
+      alert("DLリストのアイテムは最大30個まで追加できます。");
+      return;
+    }
+
     setItems([...items, { dt: "", dd: "" }]);
   };
 
@@ -261,6 +267,12 @@ export function DescListEditor({ section, onUpdate }: DescListEditorProps) {
             size="sm"
             variant="outline"
             className="w-full"
+            disabled={items.length >= 30}
+            title={
+              items.length >= 30
+                ? "DLリストのアイテムは最大30個まで追加できます"
+                : undefined
+            }
           >
             <Plus className="mr-1 h-4 w-4" />
             行追加
@@ -269,14 +281,14 @@ export function DescListEditor({ section, onUpdate }: DescListEditorProps) {
           {/* DT(項目)DD(説明)グリッド */}
           <div className="overflow-hidden rounded-sm border border-gray-200">
             {/* ヘッダー */}
-            <div className="grid grid-cols-12 border-b border-gray-200 bg-gray-50">
-              <div className="col-span-3 border-r border-gray-200 px-3 py-2 text-sm font-medium text-gray-700">
+            <div className="grid grid-cols-12 border-b border-gray-200  bg-muted ">
+              <div className="col-span-3 border-r border-gray-200 px-3 py-2 text-sm font-medium ">
                 DT (項目)
               </div>
-              <div className="col-span-8 border-r border-gray-200 px-3 py-2 text-sm font-medium text-gray-700">
+              <div className="col-span-8 border-r border-gray-200 px-3 py-2 text-sm font-medium ">
                 DD (説明)
               </div>
-              <div className="col-span-1 px-3 py-2 text-center text-sm font-medium text-gray-700">
+              <div className="col-span-1 px-3 py-2 text-center text-sm font-medium ">
                 削除
               </div>
             </div>

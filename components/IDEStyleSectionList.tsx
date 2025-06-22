@@ -589,13 +589,15 @@ export default function IDEStyleSectionList({
             ...indentStyle,
             ...groupWidthStyle,
             borderLeftColor: groupColors.border,
-            backgroundColor: isActive ? groupColors.bgWithAlpha : undefined,
-            color: isActive ? groupColors.text : undefined,
+        //     backgroundColor: isActive
+        //       ? `color-mix(in srgb, var(--primary) 50%, transparent)`
+        //       : undefined,
+            color: isActive ? undefined : undefined,
             touchAction: "none", // モバイルでのスクロール防止
           }}
           {...attributes}
           {...listeners}
-          variant={isActive ? "default" : "ghost"}
+          variant="ghost"
           size="sm"
           className={`h-6 min-w-[51%] justify-start px-2 py-1 text-left font-normal ${
             isFocused ? "ring-2 ring-slate-400 ring-offset-1" : ""
@@ -642,12 +644,15 @@ export default function IDEStyleSectionList({
                 ...style,
                 ...indentStyle,
                 ...groupWidthStyle,
+                backgroundColor: isActive//選択時の背景色
+                  ? `color-mix(in srgb, var(--primary) 10%, transparent)`
+                  : undefined,
                 touchAction: "none", // モバイルでのスクロール防止
               }
         }
         {...attributes}
         {...listeners}
-        variant={isActive ? "default" : "ghost"}
+        variant="ghost"
         size="sm"
         className={`h-6 min-w-[51%] justify-start px-2 py-1 text-left font-normal ${
           isFocused ? "ring-2 ring-slate-400 ring-offset-1" : ""

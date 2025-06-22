@@ -916,9 +916,113 @@ export default function EditorPage() {
                   </span>
                 </h3>
                 <p className="mt-1 text-sm">
-                  CMS内でのテーブル編集機能実装は複雑性が高く、ユーザビリティの観点からも外部サービス（Google
-                  Sheets、Notion、Airtable等）を活用し、iframeで埋め込む方が建設的。既存の高機能なツールを活用することで、開発コストを抑えつつ、より良いユーザー体験を提供できる。
+                  ユーザビリティの観点からCMS環境で制限のあるテーブル編集に慣れてもらうよりも外部サービス（Google
+                  Sheets、Notion、Airtable等）を活用し、iframeで埋め込む方が建設的。既存の高機能で再利用可能なツールを選ぶことがより良いユーザー体験になる。
+                  セキュリティの観点から、iframe埋め込み専用のUI導入は実装予定
                 </p>
+
+                <details className="mt-4">
+                  <summary className="cursor-pointer text-sm font-medium">
+                    Perplexityの具体的な実装提案
+                  </summary>
+                  <div className="mt-2 space-y-4 pl-4">
+                    <details>
+                      <summary className="cursor-pointer text-sm font-medium">
+                        Notionを使用した価格表作成手順
+                      </summary>
+                      <div className="mt-2 space-y-2 pl-4">
+                        <div>
+                          <h4 className="text-sm font-medium">
+                            テーブルビューの作成
+                          </h4>
+                          <ul className="mt-1 list-inside list-disc space-y-1 text-sm">
+                            <li>
+                              Databaseから「Table
+                              view」を選択し、新規ビューを作成
+                            </li>
+                            <li>項目名、価格、説明などの列を設定</li>
+                          </ul>
+                        </div>
+
+                        <div>
+                          <h4 className="text-sm font-medium">
+                            Formula機能の活用
+                          </h4>
+                          <ul className="mt-1 list-inside list-disc space-y-1 text-sm">
+                            <li>
+                              価格計算が必要な場合、Formula機能を使用して自動計算を実装
+                            </li>
+                            <li>
+                              チェックボックスと組み合わせることで、必要な項目のみの価格表示も可能
+                            </li>
+                          </ul>
+                        </div>
+
+                        <div>
+                          <h4 className="text-sm font-medium">
+                            デザインの最適化
+                          </h4>
+                          <ul className="mt-1 list-inside list-disc space-y-1 text-sm">
+                            <li>不要な列（dummyなど）は非表示に設定</li>
+                            <li>
+                              テーブルの見栄えを整えるため、適切な列幅と行高を設定
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </details>
+
+                    <details>
+                      <summary className="cursor-pointer text-sm font-medium">
+                        iframe埋め込み時の注意点
+                      </summary>
+                      <div className="mt-2 space-y-2 pl-4">
+                        <div>
+                          <h4 className="text-sm font-medium">
+                            セキュリティ対策
+                          </h4>
+                          <p className="mt-1 text-sm">
+                            iframe埋め込みでは、sandbox属性の設定、X-Frame-Optionsヘッダーの適用、HTTPS通信の強制などのセキュリティ対策が必要です。
+                          </p>
+                        </div>
+
+                        <div>
+                          <h4 className="text-sm font-medium">
+                            レスポンシブデザイン
+                          </h4>
+                          <p className="mt-1 text-sm">
+                            widthやheightパラメータを調整し、ホームページのデザインに合わせたサイズ設定を行うことで、違和感のない埋め込みが実現できます。
+                          </p>
+                        </div>
+                      </div>
+                    </details>
+
+                    <details>
+                      <summary className="cursor-pointer text-sm font-medium">
+                        料金面での比較
+                      </summary>
+                      <div className="mt-2 space-y-2 pl-4">
+                        <ul className="list-inside list-disc space-y-1 text-sm">
+                          <li>
+                            <strong>Notion:</strong>{" "}
+                            基本機能は無料、カスタムドメインや高度な機能は月額1,650円から
+                          </li>
+                          <li>
+                            <strong>Google Sheets:</strong> 完全無料で利用可能
+                          </li>
+                          <li>
+                            <strong>Airtable:</strong>{" "}
+                            無料プランは1,200レコードまで、Plus
+                            プランは月額10ドル
+                          </li>
+                        </ul>
+                        <p className="mt-2 text-sm">
+                          5×5の価格表であれば、どのサービスも無料プランで十分対応可能ですが、デザイン性とiframe埋め込みの自然さを考慮すると、Notionが最も適した選択肢となります。
+                        </p>
+                      </div>
+                    </details>
+                  </div>
+                </details>
               </div>
             </div>
           </div>

@@ -164,6 +164,12 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
 
   // 新しいカードを追加
   const addCard = () => {
+    // カード数の上限チェック（メモリ・パフォーマンス対策）
+    if (section.cards.length >= 20) {
+      alert("カードは最大20個まで追加できます。");
+      return;
+    }
+
     const newCard: CardType = {
       image: "",
       imageClass: "",
@@ -297,7 +303,16 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
               <h4 className="text-md w-32 font-medium">
                 カード ({section.cards.length})
               </h4>
-              <Button size="sm" onClick={addCard}>
+              <Button
+                size="sm"
+                onClick={addCard}
+                disabled={section.cards.length >= 20}
+                title={
+                  section.cards.length >= 20
+                    ? "カードは最大20個まで追加できます"
+                    : undefined
+                }
+              >
                 <Plus className="mr-1 h-4 w-4" />
                 カードを追加
               </Button>
