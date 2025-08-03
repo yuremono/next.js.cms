@@ -24,6 +24,9 @@
 .DS_Store
 *.pem
 
+# legacy files
+public/legacy/
+
 # debug
 npm-debug.log*
 yarn-debug.log*
