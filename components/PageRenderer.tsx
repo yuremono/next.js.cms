@@ -5,6 +5,11 @@
 import { Page, Section } from "@/types";
 import Image from "next/image";
 import { CSSProperties } from "react";
+import {
+  resolveTagType,
+  extractHtmlContents,
+  analyzeMultipleHtmlContents,
+} from "@/lib/html-tag-utils";
 import "../app/top.scss";
 
 interface PageRendererProps {
@@ -122,16 +127,26 @@ export function PageRenderer({
             };
           }
 
+          // グループレベルのタグタイプ判定：グループ内全HTMLコンテンツで判定
+          const allGroupHtmlContents: (string | undefined)[] = [];
+          groupSections.forEach((groupSection) => {
+            const sectionContents = extractHtmlContents(groupSection);
+            allGroupHtmlContents.push(...sectionContents);
+          });
+          const GroupTagType = analyzeMultipleHtmlContents(
+            allGroupHtmlContents
+          ) as keyof JSX.IntrinsicElements;
+
           result.push(
-            <article
+            <GroupTagType
               key={`group-${i}`}
               className={sectionClass}
               style={combinedGroupStyle}
             >
               {groupSections.map((groupSection, idx) =>
-                renderSection(groupSection, `${i}-${idx}`)
+                renderSection(groupSection, `${i}-${idx}`, true)
               )}
-            </article>
+            </GroupTagType>
           );
 
           // グループ全体をスキップ
@@ -161,7 +176,7 @@ export function PageRenderer({
         i++;
       } else {
         // 通常のセクション
-        result.push(renderSection(section, i));
+        result.push(renderSection(section, i, false));
         i++;
       }
     }
@@ -169,7 +184,11 @@ export function PageRenderer({
     return result;
   };
 
-  const renderSection = (section: Section, index: number | string) => {
+  const renderSection = (
+    section: Section,
+    index: number | string,
+    isInsideGroup: boolean = false
+  ) => {
     const sectionClass = section.class || "";
     const bgStyle = section.bgImage
       ? { backgroundImage: `url(${section.bgImage})` }
@@ -181,10 +200,17 @@ export function PageRenderer({
       : {};
     const combinedStyle = { ...bgStyle, ...sectionWidthStyle };
 
+    // 動的タグ選択（section または div）
+    const TagType = resolveTagType(
+      section,
+      undefined,
+      isInsideGroup
+    ) as keyof JSX.IntrinsicElements;
+
     switch (section.layout) {
       case "mainVisual":
         return (
-          <section
+          <TagType
             key={index}
             className={`MainVisual ${sectionClass}`}
             style={combinedStyle}
@@ -212,11 +238,11 @@ export function PageRenderer({
                 __html: section.html,
               }}
             />
-          </section>
+          </TagType>
         );
       case "imgText":
         return (
-          <section
+          <TagType
             key={index}
             className={`ImgText  grid grid-cols-1 items-center gap-8 md:grid-cols-2 ${sectionClass}`}
             style={combinedStyle}
@@ -244,11 +270,11 @@ export function PageRenderer({
                 }}
               />
             </div>
-          </section>
+          </TagType>
         );
       case "cards":
         return (
-          <section
+          <TagType
             key={index}
             className={`Cards  ${sectionClass}`}
             style={combinedStyle}
@@ -279,11 +305,11 @@ export function PageRenderer({
                 />
               </div>
             ))}
-          </section>
+          </TagType>
         );
       case "descList":
         return (
-          <section
+          <TagType
             key={index}
             className={`DescList ${sectionClass}`}
             style={combinedStyle}
@@ -299,11 +325,11 @@ export function PageRenderer({
                 __html: section.html,
               }}
             />
-          </section>
+          </TagType>
         );
       case "form":
         return (
-          <section
+          <TagType
             key={index}
             className={`Form   ${sectionClass}`}
             style={combinedStyle}
@@ -373,7 +399,7 @@ export function PageRenderer({
                 送信
               </button>
             </form>
-          </section>
+          </TagType>
         );
       // group-start と group-end は個別レンダリングでは処理しない
       case "group-start":
@@ -381,11 +407,11 @@ export function PageRenderer({
         return null;
       default:
         return (
-          <section key={index} className="unknown-section">
+          <TagType key={index} className="unknown-section">
             <div className="container mx-auto ">
               <p className="text-red-500">未知のセクションタイプです</p>
             </div>
-          </section>
+          </TagType>
         );
     }
   };

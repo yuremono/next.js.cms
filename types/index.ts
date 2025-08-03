@@ -21,6 +21,7 @@ export interface BaseSection {
   id: string;
   groupId?: string; // 所属グループID（グループ化用）
   sectionWidth?: string; // セクション幅（例: "max-w-6xl", "container"）
+  tagType?: "auto" | "section" | "div"; // HTMLタグタイプ（auto=自動判定、デフォルト）
 }
 
 export interface MainVisualSection extends BaseSection {
