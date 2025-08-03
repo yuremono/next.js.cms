@@ -26,6 +26,7 @@
 
 # legacy files
 public/legacy/
+css
 
 # debug
 npm-debug.log*

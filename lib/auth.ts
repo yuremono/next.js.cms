@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { cookies } from "next/headers";
 
-const authConfig = require("@/config/auth.config.js");
+import authConfig from "@/config/auth.config.js";
 
 export async function checkAuth(request?: NextRequest): Promise<boolean> {
   // 開発時の認証スキップ（設定ファイルまたは環境変数で制御）

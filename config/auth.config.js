@@ -27,4 +27,3 @@ const authConfig = {
 };
 
 export default authConfig;
-module.exports = authConfig;
