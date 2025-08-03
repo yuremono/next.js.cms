@@ -184,33 +184,33 @@ body section .child480 > *, footer .child480 > *, header .child480 > *, .blog #c
   --bl2 :calc(var(--bl)*2.0);
   --bl25:calc(var(--bl)*2.5);
   --bl3 :calc(var(--bl)*3.0); */
-  --incont:calc(50vw - clamp(0px,50vw - var(--mainBezel,20px), (var(--base) / 2) ));
-  --in1800:calc(50vw - clamp(0px,50vw - var(--mainBezel,20px), 900px ));
-  --in1740:calc(50vw - clamp(0px,50vw - var(--mainBezel,20px), 870px ));
-  --in1728:calc(50vw - clamp(0px,50vw - var(--mainBezel,20px), 864px ));
-  --in1680:calc(50vw - clamp(0px,50vw - var(--mainBezel,20px), 840px ));
-  --in1620:calc(50vw - clamp(0px,50vw - var(--mainBezel,20px), 810px ));
-  --in1560:calc(50vw - clamp(0px,50vw - var(--mainBezel,20px), 780px ));
-  --in1536:calc(50vw - clamp(0px,50vw - var(--mainBezel,20px), 768px ));
-  --in1500:calc(50vw - clamp(0px,50vw - var(--mainBezel,20px), 750px ));
-  --in1440:calc(50vw - clamp(0px,50vw - var(--mainBezel,20px), 720px ));
-  --in1380:calc(50vw - clamp(0px,50vw - var(--mainBezel,20px), 690px ));
-  --in1320:calc(50vw - clamp(0px,50vw - var(--mainBezel,20px), 660px ));
-  --in1200:calc(50vw - clamp(0px,50vw - var(--mainBezel,20px), 600px ));
-  --in1080:calc(50vw - clamp(0px,50vw - var(--mainBezel,20px), 540px ));
-  --in1000:calc(50vw - clamp(0px,50vw - var(--mainBezel,20px), 500px ));
-  --in960: calc(50vw - clamp(0px,50vw - var(--mainBezel,20px), 480px ));
-  --in800: calc(50vw - clamp(0px,50vw - var(--mainBezel,20px), 400px ));
-  --in840: calc(50vw - clamp(0px,50vw - var(--mainBezel,20px), 420px ));
-  --in720: calc(50vw - clamp(0px,50vw - var(--mainBezel,20px), 360px ));
-  --in600: calc(50vw - clamp(0px,50vw - var(--mainBezel,20px), 300px ));
+  --incont:calc(50vw - clamp(0px,50vw - var(--spaceX,20px), (var(--base) / 2) ));
+  --in1800:calc(50vw - clamp(0px,50vw - var(--spaceX,20px), 900px ));
+  --in1740:calc(50vw - clamp(0px,50vw - var(--spaceX,20px), 870px ));
+  --in1728:calc(50vw - clamp(0px,50vw - var(--spaceX,20px), 864px ));
+  --in1680:calc(50vw - clamp(0px,50vw - var(--spaceX,20px), 840px ));
+  --in1620:calc(50vw - clamp(0px,50vw - var(--spaceX,20px), 810px ));
+  --in1560:calc(50vw - clamp(0px,50vw - var(--spaceX,20px), 780px ));
+  --in1536:calc(50vw - clamp(0px,50vw - var(--spaceX,20px), 768px ));
+  --in1500:calc(50vw - clamp(0px,50vw - var(--spaceX,20px), 750px ));
+  --in1440:calc(50vw - clamp(0px,50vw - var(--spaceX,20px), 720px ));
+  --in1380:calc(50vw - clamp(0px,50vw - var(--spaceX,20px), 690px ));
+  --in1320:calc(50vw - clamp(0px,50vw - var(--spaceX,20px), 660px ));
+  --in1200:calc(50vw - clamp(0px,50vw - var(--spaceX,20px), 600px ));
+  --in1080:calc(50vw - clamp(0px,50vw - var(--spaceX,20px), 540px ));
+  --in1000:calc(50vw - clamp(0px,50vw - var(--spaceX,20px), 500px ));
+  --in960: calc(50vw - clamp(0px,50vw - var(--spaceX,20px), 480px ));
+  --in800: calc(50vw - clamp(0px,50vw - var(--spaceX,20px), 400px ));
+  --in840: calc(50vw - clamp(0px,50vw - var(--spaceX,20px), 420px ));
+  --in720: calc(50vw - clamp(0px,50vw - var(--spaceX,20px), 360px ));
+  --in600: calc(50vw - clamp(0px,50vw - var(--spaceX,20px), 300px ));
   --contout:calc(50% - 50vw );
 }
 
 .container {
   padding-inline: 0;
   width: var(--base);
-  max-width: calc(100% - var(--mainBezel) * 2);
+  max-width: calc(100% - var(--spaceX) * 2);
 }
 .left-incont {
   left: var(--incont);

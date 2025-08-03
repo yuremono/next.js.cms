@@ -4,7 +4,7 @@
   --sectionMT: 80px;
   --titleAfter: 24px;
   --sectionPY: 60px;
-  --mainBezel: 5%;
+  --spaceX: 5%;
   --gap: 24px;
   --mc: #3b82f6;
   --sc: #64748b;
@@ -17,13 +17,13 @@
 
 main>*{
     width:var(--base);
-    max-width:calc(100% - var(--mainBezel)*2);
+    max-width:calc(100% - var(--spaceX)*2);
     margin-inline:auto;
     +*{margin-top:var(--sectionMT);}
 }
 
 /* header>*,footer>*{
-    max-width:calc(100% - var(--mainBezel)*2);
+    max-width:calc(100% - var(--spaceX)*2);
     margin-inline:auto;
 } */
 

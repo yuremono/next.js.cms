@@ -13,7 +13,7 @@ module.exports = {
     "max-w-[var(--sectionMax)]",
     "min-w-[var(--sectionMax)]",
     "h-[var(--head)]",
-    "px-[var(--mainBezel)]",
+    "px-[var(--spaceX)]",
     "py-[var(--sectionPY)]",
     "mt-[var(--sectionMT)]",
     "mb-[var(--titleAfter)]",

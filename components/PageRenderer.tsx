@@ -43,7 +43,7 @@ function extractCSSVariables(customCSS: string): {
           trimmed.includes("--sectionMT:") ||
           trimmed.includes("--titleAfter:") ||
           trimmed.includes("--sectionPY:") ||
-          trimmed.includes("--mainBezel:") ||
+          trimmed.includes("--spaceX:") ||
           trimmed.includes("--gap:") ||
           trimmed.includes("--mc:") ||
           trimmed.includes("--sc:") ||

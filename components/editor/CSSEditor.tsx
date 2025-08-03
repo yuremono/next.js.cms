@@ -135,7 +135,7 @@ export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
     if (variables.sectionPaddingY)
       variablesList.push(`  --sectionPY: ${variables.sectionPaddingY};`);
     if (variables.sectionPaddingX)
-      variablesList.push(`  --mainBezel: ${variables.sectionPaddingX};`);
+      variablesList.push(`  --spaceX: ${variables.sectionPaddingX};`);
     if (variables.cardGap) variablesList.push(`  --gap: ${variables.cardGap};`);
     if (variables.primaryColor)
       variablesList.push(`  --mc: ${variables.primaryColor};`);
@@ -280,7 +280,7 @@ export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
                   />
                   <VariableField
                     id="section-padding-x"
-                    label="メイン縁ヨコ幅　--mainBezel"
+                    label="基本ヨコ余白　--spaceX"
                     value={cssVariables.sectionPaddingX}
                     onChange={(value) =>
                       handleVariableChange("sectionPaddingX", value)
