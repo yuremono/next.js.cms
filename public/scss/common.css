@@ -1814,7 +1814,7 @@ div#form_calendar table tbody tr td.close span {
   margin-inline: auto;
   position: relative;
   width: var(--base);
-  max-width: calc(100% - var(--bezel) * 2);
+  max-width: calc(100% - var(--spaceX) * 2);
   min-height: 100vh;
   min-height: 100dvh;
 }
@@ -17727,14 +17727,14 @@ body section .btn.fit-auto, footer .btn.fit-auto, header .btn.fit-auto, .blog #c
   --sectionMT: 80px;
   --titleAfter: 24px;
   --sectionPY: 100px;
-  --bezel: 5%;
+  --spaceX: 5%;
   --gap: 24px;
 }
 
 main > * {
   position: relative;
   width: var(--base);
-  max-width: calc(100% - var(--bezel) * 2);
+  max-width: calc(100% - var(--spaceX) * 2);
   margin-inline: auto;
 }
 main > * + * {
@@ -17769,7 +17769,7 @@ main > * + * {
   margin-inline: auto;
   position: relative;
   width: var(--base);
-  max-width: calc(100% - var(--bezel) * 2);
+  max-width: calc(100% - var(--spaceX) * 2);
   min-height: 100vh;
 }
 

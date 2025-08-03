@@ -80,7 +80,7 @@
     >*:not(.bgFix){
         margin-inline: auto;position: relative;   
         width: var(--base);
-        max-width: calc(100% - var(--bezel)*2);
+        max-width: calc(100% - var(--spaceX)*2);
 	min-height: 100vh;
 	min-height: 100dvh;
     }
