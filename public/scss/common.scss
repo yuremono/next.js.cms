@@ -1,0 +1,119 @@
+@use "01reset"as *;
+@use "02foundation"as *;
+
+
+@use "08scroll-driven"as *;
+@use "09hover"as *;
+@use "10template"as *;
+@use "10.1FBclass"as *;
+
+
+@use "11header"as *;
+@use "12footer"as *;
+
+@use "15index"as *;
+@use "16style"as *;
+
+@use "20utility"as *;
+
+
+:root {
+        --base: 1200px;
+        --head: 80px;
+        --sectionMT: 80px;
+        --titleAfter: 24px;
+        --sectionPY: 100px;
+        --bezel: 5%;
+        --gap: 24px;
+}
+
+main>* {
+        position: relative;
+        width: var(--base);
+        max-width: calc(100% - var(--bezel)*2);
+        margin-inline: auto;
+
+        +* {
+                margin-top: var(--sectionMT);
+        }
+}
+
+.fullWidth {
+        width: 100%;
+        max-width: 100%;
+}
+.one-third{
+	width:calc(100% / 3); 
+	height: 100%;
+        background-color: var(--bc);
+        &.__left{margin-inline: 0 auto;}
+        &.__right{margin-inline: auto 0;}
+}
+
+.js-bgTrigger {
+        height: 100vh;
+        +.js-bgTrigger{margin-top: unset;}
+}
+:where(.js-bgTrigger){
+        >*{
+            margin-inline: auto;position: relative;   
+            width: var(--base);
+            max-width: calc(100% - var(--bezel)*2);
+            min-height: 100vh;
+        }
+}
+
+
+.bgLayer {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        z-index: -1;
+        overflow: hidden;
+
+        +* {
+                margin-top: unset;
+        }
+}
+
+.bgItem {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        opacity: 0;
+        transition: opacity 0.6s ease;
+}
+
+.bgItem.show {
+        opacity: 1;
+}
+
+.bgNav {
+        position: fixed;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        z-index: 10;
+}
+
+.navDot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #ccc;
+        border: none;
+        cursor: pointer;
+}
+
+.navDot.current {
+        background: #333;
+}

@@ -1,0 +1,253 @@
+@use "mixin" as *;
+
+
+:root{// IntersectionObserver addClass'show'
+    --trt:translate 1.2s,opacity 1.2s ,clip-path 1.2s ,filter 1.2s ,scale 1.8s ;
+    // --trt:translate .6s,opacity .6s 1.6s,clip-path .6s .0s,filter .6s .0s,scale .6s .6s;
+    --jsBlur:0px;
+    --jsInvert:0;
+    --transX: 6vmin;
+    --transY: 6vmin;
+}
+[class*=js-],[class*=js-ch]>*,[class*=js-art] article>*{
+    @for $i from 1 through 9 {
+		&.show:nth-child(#{$i}){
+            transition-delay: #{$i*0.1 - 0.1}s;
+            &:is(section>*,form>*){
+                transition-delay: 0s!important;
+            }
+        }
+	}
+}
+
+.H-split :is(h1,h2,h3)>*:nth-child(1),
+.div-split div>*
+{
+    >*{
+        opacity: 0;
+        transition: var(--trt);
+    }
+    &.show >*{
+        opacity: 1;
+    }
+    @for $i from 1 through 60 {
+		&.show >*:nth-child(#{$i}){
+            transition-delay: #{$i*0.06 + 0}s;
+        }
+	}
+
+}
+.it01,.it01>*,.ti01,.ti01>*{
+    @for $i from 1 through 9 {
+		&.show:nth-child(#{$i}){
+            transition-delay: #{$i*0.2 - 0.2}s;
+            &:is(section>*){
+                transition-delay: 0s;
+            }
+        }
+        
+	}
+}
+
+.js-bgFix{
+    z-index: 1;
+    
+    transition: 1s;
+    // &:has(+.js-bgFix.show){
+    //     opacity: 0;
+    // } 
+    .bgFix{
+        position: fixed;
+        opacity: 0;pointer-events: none;
+		z-index: -1;
+    }
+    &.show .bgFix{
+        opacity: 1;
+    }
+	+.js-bgFix{margin-top:unset;
+		// z-index: 0;
+	}
+    .bgFix {
+        margin-top: unset;
+        background: no-repeat center / cover;
+        +*{margin-top: unset;}
+        @include bp960{
+            background: no-repeat 0 0 /cover;
+        }
+    }
+}
+:where(.js-bgFix){
+    >*:not(.bgFix){
+        margin-inline: auto;position: relative;   
+        width: var(--base);
+        max-width: calc(100% - var(--bezel)*2);
+	min-height: 100vh;
+	min-height: 100dvh;
+    }
+}
+
+
+.js-{
+    &left,&right,&top,&bottom,
+    &chB>*,&chL>*,&chR>*,&chT>*
+    // &artB article>*,&artL article>*,&artR article>*
+    {
+        transition: var(--trt);
+        opacity: 0;
+        filter: blur(var(--jsBlur)) invert(var(--jsInvert));
+        // filter: invert(.25);
+        &.show{
+            opacity: 1;
+            // --jsBlur:0px;
+            translate: none;
+            filter: unset;
+        }
+    }
+    &hide,&chHide>*
+    {
+        filter: blur(var(--jsBlur)) invert(var(--jsInvert));
+        opacity: 0;
+        // translate: 0 var(--jsBlur);
+        transition:var(--trt);
+        // filter: invert(1);
+        &.show{
+            opacity: 1;
+            // --jsBlur:0px;
+            // translate: none;
+            filter: unset;
+        }
+    }
+    &cpL,&cpR,&uHide
+    // &artB article>*,&artL article>*,&artR article>*
+    {
+        transition: var(--trt);
+        opacity: 0;
+        // filter: invert(.5);
+        
+        &.show{
+            translate: none;opacity: 1;filter: unset;
+        }
+    }
+    &scale
+    {
+        opacity: 0;
+        transition:scale 1.8s, opacity 1.2s .4s!important;
+        scale: .8;
+        &.show{
+            opacity: 1;
+            scale: 1;
+        }
+    }
+    &left,&chL>*,&artL article>*{
+        translate: calc(var(--transX)*-1);
+    }
+    &right,&chR>*,&artR article>*{
+        translate: var(--transX)
+    }
+    &bottom,&chB>*,&artB article>*{
+        translate: 0 var(--transY);
+    }
+    &top,&chT>*,&artT article>*{
+        translate: 0 calc(var(--transY)*-0.5);
+    }
+}
+.js-cpL ,
+.js-cpR ,
+.js-cpT ,
+.js-cpB {
+    transition: var(--trt);
+    opacity: 0;
+    clip-path: inset(0 95% 0 0);
+    &.show{
+        opacity: 1;
+        clip-path: inset(0);
+    } 
+}
+.js-cpL {clip-path: inset(0 95% 0 0);}
+.js-cpR {clip-path: inset(0  0 0 95%);}
+.js-cpT {clip-path: inset(0  0 50% 0);}
+.js-cpB {clip-path: inset(95% 0  0 0);}//できない
+
+// [class*=js-clip]{
+.js-clip{
+    // @for $i from 1 through 9 {
+	// 	&.show:nth-child(#{$i}){
+    //         .im{
+    //             transition-delay: #{$i*0.2}s;
+    //             // >*{transition-delay:#{$i*0.2+0.8}s;}
+    //         }
+    //     }
+	// }
+    .im{
+        transition: .4s 0s;
+        clip-path: polygon(
+            0% 0%,
+            100% 0%,
+            100% 1px,
+            0% 0%,
+        );
+        >*{
+            transition: .4s;
+                clip-path: polygon(
+                    0% 0%,
+                    0% 0%,
+                    0% 100%,
+                    0% 100%,
+                );
+        }
+    }
+    &.show{
+        .im{
+            transition: .8s;
+            clip-path: polygon(
+                0% 0%,
+                100% 0%,
+                100% 100%,
+                0% 100%,
+            );
+            >*{
+                clip-path: polygon(
+                    0% 0%,
+                    100% 0%,
+                    100% 100%,
+                    0% 100%,
+                );
+            }
+        }
+    } 
+    
+    &.js-clipR{
+        clip-path: polygon(
+            100% 0%,
+            100% 0%,
+            100% 100%,
+            100% 100%,
+        );
+        &:after{
+            transform-origin: left;
+        }
+    }
+}
+.js-letter{
+    @for $i from 1 through 60 {
+		&.show :is(h1,h2,h3)>*:nth-child(#{$i}){
+            transition-delay: #{$i*0.05 + 0.05}s;
+        }
+	}
+}
+.js-letter{
+    :is(h1,h2,h3)>*{
+        opacity: 0;
+        transition: .6s;
+    }
+    &.show :is(h1,h2,h3)>*{
+        opacity: 1;
+    }
+    // filter: blur(var(--jsBlur));
+    opacity: 0;
+    transition:var(--trt);
+    &.show{
+        opacity: 1;
+        --jsBlur:0px;
+    }
+}

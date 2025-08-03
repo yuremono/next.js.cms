@@ -4,9 +4,10 @@
  */
 
 const authConfig = {
-  // 🔐 CMSアクセスパスワード
-  // ※本番環境では環境変数 CMS_PASSWORD で上書きされます
-  defaultPassword: "in",
+  // 🔐 CMSアクセスパスワード（廃止）
+  // 権限レベル別のパスワードを環境変数で設定してください
+  // CMS_PASSWORD_EDIT: 編集権限, CMS_PASSWORD_VIEW: 閲覧権限
+  defaultPassword: null, // セキュリティ向上のため無効化
 
   // ⏰ セッション維持時間（秒）
   // 3600 = 1時間, 7200 = 2時間, 86400 = 24時間
@@ -25,4 +26,5 @@ const authConfig = {
   },
 };
 
+export default authConfig;
 module.exports = authConfig;

@@ -1,0 +1,841 @@
+@charset "UTF-8";
+
+
+/* .mv {
+  z-index: 0;
+  margin-top: var(--mvMT);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.mv .slick-dotted.slick-slider {
+  margin-bottom: unset;
+}
+.mv.__framed {
+  padding-inline: calc(var(--innerPI) * 2);
+}
+@media screen and (max-width: 1440px) {
+  .mv.__framed {
+    padding-inline: var(--g);
+  }
+}
+.mv.__framed > * {
+  border-radius: var(--rad2);
+  overflow: hidden;
+}
+.mv_slide, .mv_img, .mv_video {
+  overflow: hidden;
+  z-index: -1;
+  height: 100%;
+  transition: 1s;
+}
+.mv_slide.hide, .mv_img.hide, .mv_video.hide {
+  opacity: 0;
+  visibility: hidden;
+}
+.mv_slide:after, .mv_img:after, .mv_video:after {
+  display: none;
+}
+@media screen and (max-width: 960px) {
+  .mv_slide, .mv_img, .mv_video {
+    width: 100%;
+  }
+}
+.mv_slide .slick-list, .mv_img .slick-list, .mv_video .slick-list {
+  height: 100%;
+}
+.mv_slide .slick-track, .mv_img .slick-track, .mv_video .slick-track {
+  display: flex;
+  height: 100%;
+}
+.mv_slide .slick-slide, .mv_img .slick-slide, .mv_video .slick-slide {
+  padding-inline: unset;
+}
+
+
+.mv .dotCover:after {
+  display: block !important;
+  content: "";
+  inset: 0;
+  --col:var(--wh50);
+  --size:4px;
+  --pos:0px;
+  background: repeating-radial-gradient(var(--col), var(--col) var(--pos), transparent calc(var(--pos) + 1px), transparent) repeat center/var(--size) var(--size);
+}
+.mv:has(.bg_slide) {
+  min-height: var(--mvImg);
+}
+.mv_switch {
+  --jsBlur:0px;
+  transition: 0.6s 0.4s;
+  transform-origin: center bottom;
+  overflow: hidden;
+  z-index: -1;
+  height: 100%;
+  transition: 1s;
+}
+.mv_switch.__fixed {
+  position: fixed;
+  inset: 0;
+}
+.mv_switch .card2, .mv_switch .ul_card2 > ul {
+  --g:0px;
+  display: flex;
+  justify-content: space-between;
+}
+@media screen and (max-width: 834px) {
+  .mv_switch .card2, .mv_switch .ul_card2 > ul {
+    flex-direction: column !important;
+  }
+  .mv_switch .card2 > *, .mv_switch .ul_card2 > ul > * {
+    width: 100% !important;
+  }
+}
+.mv_switch .card2 > *:nth-child(even), .mv_switch .ul_card2 > ul > *:nth-child(even) {
+  animation-delay: 0.3s;
+}
+@keyframes cp-hide {
+  0% {
+    -webkit-clip-path: inset(0);
+            clip-path: inset(0);
+  }
+  99% {
+    -webkit-clip-path: inset(0 0 100% 0);
+            clip-path: inset(0 0 100% 0);
+  }
+  100% {
+    -webkit-clip-path: inset(100% 0 0 0);
+            clip-path: inset(100% 0 0 0);
+  }
+}
+@keyframes cp-show {
+  0% {
+    -webkit-clip-path: inset(100% 0 0 0);
+            clip-path: inset(100% 0 0 0);
+  }
+  99% {
+    -webkit-clip-path: inset(0);
+            clip-path: inset(0);
+  }
+}
+@keyframes cp-hide-tab {
+  0% {
+    -webkit-clip-path: inset(0);
+            clip-path: inset(0);
+  }
+  99% {
+    -webkit-clip-path: inset(0 0 0 100%);
+            clip-path: inset(0 0 0 100%);
+  }
+  100% {
+    -webkit-clip-path: inset(0 100% 0 0);
+            clip-path: inset(0 100% 0 0);
+  }
+}
+@keyframes cp-show-tab {
+  0% {
+    -webkit-clip-path: inset(0 100% 0 0);
+            clip-path: inset(0 100% 0 0);
+  }
+  99% {
+    -webkit-clip-path: inset(0);
+            clip-path: inset(0);
+  }
+}
+.mv_switch.hide {
+  opacity: 0;
+  visibility: hidden;
+}
+.mv_switch:after {
+  display: none;
+}
+@media screen and (max-width: 960px) {
+  .mv_switch {
+    width: 100%;
+  }
+}
+.mv_switch .slick-list {
+  height: 100%;
+}
+.mv_switch .slick-track {
+  height: 100%;
+}
+.mv_switch .slick-slide {
+  padding-inline: unset;
+  display: flex;
+}
+.mv_switch img {
+  margin: unset;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: var(--mvImg) !important;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+@media screen and (max-width: 834px) {
+  .mv_switch img {
+    height: calc(var(--mvImg) / 2) !important;
+  }
+}
+.mv .mv_marquee:is(*) {
+  width: 100%;
+  display: flex;
+  gap: 0.5em;
+  pointer-events: none;
+  transition: 1s 0s !important;
+  animation: marquee 30s infinite linear;
+}
+.mv .mv_marquee:is(*) > * {
+  pointer-events: all;
+}
+.mv .mv_marquee:is(*) > div {
+  white-space: nowrap;
+  max-width: unset;
+}
+.mv .mv_marquee:is(*)::after {
+  display: none;
+}
+@keyframes fadeup {
+  0% {
+    opacity: 0;
+    translate: 0% 100%;
+  }
+  100% {
+    opacity: 1;
+    translate: 0% 0;
+  }
+}
+@keyframes faderight {
+  0% {
+    opacity: 0;
+    translate: 5vmin 0;
+  }
+  100% {
+    opacity: 1;
+    translate: 0% 0;
+  }
+}
+@keyframes marquee {
+  0% {
+    translate: 0% 0;
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 1;
+  }
+  100% {
+    translate: -100% 0;
+    opacity: 0;
+  }
+}
+
+.mv_switch.__fixed .slick-slide:nth-child(2) {
+  left: -98vw !important;
+}
+
+.mv_switch.__fixed {
+  top: var(--head);
+}
+.mv_switch.__fixed .box:nth-child(1) {
+  margin-top: var(--leftMarginTop);
+}
+@media screen and (max-width: 960px) {
+  .mv_switch.__fixed .box:nth-child(1) {
+    margin-top: var(--leftMarginTopBP960);
+  }
+}
+@media screen and (max-width: 960px) {
+  .mv_switch.__fixed {
+    opacity: 0.6;
+  }
+}
+@media screen and (max-width: 834px) {
+  .mv_switch.__fixed {
+    top: 15vh;
+  }
+}
+.mv_switch.__fixed .slick-track {
+  display: flex;
+}
+.mv_switch.__fixed .slick-slide {
+  margin-inline: -6.25%;
+  max-width: unset !important;
+  justify-content: space-between;
+}
+.mv_switch.__fixed .box {
+  width: 30%;
+  --show:1;
+  animation: transUP calc(var(--rate) * 4) linear infinite;
+}
+.mv_switch.__fixed .box img:is(#contents *) {
+  width: 100%;
+  border-radius: var(--rad);
+  aspect-ratio: 1;
+  height: unset !important;
+}
+@media screen and (max-width: 960px) {
+  .mv_switch.__fixed .box {
+    width: 36%;
+  }
+  .mv_switch.__fixed .box img:is(#contents *) {
+    aspect-ratio: 3/4;
+  }
+}
+.mv_switch.__fixed .box:nth-child(even) {
+  animation-direction: reverse;
+}
+@keyframes transUP {
+  0% {
+    translate: 0 10%;
+    opacity: 0;
+  }
+  2% {
+    opacity: 1;
+  }
+  98% {
+    opacity: 1;
+  }
+  100% {
+    translate: 0 0%;
+    opacity: 0;
+  }
+}
+
+html:has(.h.trans) .mv_switch {
+  opacity: 0.2;
+}
+
+.mv_it {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 100%;
+}
+.mv_it > * {
+  pointer-events: all;
+}
+.mv_it .im img:is(#contents *) {
+  margin-inline: auto;
+  height: auto !important;
+  min-width: 160px;
+}
+@media screen and (max-width: 640px) {
+  .mv_it {
+    left: 0;
+    transform: unset;
+  }
+}
+.mv_it h1, .mv_it p {
+  font-size: clamp(var(--minFZ, 20px), 4vw, 48px);
+}
+.mv_it::after {
+  display: none;
+}
+
+#contents :is(.mv_img, .mv_slide) {
+  width: 100%;
+  margin-inline: auto;
+}
+#contents :is(.mv_img, .mv_slide).__framed {
+  padding-inline: calc(var(--gap) * 2);
+}
+#contents :is(.mv_img, .mv_slide).__framed > * {
+  border-radius: var(--rad2);
+  overflow: hidden;
+}
+#contents :is(.mv_img, .mv_slide) img {
+  min-width: 100%;
+  margin-inline: auto;
+  display: block;
+  height: var(--mvImg) !important;
+  -o-object-fit: cover;
+     object-fit: cover;
+  border-radius: unset;
+  max-height: 100vh;
+} */
+
+
+/* ===========================================
+   CSS Only Slider Implementation (ネスティング記法)
+   =========================================== */
+
+/* CSSオンリースライダー - 基本設定 */
+.mv_slide.__css-only {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  /* ドラッグ操作を有効化 - overflowを必ず設定 */
+  overflow-x: auto;
+  overflow-y: hidden;
+  display: flex;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  --slide-duration: 6s;
+  --slide-count: 3;
+  
+  /* スクロールバーを隠す */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  
+  /* 自動再生は一旦無効化してドラッグ操作を優先 */
+  /* animation: css-auto-scroll calc(var(--slide-duration) * var(--slide-count)) infinite ease-in-out; */
+  /* animation-play-state: running; */
+  
+  /* ドラッグ操作のカーソル */
+  cursor: grab;
+  
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* ドラッグ中のカーソル */
+  &:active {
+    cursor: grabbing;
+    scroll-behavior: auto; /* ドラッグ中はスムーススクロールを無効化 */
+  }
+  
+  /* スライド項目 */
+  > div {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    height: 100%;
+  }
+  
+  .box {
+    width: 100%;
+    height: 100%;
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
+      /* 画像の選択とドラッグを無効化 */
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      pointer-events: none; /* 画像自体のドラッグを防止 */
+    }
+    
+    &:hover img {
+      transform: scale(1.05);
+    }
+  }
+  
+  /* ナビゲーションドット */
+  + .css-nav-dots {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+    
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.5);
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      
+      &:hover,
+      &.active {
+        background: rgba(255, 255, 255, 1);
+        transform: scale(1.2);
+      }
+    }
+  }
+  
+  /* レスポンシブ対応 */
+  @media screen and (max-width: 834px) {
+    height: 250px;
+    
+    + .css-nav-dots {
+      bottom: 15px;
+      gap: 8px;
+      
+      .dot {
+        width: 10px;
+        height: 10px;
+      }
+    }
+  }
+  
+  /* アクセシビリティ対応 */
+  @media (prefers-reduced-motion: reduce) {
+    scroll-behavior: auto;
+    
+    .box img {
+      transition: none;
+    }
+  }
+  
+  /* Safari特有の調整 */
+  @supports (-webkit-appearance: none) {
+    -webkit-scroll-snap-type: x mandatory;
+    
+    > div {
+      -webkit-scroll-snap-align: start;
+    }
+  }
+  
+  /* パフォーマンス最適化 */
+  &,
+  * {
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+}
+
+/* 自動再生アニメーション（必要に応じて有効化） */
+@keyframes css-auto-scroll {
+  0%, 30% {
+    transform: translateX(0);
+  }
+  33.33%, 63.33% {
+    transform: translateX(-100%);
+  }
+  66.66%, 96.66% {
+    transform: translateX(-200%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* ===========================================
+   フェード効果スライダー (__fade専用) - 修正版
+   =========================================== */
+
+.mv_slide.__fade {
+  position: relative;
+  width: 100%;
+  height: 800px;
+  overflow: hidden;
+  display: block;
+  --fade-duration: 4s;
+  --fade-count: 3;
+  
+  /* ラジオボタンを完全に隠す */
+  input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    z-index: -1;
+    width: 0;
+    height: 0;
+  }
+  
+  /* スライド項目 */
+  > div:not(.fade-controls) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+    z-index: 1;
+    
+    /* デフォルトで最初のスライドを表示 */
+    &:first-of-type {
+      opacity: 1;
+      z-index: 2;
+    }
+    
+    /* 自動再生アニメーション */
+    &:nth-of-type(1) {
+      animation: fade-slide-1 calc(var(--fade-duration) * var(--fade-count)) infinite;
+    }
+    
+    &:nth-of-type(2) {
+      animation: fade-slide-2 calc(var(--fade-duration) * var(--fade-count)) infinite;
+    }
+    
+    &:nth-of-type(3) {
+      animation: fade-slide-3 calc(var(--fade-duration) * var(--fade-count)) infinite;
+    }
+  }
+  
+  .box {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
+    
+    &:hover img {
+      transform: scale(1.05);
+    }
+  }
+  
+  /* ドラッグ操作用コントロール - 修正版 */
+  .fade-controls {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10; /* 確実に最前面に */
+    display: flex;
+    pointer-events: auto; /* クリックを有効化 */
+    
+    label {
+      flex: 1;
+      height: 100%;
+      cursor: pointer;
+      position: relative;
+      display: block;
+      
+      /* デバッグ用（動作確認後削除） */
+      background: rgba(255, 0, 0, 0.1);
+      border: 1px solid rgba(255, 0, 0, 0.3);
+      
+      /* ホバー効果 */
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+      
+      &:active {
+        background: rgba(255, 255, 255, 0.2);
+      }
+    }
+  }
+  
+  /* ラジオボタンによるスライド制御 - 修正版 */
+  input[type="radio"]:checked {
+    ~ div:not(.fade-controls) {
+      opacity: 0;
+      z-index: 1;
+      animation-play-state: paused;
+    }
+  }
+  
+  #fade-slide-1:checked ~ div:nth-of-type(1) {
+    opacity: 1 !important;
+    z-index: 2 !important;
+  }
+  
+  #fade-slide-2:checked ~ div:nth-of-type(2) {
+    opacity: 1 !important;
+    z-index: 2 !important;
+  }
+  
+  #fade-slide-3:checked ~ div:nth-of-type(3) {
+    opacity: 1 !important;
+    z-index: 2 !important;
+  }
+  
+  /* ホバー時の一時停止 */
+  &:hover > div:not(.fade-controls) {
+    animation-play-state: paused;
+  }
+  
+  /* ナビゲーションドット */
+  + .css-nav-dots {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+    
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.5);
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      
+      &:hover,
+      &.active {
+        background: rgba(255, 255, 255, 1);
+        transform: scale(1.2);
+      }
+    }
+  }
+  
+  /* レスポンシブ対応 */
+  @media screen and (max-width: 834px) {
+    height: 400px;
+    --fade-duration: 3s;
+    
+    + .css-nav-dots {
+      bottom: 15px;
+      gap: 8px;
+      
+      .dot {
+        width: 10px;
+        height: 10px;
+      }
+    }
+  }
+  
+  /* アクセシビリティ対応 */
+  @media (prefers-reduced-motion: reduce) {
+    > div:not(.fade-controls) {
+      animation: none;
+      
+      &:first-of-type {
+        opacity: 1;
+      }
+      
+      &:not(:first-of-type) {
+        opacity: 0;
+      }
+    }
+    
+    .box img {
+      transition: none;
+    }
+  }
+  
+  /* パフォーマンス最適化 */
+  &,
+  * {
+    will-change: opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+}
+
+/* フェードアニメーションキーフレーム */
+@keyframes fade-slide-1 {
+  0%, 25% {
+    opacity: 1;
+    z-index: 2;
+  }
+  33.33%, 100% {
+    opacity: 0;
+    z-index: 1;
+  }
+}
+
+@keyframes fade-slide-2 {
+  0%, 25% {
+    opacity: 0;
+    z-index: 1;
+  }
+  33.33%, 58.33% {
+    opacity: 1;
+    z-index: 2;
+  }
+  66.66%, 100% {
+    opacity: 0;
+    z-index: 1;
+  }
+}
+
+@keyframes fade-slide-3 {
+  0%, 58.33% {
+    opacity: 0;
+    z-index: 1;
+  }
+  66.66%, 91.66% {
+    opacity: 1;
+    z-index: 2;
+  }
+  100% {
+    opacity: 0;
+    z-index: 1;
+  }
+}
+
+/* 代替実装：手動スクロール対応 */
+.mv_slide.__css-manual {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  display: flex;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  
+  > div {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+  
+  .box {
+    width: 100%;
+    height: 100%;
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+  }
+}
+
+/* タッチデバイス対応 */
+@media (hover: none) and (pointer: coarse) {
+  .mv_slide.__css-only {
+    /* タッチスクロールの最適化 */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+  
+  .mv_slide.__fade {
+    .fade-controls label {
+      /* タッチエリアを大きく */
+      min-height: 44px;
+      
+      &:active {
+        background: rgba(255, 255, 255, 0.3);
+      }
+    }
+  }
+}
+
+/* マウス操作の最適化 */
+@media (hover: hover) and (pointer: fine) {
+  .mv_slide.__css-only {
+    /* マウスホイールでのスクロールを滑らかに */
+    scroll-behavior: smooth;
+  }
+  
+  .mv_slide.__fade .fade-controls label {
+    /* マウスでの操作感を向上 */
+    transition: background-color 0.2s ease;
+  }
+}
+

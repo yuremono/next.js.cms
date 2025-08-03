@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { UserRole } from "@/types";
-
-const authConfig = require("@/config/auth.config.js");
+import authConfig from "@/config/auth.config.js";
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,12 +21,8 @@ export async function POST(request: NextRequest) {
     ) {
       userRole = "view";
     }
-    // 従来のパスワードとの互換性維持（edit権限として扱う）
-    else if (
-      password === (process.env.CMS_PASSWORD || authConfig.defaultPassword)
-    ) {
-      userRole = "edit";
-    }
+    // 注意: セキュリティ向上のため従来パスワード認証は廃止しました
+    // 権限レベル別の環境変数（CMS_PASSWORD_EDIT, CMS_PASSWORD_VIEW）を使用してください
 
     if (userRole) {
       // セッションCookieを設定

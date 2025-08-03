@@ -1,0 +1,719 @@
+@charset "utf-8";
+
+$menu: 960px;
+@mixin menu {@media screen and (max-width: $menu) {@content;}}
+@mixin tab {@media screen and (max-width: 834px) {@content;}}
+@mixin sp {@media screen and (max-width: 640px) {@content;}} 
+// ******************font 
+// @import url("https://use.typekit.net/ivt0kdz.css");
+// html{transition: .4s;opacity: 0;&.wf-active{opacity: 1;}}//adobe fonts
+// @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=Noto+Sans+JP:wght@100..900&family=Noto+Serif+JP:wght@200..900&family=Open+Sans:wght@300..800&text=0123456789&display=swap');
+// @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200..900&display=swap');
+
+// "Josefin Sans","Tangerine","Cormorant Garamond","Space Grotesk","Sawarabi Gothic","Yuji Syuku","Rajdhani", "Oswald","Cardo","Train One","Zen Old Mincho","Zen Kaku Gothic New","Shippori Mincho","Proza Libre","Hina Mincho","Yuji Mai","Klee One","Noto Sans JP","IBM Plex Sans JP","RocknRoll One","Josefin Sans","Rubik Spray Paint","Montserrat","M PLUS Rounded 1c","Stardos Stencil","Klee One","Times New Roman","Shippori Mincho B1"{'Times New Roman', Times, serif;}
+
+
+
+:root{//icon font
+    --fa: 'Font Awesome 6 Pro','Font Awesome 6 Free','Font Awesome 6 Brand','Font Awesome 6 Duotone','Line Awesome Free','Line Awesome Brands';
+    --la: 'Line Awesome Free','Line Awesome Brands','Font Awesome 6 Pro','Font Awesome 6 Free','Font Awesome 6 Brand','Font Awesome 6 Duotone';
+    --ph: "Phosphor",'Line Awesome Free','Line Awesome Brands','Font Awesome 6 Pro','Font Awesome 6 Free','Font Awesome 6 Brand','Font Awesome 6 Duotone' ;
+    --icon:var(--la);
+}
+:root{//font
+    --Home: "\f015";
+    --panAF: inline;
+    --Hig: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", "Meiryo", "Noto Sans JP", sans-serif;
+    --Him: "Hiragino Mincho ProN", "Hiragino Mincho Pro", "Yu Mincho", "MS PMincho", "Noto Serif JP", serif;
+
+    --Yug:"Yu Gothic", "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Meiryo", "Noto Sans JP", sans-serif;
+    --Yum: "Yu Mincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", "MS PMincho", "Noto Serif JP", serif;
+
+    --Ser: "Noto Serif JP",  serif;
+    --San: "Noto Sans JP",  sans-serif;
+    
+    --Tnr:'Times New Roman', Times, "Noto Serif JP",  sans-serif;
+    --Gre:'Great Vibes', Times, "Noto Serif JP",  sans-serif;
+    // --Kai:"Kaisei HarunoUmi","Noto Sans JP",  sans-serif;
+    
+    // --bodyFF:  YakuHanJP_Narrow,"Noto Sans JP",  sans-serif;
+    --bodyFF:  YakuHanJP_Narrow, var(--Tnr); 
+    // --bodyFF:  "Zen Old Mincho",  sans-serif;
+    --noYH:var(--Tnr);
+    --Eng:var(--Gre);
+    
+    // --ibmPT: .125em;
+    // @include sp{--ibmPT: 0em;}
+}
+
+// .lib{@extend %lib;}
+.noYH{font-family: var(--noYH)!important;}
+.Ser{font-family: var(--Ser)!important;}
+.San{font-family: var(--San)!important;}
+.Eng{font-family: var(--Eng)!important;}
+
+
+.Gre{font-family: var(--Gre)!important;}
+.Tnr{font-family: var(--Tnr)!important;}
+// .yuj,.yuj *{font-family: var(--yuj)!important;font-weight: 900;} 
+
+@keyframes fadeIn {
+    0% {opacity: 0;}
+    // 50% {opacity: 0;}
+    100% {opacity: 1;}
+}
+%h-font,.h-font{
+    font-weight: var(--hfw);
+    font-family: var(--hff);
+    line-height: var(--hlh);
+    letter-spacing: var(--hls);
+    color: var(--hcolor);
+}
+%h1FZ{font-size: var(--h1FZ);}
+%h2FZ{font-size: var(--h2FZ);}
+%h3FZ{font-size: var(--h3FZ);}
+%lib{
+    font-family: var(--lib);font-style: italic;font-weight: 100;
+}
+%radius{border-radius: var(--rad);}
+%radius2{border-radius: var(--rad2);}
+
+%scrollBar{
+    --thumbC:var(--tx10);
+    --thumbW:8px;
+    &::-webkit-scrollbar{background-color: transparent;width: var(--thumbW);height: 0;}
+    &::-webkit-scrollbar-thumb {background-color:var(--thumbC);}
+}
+%scrollBarX{
+    --thumbC:var(--tx10);
+    --thumbW:8px;
+    &::-webkit-scrollbar{background-color: transparent;width: 0;height: var(--thumbW);}
+    &::-webkit-scrollbar-thumb {background-color:var(--thumbC);}
+}
+:root{//color
+    --un:unset;
+    --inh:inherit;
+    --cur:currentColor;
+    --tr:transparent;
+
+    --grad01:linear-gradient(-10deg,#f5e1c4 ,var(--mcDK),#f5e1c4 );
+    --grad02:linear-gradient(-10deg,#f5e1c4 15%,var(--mcDK),#f5e1c4 85%);
+    --mc:#209b32;
+    --sc:#f5fff6;
+    --ac:#705a8b;
+    --bc:#fafafa;
+    --tx:#333;
+    --gr:#666;
+    --bk:#000;
+    --wh:#fff;
+    
+    --01:#f2b6ca;
+    --02:#e5cfa1;
+    --03:#bcd9ad;
+    --04:#add9ca;
+    --05:#e2c2f2;
+
+
+    
+    --mc10: color-mix(in srgb, transparent,var(--mc) 10%);    
+    --mc20: color-mix(in srgb, transparent,var(--mc) 20%);
+    --mc30: color-mix(in srgb, transparent,var(--mc) 30%);
+    --mc40: color-mix(in srgb, transparent,var(--mc) 40%);
+    --mc50: color-mix(in srgb, transparent,var(--mc) 50%);
+    --mc60: color-mix(in srgb, transparent,var(--mc) 60%);
+    --mc70: color-mix(in srgb, transparent,var(--mc) 70%);
+    --mc80: color-mix(in srgb, transparent,var(--mc) 80%);
+    --mc90: color-mix(in srgb, transparent,var(--mc) 90%);
+    // --mcDK:#0f121a;
+    // --mcLT2:#e4f2f5; 
+    // --mcLT:#c9e9f0;
+    // --mcRev:#96702f;
+
+    // --scPale:#e4f2f5;
+    // --scLT:#c9f0ed;
+    --sc10: color-mix(in srgb, transparent,var(--sc) 10%);
+    --sc20: color-mix(in srgb, transparent,var(--sc) 20%);
+    --sc30: color-mix(in srgb, transparent,var(--sc) 30%);
+    --sc40: color-mix(in srgb, transparent,var(--sc) 40%);
+    --sc50: color-mix(in srgb, transparent,var(--sc) 50%);
+    --sc60: color-mix(in srgb, transparent,var(--sc) 60%);
+    --sc70: color-mix(in srgb, transparent,var(--sc) 70%);
+    --sc80: color-mix(in srgb, transparent,var(--sc) 80%);
+    --sc90: color-mix(in srgb, transparent,var(--sc) 90%);
+
+    // --acDK:#d9dd10;
+    --ac10: color-mix(in srgb, transparent,var(--ac) 10%);
+    --ac20: color-mix(in srgb, transparent,var(--ac) 20%);
+    --ac30: color-mix(in srgb, transparent,var(--ac) 30%);
+    --ac40: color-mix(in srgb, transparent,var(--ac) 40%);
+    --ac50: color-mix(in srgb, transparent,var(--ac) 50%);
+    --ac60: color-mix(in srgb, transparent,var(--ac) 60%);
+    --ac70: color-mix(in srgb, transparent,var(--ac) 70%);
+    --ac80: color-mix(in srgb, transparent,var(--ac) 80%);
+    --ac90: color-mix(in srgb, transparent,var(--ac) 90%);
+
+    --bc10: color-mix(in srgb, transparent,var(--bc) 10%);
+    --bc20: color-mix(in srgb, transparent,var(--bc) 20%);
+    --bc30: color-mix(in srgb, transparent,var(--bc) 30%);
+    --bc40: color-mix(in srgb, transparent,var(--bc) 40%);
+    --bc50: color-mix(in srgb, transparent,var(--bc) 50%);
+    --bc60: color-mix(in srgb, transparent,var(--bc) 60%);
+    --bc70: color-mix(in srgb, transparent,var(--bc) 70%);
+    --bc80: color-mix(in srgb, transparent,var(--bc) 80%);
+    --bc90: color-mix(in srgb, transparent,var(--bc) 90%);
+
+    --tx10: color-mix(in srgb, transparent,var(--tx) 10%);
+    --tx20: color-mix(in srgb, transparent,var(--tx) 20%);
+    --tx30: color-mix(in srgb, transparent,var(--tx) 30%);
+    --tx40: color-mix(in srgb, transparent,var(--tx) 40%);
+    --tx50: color-mix(in srgb, transparent,var(--tx) 50%);
+    --tx60: color-mix(in srgb, transparent,var(--tx) 60%);
+    --tx70: color-mix(in srgb, transparent,var(--tx) 70%);
+    --tx80: color-mix(in srgb, transparent,var(--tx) 80%);
+    --tx90: color-mix(in srgb, transparent,var(--tx) 90%);
+
+    --gr10: color-mix(in srgb, transparent,var(--gr) 10%);
+    --gr20: color-mix(in srgb, transparent,var(--gr) 20%);
+    --gr30: color-mix(in srgb, transparent,var(--gr) 30%);
+    --gr40: color-mix(in srgb, transparent,var(--gr) 40%);
+    --gr50: color-mix(in srgb, transparent,var(--gr) 50%);
+    --gr60: color-mix(in srgb, transparent,var(--gr) 60%);
+    --gr70: color-mix(in srgb, transparent,var(--gr) 70%);
+    --gr80: color-mix(in srgb, transparent,var(--gr) 80%);
+    --gr90: color-mix(in srgb, transparent,var(--gr) 90%);
+
+    --bk10: color-mix(in srgb, transparent,var(--bk) 10%);
+    --bk20: color-mix(in srgb, transparent,var(--bk) 20%);
+    --bk30: color-mix(in srgb, transparent,var(--bk) 30%);
+    --bk40: color-mix(in srgb, transparent,var(--bk) 40%);
+    --bk50: color-mix(in srgb, transparent,var(--bk) 50%);
+    --bk60: color-mix(in srgb, transparent,var(--bk) 60%);
+    --bk70: color-mix(in srgb, transparent,var(--bk) 70%);
+    --bk80: color-mix(in srgb, transparent,var(--bk) 80%);
+    --bk90: color-mix(in srgb, transparent,var(--bk) 90%);
+    
+    --wh10: color-mix(in srgb, transparent,var(--wh) 10%);
+    --wh20: color-mix(in srgb, transparent,var(--wh) 20%);
+    --wh30: color-mix(in srgb, transparent,var(--wh) 30%);
+    --wh40: color-mix(in srgb, transparent,var(--wh) 40%);
+    --wh50: color-mix(in srgb, transparent,var(--wh) 50%);
+    --wh60: color-mix(in srgb, transparent,var(--wh) 60%);
+    --wh70: color-mix(in srgb, transparent,var(--wh) 70%);
+    --wh80: color-mix(in srgb, transparent,var(--wh) 80%);
+    --wh90: color-mix(in srgb, transparent,var(--wh) 90%);
+
+    // ******************
+        // --RE: #f05454;赤
+    // --PI: #f549f5;ピンク
+    // --BL: #4949f5;青
+    // --SK: #49f5f5;空色
+    // --GR: #49f549;緑
+    // --YE: #f5f549;黄色
+    // --OR: #f59f49;オレンジ
+    // --grad90: linear-gradient(135deg,var(--BL90) 25%,var(--PI90), var(--OR90) ,var(--RE90) 75%);
+    // --grad00: linear-gradient(135deg,var(--BL) 25%,var(--PI), var(--OR) ,var(--RE) 75%);
+    // --red: #f05454;
+    // --pink: #f5ebeb;
+    // --blue: #4949f5;
+    // --sky: #49f5f5;
+    // --gree:#49f549;
+    // --yell:#f5f549;
+    // --oran:#f59f49;
+
+    --beige:#faedd4;
+    // --yel: #eeba02;
+    --ml:#f4eceb;
+    --al:#e5fdff;
+    --cc:#ccc;
+    --dd:#ddd;
+    --ee:#eee;
+    --ff:#fff;
+    --f2:#f3ede1;
+    --c6:#c6c6c6;
+    --9b:#9b9b9b;
+    // --wood: url(/images/home/wood.jpg) no-repeat center/cover;
+    // --wood1: url(/images/home/wood.jpg) no-repeat center/cover;
+    // --wood2: url(/images/home/wood2.jpg) no-repeat center/cover;
+
+}
+:root{//ブロックbl パディング内サイズin~ 画面幅マイナス--base=contout
+    --bl025:calc(var(--bl)/4);
+    --bl03:calc(var(--bl)/3);
+    --bl05:calc(var(--bl)/2);
+    --bl06:calc(var(--bl)/3*2);
+    --bl075:calc(var(--bl)/4*3);
+    --Nbl15:calc(var(--bl)*-1.5);
+    --Nbl05:calc(var(--bl)*-0.5);
+    --Nbl075:calc(var(--bl)*-0.75);
+    --Nbl2:calc(var(--bl)*-2.0);
+    --Nbl:calc(var(--bl)*-1.0);
+    --Nbl1:calc(var(--bl)*-1.0);
+    --bl:calc(var(--bl)*1.0);
+    --bl1:calc(var(--bl)*1.0);
+    --bl15:calc(var(--bl)*1.5);
+    --bl2 :calc(var(--bl)*2.0);
+    --bl25:calc(var(--bl)*2.5);
+    --bl3 :calc(var(--bl)*3.0);
+    --incont:calc(50vw - clamp(0px,50vw - var(--pad,20px), (var(--base) / 2) ));
+    --in1800:calc(50vw - clamp(0px,50vw - var(--pad,20px), 900px ));
+    --in1740:calc(50vw - clamp(0px,50vw - var(--pad,20px), 870px ));
+    --in1728:calc(50vw - clamp(0px,50vw - var(--pad,20px), 864px ));
+    --in1680:calc(50vw - clamp(0px,50vw - var(--pad,20px), 840px ));
+    --in1620:calc(50vw - clamp(0px,50vw - var(--pad,20px), 810px ));
+    --in1560:calc(50vw - clamp(0px,50vw - var(--pad,20px), 780px ));
+    --in1536:calc(50vw - clamp(0px,50vw - var(--pad,20px), 768px ));
+    --in1500:calc(50vw - clamp(0px,50vw - var(--pad,20px), 750px ));
+    --in1440:calc(50vw - clamp(0px,50vw - var(--pad,20px), 720px ));
+    --in1380:calc(50vw - clamp(0px,50vw - var(--pad,20px), 690px ));
+    --in1320:calc(50vw - clamp(0px,50vw - var(--pad,20px), 660px ));
+    --in1200:calc(50vw - clamp(0px,50vw - var(--pad,20px), 600px ));
+    --in1080:calc(50vw - clamp(0px,50vw - var(--pad,20px), 540px ));
+    --in1000:calc(50vw - clamp(0px,50vw - var(--pad,20px), 500px ));
+    --in960: calc(50vw - clamp(0px,50vw - var(--pad,20px), 480px ));
+    --in800: calc(50vw - clamp(0px,50vw - var(--pad,20px), 400px ));
+    --in840: calc(50vw - clamp(0px,50vw - var(--pad,20px), 420px ));
+    --in720: calc(50vw - clamp(0px,50vw - var(--pad,20px), 360px ));
+    --in600: calc(50vw - clamp(0px,50vw - var(--pad,20px), 300px ));
+    --contout:calc(50% - 50vw );
+    --contoutsp:calc(100% - 100vw );
+    --barhalf:calc(var(--bar,0px) / 2);
+}
+// ***************breakpoints************
+@mixin bp960   {@media screen and (max-width: 960px)  {	@content;}}
+@mixin bp480   {@media screen and (max-width: 480px)  {	@content;}}
+
+// ****************%placeholder*********main!!
+
+%cont {
+    max-width: 100%;
+    width: var(--base);
+    margin-inline: auto;
+
+}
+%bg100Rin,.bg100Rin,.contoutR {
+    margin-inline: 0 var(--contout)!important;
+    max-width: unset;
+}
+%bg100Lin,.bg100Lin,.contoutL {
+    margin-inline: var(--contout) 0!important;
+    max-width: unset;
+}
+%bg100in ,.bg100in{
+    margin-inline: var(--contout)!important;
+    max-width: unset;
+    padding-inline: var(--incont);
+}
+%bg100,.bg100 {
+    margin-inline: var(--contout)!important;
+    max-width: unset;
+}
+%wrapper,.wrapper {
+    padding-block: var(--Wpdb);
+    background-size: cover;
+}
+%wrapper100,.wrapper100 {
+    margin-inline: var(--contout)!important;
+    max-width: unset;
+    padding-block: var(--Wpdb);
+    background-size: cover;
+
+}
+%wrapper100in ,.wrapper100in{
+    margin-inline: var(--contout)!important;
+    max-width: unset;
+    padding-inline: var(--incont);
+    padding-block: var(--Wpdb);
+    background-size: cover;
+
+}
+%r-grow{
+    background-image: linear-gradient(currentColor,currentColor);
+    transition: background .4s ease;
+    background-repeat: no-repeat;
+    background-position-y: 100%;
+    background-position-x: -103%;
+    background-size: 200% 2px;
+    &:hover{
+        background-position-x: 0%;
+        animation: rightgrow .4s ease;
+    }
+    @keyframes rightgrow {
+        0% {
+            background-position-x: 203%;
+        }
+        100% {
+            background-position-x: 100%;
+        }
+    }
+}
+%bfin{
+    position: relative;
+    &::before{
+        content: "bf";display: inline-block;
+        background-color: #777;z-index: 1;
+        font-weight: 900;font-family: var(--fa);
+    }
+}
+%afin{
+    position: relative;
+    &::after{
+        content: "af";display: inline-block;
+        background-color: #777;z-index: 1;
+        font-weight: 900;font-family: var(--fa);
+    }
+}
+%bf{
+    position: relative;z-index: 1;
+    &::before{
+        content: "";display: block;position: absolute;
+        // top: 0;left: 0;
+        width: 100%;height: 100%;
+        // background-color: #777;z-index: 1;
+    }
+}
+%af{
+    position: relative;z-index: 1;
+    &::after{
+        content: "";display: block;position: absolute;
+        // top: 0;left: 0;
+        width: 100%;height: 100%;
+        // background-color: #777;z-index: 1;
+    }
+}
+:root{//font size
+    --f12:clamp(10px, 1.2vw, 12px); 
+    --f14:clamp(12px, 1.3vw, 14px); 
+    --f15:clamp(14px, 1.4vw, 15px); 
+    --f16:clamp(14px, 1.4vw, 16px); 
+    --f18:clamp(14px, 1.6vw, 18px); 
+    --f20:clamp(14px, 1.8vw, 20px); 
+    --f22:clamp(16px, 2vw, 22px); 
+    --f24:clamp(16px, 2.4vw, 24px); 
+    --f26:clamp(18px, 2.4vw, 26px); 
+    --f28:clamp(20px, 2.4vw, 28px); 
+    --f30:clamp(20px, 2.4vw, 30px); 
+    --f32:clamp(20px, 3.2vw, 32px); 
+    --f34:clamp(20px, 3.4vw, 34px); 
+    --f36:clamp(24px, 3.6vw, 36px); 
+    --f40:clamp(28px, 4vw, 40px); 
+    --f44:clamp(32px, 4vw, 44px); 
+    --f48:clamp(32px, 5vw, 48px); 
+    --f52:clamp(40px, 5vw, 52px); 
+    --f60:clamp(40px,6vw,60px);
+    --f64:clamp(48px,6vw,64px);
+    --f68:clamp(48px,6vw,68px);
+    --f72:clamp(48px,7vw,72px);
+    --f96:clamp(48px,9vmin,96px);
+    --f160:clamp(64px,16vw,160px);
+}
+// @font-face {
+//     font-family: 'KyokashoN-B';
+//     src: url("/css/UDDigiKyokashoN-B.ttc");
+// }
+// @font-face {
+//   font-family: 'FontAwesome';
+//   src: url('../fonts/fontawesome-webfont.eot?v=4.3.0');
+//   src: url('../fonts/fontawesome-webfont.eot?#iefix&v=4.3.0') format('embedded-opentype')
+//   ,url('../fonts/fontawesome-webfont.woff2?v=4.3.0') format('woff2')
+//   ,url('../fonts/fontawesome-webfont.woff?v=4.3.0') format('woff')
+//   ,url('../fonts/fontawesome-webfont.ttf?v=4.3.0') format('truetype')
+//   ,url('../fonts/fontawesome-webfont.svg?v=4.3.0#fontawesomeregular') format('svg');
+// }
+
+// ****************%placeholder*********sub
+%r-grow-u{
+    background: linear-gradient(var(--tx), var(--tx));
+    transition:  1s ease;
+    background-repeat: no-repeat;
+    background-size: 200% 2px;
+    background-position-y: 100%;
+    background-position-x: 0% ;
+    animation: rightgrow .8s ease;
+    @keyframes rightgrow {
+        0% {
+            background-position-x: 203% ;
+        }
+        100% {
+            background-position-x: 100% ;
+        }
+    }
+    &.hide{
+        background-position-x: 203%;
+        color: var(--txtr);
+        b,em{
+            color: var(--mctr);
+        }
+        
+    }
+}
+%nowrap{
+    // width: fit-content;
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+%lineClamp{
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    line-clamp: var(--lineClamp);
+    -webkit-line-clamp: var(--lineClamp);
+    overflow: hidden;
+}
+// %btn-shadow{
+//     --bsW:.5vmin;
+//     --btnSh:var(--bsW) var(--bsW) var(--tx);
+//     will-change: scale;
+//     transform-origin: 100% 100%;
+//     &:hover{
+//         --bsW: .75vmin;
+//         scale: 1.02;
+//     }
+// }
+// %light-poyon{
+//     --c:var(--mc);
+//     @extend %bf;
+//     &:before{
+//         background-color: unset;z-index: -1;
+//         background: radial-gradient(circle at center,var(--c) 0%,var(--c) 75%, transparent );
+//         opacity: 0;
+//         transition: .6s;
+//     }
+//     &:hover{
+//         img{
+//            animation: poyonK .6s;
+//         }
+//         &:before{
+//             opacity: 1;
+//         }
+//     }
+// }
+
+// %jsclamp{
+//     overflow: hidden;
+//     position: relative;
+//     &::after{
+//         content: "…";
+//         display: block;
+//         width: 4em;
+//         text-align: right;
+//         font-size: 14px;
+//         font-weight: bold;
+//         // background: linear-gradient(to right,#fff7,#fff 40%);
+//         position: absolute;
+//         right: 0em;
+//         bottom: .0;
+//         padding: 0 0em;
+//     }
+// }
+// ************animation****
+// @keyframes rotate {
+//     0% {
+//       transform: rotate(0);
+//     }
+//     100% {
+//       transform: rotate(360deg);
+//     }
+//   }
+// @keyframes listslide { 
+//     0% {
+//         // animation-timing-function: ease-in;
+//         transform: scale(1);
+//         opacity: 0;z-index: -1;      
+//     }
+//     7% {opacity: 1;z-index: 1;}
+//     16% {opacity: 1;z-index: 1;}
+//     50% {
+//         // animation-timing-function: ease-out;
+//         transform: scale(1.1);
+//         opacity: 1;z-index: 1;
+//     }
+//     57% {opacity: 1;z-index: -1;}
+//     67% {opacity: 0;z-index: -1;}
+//     74%{transform: scale(1.2);}
+//     100% { opacity: 0;z-index: -1; }
+// }
+// @keyframes slidescale { 
+//     0% {        transform: scale(1);    }
+//     100%{transform: scale(1.10);}
+// }
+// @keyframes slowtrans { 
+//     0% {        translate: 0 0;    }
+//     100%{translate: calc(-1 * (50vw - clamp(0px,50vw,720px)));}
+// }
+// @keyframes slowscale { 
+//     0% {scale: .0 1;transform-origin: left;   }
+//     50% {scale: 1 1;transform-origin: left;   }
+//     50.1% {scale: 1 1;transform-origin: right;   }
+//     100%{scale: .0 1;transform-origin: right; }
+// }
+// @keyframes slowscale2 { 
+//     0% {scale: .5 1;transform-origin: left;   }
+//     25% {scale: 1 1;transform-origin: left;   }
+//     25.1% {scale: 1 1;transform-origin: right;   }
+//     50%{scale: .5 1;transform-origin: right; }
+//     75%{scale: .0 1;transform-origin: right; }
+//     75.1%{scale: .0 1;transform-origin: left; }
+//     100% {scale: .5 1;transform-origin: left;   }
+// }
+// @keyframes slowpos { 
+//     0% {background-position-x: 50%;  }
+//     // 50% {scale: 1 1;transform-origin: left;   }
+//     // 50.1% {scale: 1 1;transform-origin: right;   }
+//     75%{background-position-x: -100%;  }
+//     75.1%{background-position-x: 100%;  }
+//     100%{background-position-x: 50%;  }
+// }
+// @keyframes poyooon {
+// 0%   { transform: scale(1.0, 1.0) translate(0%, 0%); }
+// 10%  { transform: scale(1.1, 0.9) translate(0%, 5%); }
+// 40%  { transform: scale(1.2, 0.8) translate(0%, 15%); }
+// 50%  { transform: scale(1.0, 1.0) translate(0%, 0%); }
+// 60%  { transform: scale(0.9, 1.2) translate(0%, -100%); }
+// 75%  { transform: scale(0.9, 1.2) translate(0%, -20%); }
+// 85%  { transform: scale(1.2, 0.8) translate(0%, 15%); }
+// 100% { transform: scale(1.0, 1.0) translate(0%, 0%); }
+// }
+// @keyframes poyonK {//.6s
+//     0% {transform: scale(1, 1) ;}
+//     20% {transform: scale(1.04, 0.96) ;}
+//     40% {transform: scale(1.08, 0.92) ;}
+//     50% {transform: scale(1, 1) ;}
+//     60% {transform: scale(0.96, 1.08) ;}
+//     70% {transform: scale(1, 1.08) ;}
+//     80% {transform: scale(1.08, 0.92) ;}
+//     100% {transform: scale(1, 1) ;}
+//   }
+//   @keyframes poyonC {//.6s
+//     0%  {transform: scale(1, 1) ;}
+//     5%  {transform: scale(1.04, 0.96) ;}
+//     10% {transform: scale(1.08, 0.92) ;}
+//     20% {transform: scale(1, 1) ;}
+//     24% {transform: scale(0.96, 1.08) ;}
+//     28% {transform: scale(1, 1.08) ;}
+//     32% {transform: scale(1.08, 0.92) ;}
+//     36% {transform: scale(1, 1) ;}
+//     100% {transform: scale(1, 1) ;}
+//   }
+// @keyframes poyonK-s {//.6s
+//     0% {transform: scale(1, 1) ;}
+//     20% {transform: scale(1.02, 0.99) ;}
+//     40% {transform: scale(1.04, 0.98) ;}
+//     50% {transform: scale(1, 1) ;}
+//     60% {transform: scale(0.98, 1.02) ;}
+//     70% {transform: scale(1, 1.01) ;}
+//     80% {transform: scale(1.04, 0.98) ;}
+//     100% {transform: scale(1, 1) ;}
+//   }
+// @keyframes poyonR {
+//     0% {
+//       transform: scale(1, 1) translate(0%, 0%);
+//     }
+//     20% {
+//       transform: scale(1.04, 0.96) translate(0%, 1%);
+//     }
+//     40% {
+//       transform: scale(1.08, 0.92) translate(0%, 3%);
+//     }
+//     50% {
+//       transform: scale(1, 1) translate(0%, 0%);
+//     }
+//     60% {
+//       transform: scale(0.96, 1.08) translate(0%, -10%);
+//     }
+//     70% {
+//       transform: scale(1, 1.08) translate(0%, -4%);
+//     }
+//     80% {
+//       transform: scale(1.08, 0.92) translate(0%, 3%);
+//     }
+//     100% {
+//       transform: scale(1, 1) translate(0%, 0%);
+//     }
+//   }
+// @keyframes poyooon2 {
+// 0%   { transform: scale(1.0, 1.0) }
+// 2%  { transform: scale(1.05, 0.95) }
+// 10%  { transform: scale(1.1, 0.9)  }
+// 12%  { transform: scale(1.0, 1.0) }
+// 15%  { transform: scale(0.95, 1.1) }
+// 18%  { transform: scale(0.95, 1.1)  }
+// 21%  { transform: scale(1.1, 0.9)  }
+// 25% { transform: scale(1.0, 1.0) }
+// 28%  { transform: scale(0.98, 1.02) }
+// 32%  { transform: scale(0.98, 1.02)  }
+// 36%  { transform: scale(1.02, 0.97)  }
+// 40% { transform: scale(1.0, 1.0) }
+// }
+//     // animation: pururun 1.2s linear 0.2s 1;
+// @keyframes pururun {
+//   0%   { transform: scale(1.0, 1.0) translate(0%, 0%); }
+//   10%  { transform: scale(1.0, 1.0) translate(10%, 0%) skew(-10deg, 0deg); }
+//   60%  { transform: scale(1.0, 1.0) translate(20%, 0%) skew(-20deg, 0deg); }
+//   70%  { transform: scale(1.0, 1.0) translate(-15%, 0%) skew(15deg, 0deg); }
+//   80%  { transform: scale(1.0, 1.0) translate(15%, 0%) skew(-15deg, 0deg); }
+//   80%  { transform: scale(1.0, 1.0) translate(5%, 0%) skew(-5deg, 0deg); }
+//   90%  { transform: scale(1.0, 1.0) translate(-5%, 0%) skew(5deg, 0deg); }
+//   100% { transform: scale(1.0, 1.0) translate(0%, 0%); }
+// }
+//     // animation: purun 0.8s linear 0s 1;
+// @keyframes purun {
+// 0%   { transform: scale(1.0, 1.0) translate(0%, 0%); }
+// 15%  { transform: scale(0.9, 0.9) translate(0%, 5%); }
+// 30%  { transform: scale(1.3, 0.8) translate(0%, 10%); }
+// 50%  { transform: scale(0.8, 1.3) translate(0%, -10%); }
+// 70%  { transform: scale(1.1, 0.9) translate(0%, 5%); }
+// 100% { transform: scale(1.0, 1.0) translate(0%, 0%); }
+// }
+// // animation: puyon 1.0s linear 0s 1;
+// @keyframes puyon {
+// 0%   { transform: scale(1.0, 1.0) translate(0%, 0%); }
+// 40%  { transform: scale(0.95, 1.2) translate(0%, -10%); }
+// 50%  { transform: scale(1.1, 0.9) translate(0%, 5%); }
+// 60%  { transform: scale(0.95, 1.05) translate(0%, -3%); }
+// 70%  { transform: scale(1.05, 0.95) translate(0%, 3%); }
+// 80%  { transform: scale(1.0, 1.0) translate(0%, 0%); }
+// 100% { transform: scale(1.0, 1.0) translate(0%, 0%); }
+// }
+// // animation-timing-function: steps(6, start);
+// @keyframes step {
+//     0%{        translate: 100%;    }
+//     100%{        translate: 0%;    }
+// }
+// @keyframes UpAnime{
+//     from {      opacity: 1;      transform: translateY(0);    }
+//     to {      opacity: 0;      transform: translateY(-50%);    }
+//   }
+// @keyframes DownAnime{
+//     from {        opacity: 0;      transform: translateY(-50%);    }
+//     to {        opacity: 1;      transform: translateY(0);    }
+// }
+// .UpMove{
+//     animation: UpAnime 0.5s forwards;
+// }
+// .DownMove{
+//     animation: DownAnime 0.5s forwards ;
+// }
+// @keyframes hideop {
+//     0% {      opacity: 1;    }
+//     100% {      opacity: 0;      display:none;    }
+// }
+
+// @keyframes fadeOut {
+//     0% {opacity: 1;}
+//     100% {opacity: 0;}
+//     // 50% {opacity: 0;}
+// }
+// @keyframes fadeup {
+//     0% {opacity: 0;translate: 0% 100%;}
+//     100% {opacity: 1;translate: 0% 0;}
+// }
+// @keyframes faderight {
+//     0% {opacity: 0;translate: 5vmin 0;}
+//     100% {opacity: 1;translate: 0% 0;}
+// }
+// @keyframes fadeleft02 {
+//     0% {opacity: 0;translate: -5vmin 0;}
+//     100% {opacity: 1;translate: 0% 0;}
+// }
+// "M PLUS Rounded 1c"ジャギー対策
+// :where(section,form)>*, :where(.h_inner>*,.nav,.f>*){transform: rotate(0.05deg);@include sp{transform: unset;}}
