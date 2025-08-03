@@ -1,9 +1,17 @@
+// 権限レベルの型定義
+export type UserRole = "view" | "edit";
+
+export interface AuthUser {
+  role: UserRole;
+  authenticated: boolean;
+}
+
 export interface Header {
-	html: string;
+  html: string;
 }
 
 export interface Footer {
-	html: string;
+  html: string;
 }
 
 export interface BaseSection {

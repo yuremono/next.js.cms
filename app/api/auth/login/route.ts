@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { UserRole } from "@/types";
 
 const authConfig = require("@/config/auth.config.js");
 
@@ -7,20 +8,54 @@ export async function POST(request: NextRequest) {
   try {
     const { password } = await request.json();
 
-    // 環境変数からパスワードを取得（設定ファイルのデフォルト値使用）
-    const correctPassword =
-      process.env.CMS_PASSWORD || authConfig.defaultPassword;
+    // 権限レベル別のパスワード認証
+    let userRole: UserRole | null = null;
 
-    if (password === correctPassword) {
-      // セッションCookieを設定（設定ファイルの時間を使用）
-      const response = NextResponse.json({ success: true });
+    // 編集権限のパスワードチェック
+    const editPassword = process.env.CMS_PASSWORD_EDIT;
+    if (editPassword && password === editPassword) {
+      userRole = "edit";
+    }
+    // 閲覧権限のパスワードチェック
+    else if (
+      process.env.CMS_PASSWORD_VIEW &&
+      password === process.env.CMS_PASSWORD_VIEW
+    ) {
+      userRole = "view";
+    }
+    // 従来のパスワードとの互換性維持（edit権限として扱う）
+    else if (
+      password === (process.env.CMS_PASSWORD || authConfig.defaultPassword)
+    ) {
+      userRole = "edit";
+    }
 
-      // HTTPOnlyクッキーでセキュアに認証状態を保存
+    if (userRole) {
+      // セッションCookieを設定
+      const response = NextResponse.json({
+        success: true,
+        role: userRole,
+        message:
+          userRole === "edit"
+            ? "編集権限でログインしました"
+            : "閲覧権限でログインしました",
+      });
+
+      // 認証状態のクッキー
       response.cookies.set("cms-auth", "authenticated", {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
-        maxAge: authConfig.sessionDuration, // 設定ファイルから取得
+        maxAge: authConfig.sessionDuration,
+        path: "/",
+      });
+
+      // 権限レベルのクッキー
+      response.cookies.set("cms-role", userRole, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: authConfig.sessionDuration,
         path: "/",
       });
 

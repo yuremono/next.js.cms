@@ -8,7 +8,7 @@ import "../top.scss";
 // import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Footer, Header, Page, Section } from "@/types";
+import { Footer, Header, Page, Section, UserRole } from "@/types";
 import { HeaderEditor } from "@/components/sections/HeaderEditor";
 import { FooterEditor } from "@/components/sections/FooterEditor";
 // import SortableSections from "@/components/SortableSections";
@@ -127,6 +127,7 @@ export default function EditorPage() {
   // 認証状態
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
+  const [userRole, setUserRole] = useState<UserRole | null>(null);
 
   // Split-screen モード状態
   const [splitScreenMode, setSplitScreenMode] = useState(false);
@@ -391,12 +392,14 @@ export default function EditorPage() {
         clearTimeout(timeoutId);
 
         if (response.ok) {
-          const { authenticated } = await response.json();
-          console.log("✅ 認証チェック完了:", authenticated);
+          const { authenticated, role } = await response.json();
+          console.log("✅ 認証チェック完了:", authenticated, "権限:", role);
           setIsAuthenticated(authenticated);
+          setUserRole(role);
         } else {
           console.warn("⚠️ 認証API応答エラー:", response.status);
           setIsAuthenticated(false);
+          setUserRole(null);
         }
       } catch (error) {
         console.error("❌ 認証チェックエラー:", error);
@@ -805,6 +808,15 @@ export default function EditorPage() {
   };
 
   const savePage = async () => {
+    // 権限チェック
+    if (userRole === "view") {
+      toast.error("保存権限がありません", {
+        description: "このアカウントは閲覧専用のため、入力内容を保存できません",
+        duration: 5000,
+      });
+      return; // 保存をキャンセル
+    }
+
     // グループの整合性をチェック
     if (!validateGroups(page.sections)) {
       toast.error("グループの閉じタグがありません。順番を見直してください", {
@@ -852,10 +864,22 @@ export default function EditorPage() {
       });
     } catch (error) {
       console.error("保存エラー:", error);
-      toast.error("保存に失敗しました", {
+
+      // エラーレスポンスの詳細を確認
+      let errorMessage = "保存に失敗しました";
+      let errorDescription = "不明なエラーが発生しました";
+
+      if (error instanceof Error && error.message.includes("403")) {
+        errorMessage = "保存権限がありません";
+        errorDescription =
+          "このアカウントは閲覧専用のため、入力内容を保存できません";
+      } else if (error instanceof Error) {
+        errorDescription = error.message;
+      }
+
+      toast.error(errorMessage, {
         id: toastId,
-        description:
-          error instanceof Error ? error.message : "不明なエラーが発生しました",
+        description: errorDescription,
         duration: 5000,
       });
     } finally {
@@ -1109,7 +1133,10 @@ export default function EditorPage() {
   if (!isAuthenticated) {
     return (
       <PasswordAuth
-        onAuthenticated={() => setIsAuthenticated(true)}
+        onAuthenticated={(role) => {
+          setIsAuthenticated(true);
+          setUserRole(role || null);
+        }}
         title="ポートフォリオCMS - 企業様向け"
         subtitle="編集機能をご利用いただくため、パスワードを入力してください"
       />

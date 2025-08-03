@@ -7,9 +7,10 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Lock, Eye, EyeOff } from "lucide-react";
+import { UserRole } from "@/types";
 
 interface PasswordAuthProps {
-  onAuthenticated: () => void;
+  onAuthenticated: (role?: UserRole) => void;
   title?: string;
   subtitle?: string;
 }
@@ -32,9 +33,9 @@ export function PasswordAuth({
     try {
       const response = await fetch("/api/auth/check");
       if (response.ok) {
-        const { authenticated } = await response.json();
+        const { authenticated, role } = await response.json();
         if (authenticated) {
-          onAuthenticated();
+          onAuthenticated(role);
         }
       }
     } catch (error) {
@@ -62,8 +63,26 @@ export function PasswordAuth({
       });
 
       if (response.ok) {
-        toast.success("認証に成功しました");
-        onAuthenticated();
+        const result = await response.json();
+        const role = result.role;
+
+        // 権限レベルに応じたメッセージ表示
+        if (role === "view") {
+          toast.success("閲覧権限でログインしました", {
+            description:
+              "このアカウントは閲覧専用のため、入力内容を保存できません",
+            duration: 6000,
+          });
+        } else if (role === "edit") {
+          toast.success("編集権限でログインしました", {
+            description: "すべての機能をご利用いただけます",
+            duration: 4000,
+          });
+        } else {
+          toast.success("認証に成功しました");
+        }
+
+        onAuthenticated(role);
       } else {
         const error = await response.json();
         toast.error(error.message || "パスワードが正しくありません");
