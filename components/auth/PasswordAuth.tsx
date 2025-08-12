@@ -104,12 +104,12 @@ export function PasswordAuth({
             <Lock className="h-8 w-8 text-white" />
           </div>
           <h1 className="mb-2 text-2xl font-bold text-gray-900">{title}</h1>
-          <p className="text-sm text-gray-600">{subtitle}</p>
+          <p className="  text-gray-600">{subtitle}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-sm font-medium">
+            <Label htmlFor="password" className="  font-medium">
               アクセスパスワード
             </Label>
             <div className="relative">

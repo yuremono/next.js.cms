@@ -1,0 +1,112 @@
+:root {
+        --base: 1200px;
+        --head: 80px;
+        --sectionMT: 60px;
+        --titleAfter: 24px;
+        --sectionPY: 60px;
+        --spaceX: 5%;
+        --gap: 24px;
+      }
+      
+      main > * {
+        position: relative;
+        width: var(--base);
+        max-width: calc(100% - var(--spaceX) * 2);
+        margin-inline: auto;
+        + * {
+          margin-top: var(--sectionMT); 
+        } 
+      }   
+
+      .fullWidth {
+        width: 100%;
+        max-width: 100%;
+      }
+      .leftIncont{
+              left: var(--incont);
+      }
+      .container {
+        padding-inline: 0;
+        width: var(--base);
+        max-width: calc(100% - var(--spaceX) * 2);
+      } 
+      
+.mindMap{
+        aspect-ratio: 2/1;
+        font-size: 2rem;
+        >*{
+                font-weight: inherit;
+                display: inline-block; 
+                cursor: default;
+                transition: .4s;
+                line-height: 1;
+        }
+
+        >*:not(.mmStatic):hover{
+                font-weight: 200; 
+        }
+        >div{
+                font-weight: inherit;
+                cursor: default;
+                text-align: left;
+                line-height: 2;
+        }
+} 
+.mmStatic{
+        font-weight: 200;
+        color: var(--gr); 
+}
+.mmPin{
+        position: absolute;
+        font-weight: 200;
+        line-height: 2;
+        font-family: "Zen kaku Gothic New", sans-serif;
+        color: var(--tx);
+        font-size: var(--h1FZ);
+        background-color: var(--wh70);
+        z-index: 1;
+        padding: 1rem;
+}
+.about{
+        // display: flex;
+        // align-content: center;
+        &_tx{
+                line-height: 2.5;
+                width: calc(var(--base)*0.5 );
+                max-width: 50%;
+                // height: 100%;
+                align-content: center; 
+                right: var(--incont);
+                top: 50%;
+                translate: 0 -50%;
+        }
+}
+.knowledge{
+        &_tx{
+                width: calc(var(--base)*0.5 );
+                max-width: 50%;
+                left: var(--incont);
+                top: 0;
+        }
+        &_right{
+                left:unset;
+                right: var(--incont);
+                top:unset;
+                top: 50%;
+        }
+}
+//       .MainVisual {
+//          text-align: center; 
+//       }
+//       /* .ImgText {
+//                     margin-top: var(--sectionMT);
+//                   } */
+//       /* .Cards {
+//                     padding: var(--sectionPY) var(--sectionPX);
+//                     background-color: #f5f5f5;
+//                     margin-top: var(--sectionMT);
+//                   } */
+//       /* .Form {
+//                     margin-top: var(--sectionMT);
+//                   } */
+      

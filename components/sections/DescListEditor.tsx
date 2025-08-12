@@ -282,13 +282,13 @@ export function DescListEditor({ section, onUpdate }: DescListEditorProps) {
           <div className="overflow-hidden rounded-sm border border-gray-200">
             {/* ヘッダー */}
             <div className="grid grid-cols-12 border-b border-gray-200  bg-muted ">
-              <div className="col-span-3 border-r border-gray-200 px-3 py-2 text-sm font-medium ">
+              <div className="col-span-3 border-r border-gray-200 px-3 py-2   font-medium ">
                 DT (項目)
               </div>
-              <div className="col-span-8 border-r border-gray-200 px-3 py-2 text-sm font-medium ">
+              <div className="col-span-8 border-r border-gray-200 px-3 py-2   font-medium ">
                 DD (説明)
               </div>
-              <div className="col-span-1 px-3 py-2 text-center text-sm font-medium ">
+              <div className="col-span-1 px-3 py-2 text-center   font-medium ">
                 削除
               </div>
             </div>

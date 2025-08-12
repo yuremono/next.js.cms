@@ -35,7 +35,7 @@ export function ColorField({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="flex-1 text-sm"
+          className="flex-1  "
         />
       </div>
     </div>

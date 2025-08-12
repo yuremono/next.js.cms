@@ -24,7 +24,7 @@ export default function NotFound() {
         <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
           <Link
             href="/"
-            className="hover:bg-primary/90 inline-flex h-10 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="hover:bg-primary/90 inline-flex h-10 items-center justify-center rounded-md bg-primary px-8   font-medium text-primary-foreground ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             role="button"
             aria-label="ホームページに戻る"
           >
@@ -32,7 +32,7 @@ export default function NotFound() {
           </Link>
           <Link
             href="/editor"
-            className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-8 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-8   font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             role="button"
             aria-label="エディターページに移動"
           >
@@ -40,7 +40,7 @@ export default function NotFound() {
           </Link>
         </div>
 
-        <div className="text-sm text-muted-foreground">
+        <div className="  text-muted-foreground">
           <p>
             問題が続く場合は、
             <Link

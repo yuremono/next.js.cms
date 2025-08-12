@@ -5,6 +5,7 @@ import { CardsEditor } from "@/components/sections/CardsEditor";
 import { FormEditor } from "@/components/sections/FormEditor";
 import { GroupEditor } from "@/components/sections/GroupEditor";
 import { DescListEditor } from "@/components/sections/DescListEditor";import { Alert } from "@/components/ui/alert";
+import { HtmlContentEditor } from "@/components/sections/HtmlContentEditor";
 
 interface SectionEditorRendererProps {
   section: Section;
@@ -57,7 +58,14 @@ export function SectionEditorRenderer({
         <div className="SectionEditorRenderer">
           <DescListEditor section={section} onUpdate={onUpdate} />
         </div>
-      );    case "group-start":
+      );
+    case "htmlContent":
+      return (
+        <div className="SectionEditorRenderer">
+          <HtmlContentEditor section={section} onUpdate={onUpdate} />
+        </div>
+      );
+    case "group-start":
       return (
         <div className="SectionEditorRenderer">
           <GroupEditor section={section} onUpdate={onUpdate} />

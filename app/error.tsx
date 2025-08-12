@@ -99,7 +99,7 @@ export default function Error({ error, reset }: ErrorProps) {
 
         {process.env.NODE_ENV === "development" && (
           <div className="bg-destructive/10 rounded-md p-4 text-left">
-            <h3 className="mb-2 text-sm font-medium text-destructive">
+            <h3 className="mb-2  font-medium text-destructive">
               開発者向け情報:
             </h3>
             <p className="break-all font-mono text-xs text-muted-foreground">
@@ -131,7 +131,7 @@ export default function Error({ error, reset }: ErrorProps) {
           </Button>
         </div>
 
-        <div className="text-sm text-muted-foreground">
+        <div className=" text-muted-foreground">
           <p>
             問題が続く場合は、
             <a

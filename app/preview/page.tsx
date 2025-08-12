@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Page } from "@/types";
 import { PageRenderer } from "@/components/PageRenderer";
+import "../globals.css"; // Tailwind CSSを確実に読み込み
 import "../top.scss";
 
 export default function PreviewPage() {
@@ -37,7 +38,7 @@ export default function PreviewPage() {
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-gray-900"></div>
-          <p className="mt-2 text-sm text-gray-600">プレビュー準備中...</p>
+          <p className="mt-2  text-gray-600">プレビュー準備中...</p>
         </div>
       </div>
     );

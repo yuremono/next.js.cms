@@ -88,7 +88,7 @@ const SortableCardItem = ({
           >
             <GripVertical className="h-4 w-4 flex-shrink-0" />
           </div>
-          <span className="text-sm">カード {index + 1}</span>
+          <span className=" ">カード {index + 1}</span>
         </div>
         <div className="flex items-center space-x-1">
           <Button
@@ -183,6 +183,27 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
       cards: updatedCards,
     });
     setActiveCardIndex(updatedCards.length - 1);
+  };
+
+  // カードを複製（選択中の次に挿入）
+  const duplicateCard = () => {
+    if (activeCardIndex === null || section.cards.length === 0) {
+      alert("複製するカードを選択してください。");
+      return;
+    }
+    if (section.cards.length >= 20) {
+      alert("カードは最大20個まで追加できます。");
+      return;
+    }
+
+    const source = section.cards[activeCardIndex];
+    const copy: CardType = { ...source };
+    const insertIndex = activeCardIndex + 1;
+    const updatedCards = [...section.cards];
+    updatedCards.splice(insertIndex, 0, copy);
+
+    onUpdate({ ...section, cards: updatedCards });
+    setActiveCardIndex(insertIndex);
   };
 
   // カードを削除
@@ -316,6 +337,22 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
                 <Plus className="mr-1 h-4 w-4" />
                 カードを追加
               </Button>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={duplicateCard}
+                disabled={
+                  section.cards.length === 0 || section.cards.length >= 20
+                }
+                title={
+                  section.cards.length >= 20
+                    ? "カードは最大20個まで追加できます"
+                    : undefined
+                }
+              >
+                <Plus className="mr-1 h-4 w-4" />
+                カードを複製
+              </Button>
             </div>
             {section.cards.length === 0 ? (
               <div className="rounded border border-dashed p-8 text-center">
@@ -338,7 +375,7 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
                 >
                   <div className="flex flex-col gap-4 md:flex-row ">
                     <ul
-                      className="space-y-2 md:w-32"
+                      className="space-y-2 md:w-36"
                       role="list"
                       aria-label="カード一覧"
                     >

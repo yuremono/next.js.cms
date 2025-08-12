@@ -12,6 +12,7 @@ import {
   ChevronDown,
   ChevronRight,
   FileText,
+  SquareCode,
 } from "lucide-react";
 import {
   DndContext,
@@ -37,22 +38,17 @@ interface SortableSectionsProps {
   sections: Section[];
   activeSectionIndex: number | null;
   onSectionClick: (index: number) => void;
-  onSectionMove: (fromIndex: number, toIndex: number) => void;
+  onSectionMove?: (fromIndex: number, toIndex: number) => void;
   onSectionDelete: (index: number) => void;
   onSectionsChange?: (sections: Section[]) => void;
-  onGroupToggle?: (groupId: string) => void;
-  expandedGroups?: Set<string>;
 }
 
 export default function SortableSections({
   sections,
   activeSectionIndex,
   onSectionClick,
-  onSectionMove,
   onSectionDelete,
   onSectionsChange,
-  onGroupToggle,
-  expandedGroups,
 }: SortableSectionsProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(
@@ -90,15 +86,11 @@ export default function SortableSections({
   // 終了タグ専用のコンポーネント
   const GroupEndBar = ({
     section,
-    index,
     isActive,
-    onSelect,
     groupStartId,
   }: {
     section: Section;
-    index: number;
     isActive: boolean;
-    onSelect: () => void;
     groupStartId: string;
   }) => {
     const { setNodeRef, transform, transition, isDragging } = useSortable({
@@ -135,7 +127,7 @@ export default function SortableSections({
   // ドラッグ可能なアイテムのコンポーネント
   const SortableItem = ({
     section,
-    index,
+    index: _idx,
     isActive,
     onSelect,
     onDelete,
@@ -162,6 +154,8 @@ export default function SortableSections({
       text: string;
     };
   }) => {
+    // 明示的に未使用をマーク
+    void _idx;
     // セクションタイプに応じて表示名を取得
     const getSectionTitle = (section: Section) => {
       // セクション名が設定されている場合はそれを表示
@@ -181,10 +175,12 @@ export default function SortableSections({
           return "お問い合わせフォーム";
         case "descList":
           return "DLリスト";
+        case "htmlContent":
+          return section.name || "HTMLコンテンツ";
         case "group-start":
-          return `<article> ${section.name || "グループ開始"}`;
+          return `<グループ開始> ${section.name || "グループ開始"}`;
         case "group-end":
-          return "</article>";
+          return "</グループ終了>";
         default:
           return "不明なセクション";
       }
@@ -207,6 +203,8 @@ export default function SortableSections({
           return <Mail className=" mr-1 w-4 flex-shrink-0 text-purple-500" />;
         case "descList":
           return <FileText className="mr-1 w-4 flex-shrink-0 text-cyan-500" />;
+        case "htmlContent":
+          return <SquareCode className="mr-1 w-4 flex-shrink-0 text-slate-600" />;
         case "group-start":
           return (
             <button
@@ -284,7 +282,7 @@ export default function SortableSections({
               <GripVertical className="h-4 w-4 flex-shrink-0" />
             </div>
             {getSectionIcon(section)}
-            <span className="text-sm">{getSectionTitle(section)}</span>
+            <span className=" ">{getSectionTitle(section)}</span>
           </div>
           <div className="flex items-center space-x-1">
             {/* グループ開始タグで空の場合のみ削除ボタンを表示 */}
@@ -546,9 +544,7 @@ export default function SortableSections({
             <li key={endSection.id}>
               <GroupEndBar
                 section={endSection}
-                index={groupEndIndex}
                 isActive={isEndActive}
-                onSelect={() => onSectionClick(groupEndIndex)}
                 groupStartId={section.id}
               />
             </li>

@@ -22,7 +22,7 @@ export function VariableField({
 }: VariableFieldProps) {
   return (
     <div className={`space-y-2 ${className}`}>
-      <Label className="w-full text-sm" htmlFor={id}>
+      <Label className="w-full  " htmlFor={id}>
         {label}
       </Label>
       <Input

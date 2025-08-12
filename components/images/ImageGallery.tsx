@@ -146,12 +146,12 @@ export function ImageGallery() {
                   />
                 </Label>
                 {isUploading && (
-                  <span className="text-sm">アップロード中...</span>
+                  <span className=" ">アップロード中...</span>
                 )}
               </div>
             </div>
 
-            {error && <p className="text-sm text-red-500">{error}</p>}
+            {error && <p className="  text-red-500">{error}</p>}
 
             {/* 画像ギャラリー */}
             <div className="mt-6">

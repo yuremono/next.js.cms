@@ -1,0 +1,34 @@
+:root {
+  --base: 1200px;
+  --head: 80px;
+  --sectionMT: 60px;
+  --titleAfter: 24px;
+  --sectionPY: 60px;
+  --spaceX: 5%;
+  --gap: 24px;
+}
+
+main > * {
+  position: relative;
+  width: var(--base);
+  max-width: calc(100% - var(--spaceX) * 2);
+  margin-inline: auto;
+}
+main > * + * {
+  margin-top: var(--sectionMT);
+}
+
+.fullWidth {
+  width: 100%;
+  max-width: 100%;
+}
+
+.leftIncont {
+  left: var(--incont);
+}
+
+.container {
+  padding-inline: 0;
+  width: var(--base);
+  max-width: calc(100% - var(--spaceX) * 2);
+}

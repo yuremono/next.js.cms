@@ -5,7 +5,8 @@ import {
   Mail,
   Copy,
   Folder,
-  FileText,
+        FileText,
+  SquareCode,
 } from "lucide-react";
 
 interface SectionSelectorProps {
@@ -45,6 +46,12 @@ export function SectionSelector({ onSelect }: SectionSelectorProps) {
       icon: <FileText className="h-10 w-10 text-cyan-500" />,
     },
     {
+      type: "htmlContent",
+      title: "HTMLコンテンツ",
+      description: "自由入力のHTMLを挿入するセクション",
+      icon: <SquareCode className="h-10 w-10 text-slate-600" />,
+    },
+    {
       type: "group",
       title: "グループ",
       description: "セクションをグループ化するためのコンテナ",
@@ -67,7 +74,7 @@ export function SectionSelector({ onSelect }: SectionSelectorProps) {
             <div className="flex flex-col items-center p-4 text-center">
               {section.icon}
               <h4 className="mb-1 mt-3 font-medium">{section.title}</h4>
-              <p className="text-sm">{section.description}</p>
+              <p className="">{section.description}</p>
             </div>
           </Card>
         ))}

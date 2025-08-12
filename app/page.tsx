@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Page } from "@/types";
 
+// Tailwind CSSを確実に読み込むため、globals.cssもインポート
+import "./globals.css";
 import "./top.scss";
 
 // デフォルトページデータ（APIから取得できない場合のフォールバック）

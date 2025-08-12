@@ -298,7 +298,7 @@ export function SimpleHtmlEditor({
         const newText = beforeCursor.slice(0, -1) + afterCursor;
         const newValue = autoConvertLineBreaks
           ? convertLineBreaksToHtml(newText)
-          : newValue;
+          : newText;
         onChange(newValue);
 
         setCursorPosition(textarea, start - 1, start - 1);
@@ -657,7 +657,7 @@ export function SimpleHtmlEditor({
             style={{
               minHeight: "6rem",
               backgroundColor: "#fafafa",
-              fontSize: "14px",
+              fontSize: "16px",
               lineHeight: "1.5",
             }}
           />
@@ -670,10 +670,14 @@ export function SimpleHtmlEditor({
             className="flex-1 resize-none rounded-b-md border-0 focus:ring-0"
             style={{
               minHeight: "6rem",
-              fontSize: "14px",
+              fontSize: "16px",
               lineHeight: "1.5",
             }}
             onKeyDown={handleKeyDown}
+            spellCheck={false}
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
           />
         )}
       </div>

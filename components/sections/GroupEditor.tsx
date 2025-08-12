@@ -85,7 +85,7 @@ export function GroupEditor({ section, onUpdate }: GroupEditorProps) {
               onChange={handleScopeStylesChange}
               placeholder="例: --gap: 2rem; --bg-color: #f0f0f0; --text-color: #333;"
               rows={4}
-              className="mt-2 font-mono text-sm"
+              className="mt-2 font-mono  "
             />
           </div>
           <BackgroundImageUpload

@@ -108,7 +108,7 @@ export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
       variables.sectionSpacing = extractValue("sectionMT");
       variables.titleMarginBottom = extractValue("titleAfter");
       variables.sectionPaddingY = extractValue("sectionPY");
-      variables.sectionPaddingX = extractValue("mainBezel");
+      variables.sectionPaddingX = extractValue("spaceX");
       variables.cardGap = extractValue("gap");
       variables.primaryColor = extractValue("mc");
       variables.secondaryColor = extractValue("sc");
@@ -153,6 +153,22 @@ export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
     return `:root {\n${variablesList.join("\n")}\n}\n\n`;
   };
 
+  // 変数CSSとカスタムCSSを統合
+  const mergeVariablesWithCustomCSS = (
+    variablesCSS: string,
+    customCSS: string
+  ) => {
+    if (!variablesCSS) return customCSS;
+
+    // 既存のカスタムCSSから:rootブロックを除去
+    const cssWithoutVariables = customCSS
+      .replace(/:root\s*\{[^}]*\}\s*/g, "")
+      .trim();
+
+    // 変数CSSと残りのCSSを結合
+    return variablesCSS + (cssWithoutVariables ? cssWithoutVariables : "");
+  };
+
   // 変数CSSファイル更新（デバウンス）
   const debouncedUpdateVariablesFile = useCallback(
     (variables: CSSVariables) => {
@@ -192,6 +208,12 @@ export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
 
     // 変数をpublic/custom.cssに保存（カスタムCSSとは独立）
     debouncedUpdateVariablesFile(newVariables);
+
+    // 現在のカスタムCSSと変数CSSを統合してカスタムCSS編集エリアも更新
+    const variablesCSS = generateVariablesCSS(newVariables);
+    const updatedCSS = mergeVariablesWithCustomCSS(variablesCSS, css);
+    setCSS(updatedCSS);
+    onUpdate(updatedCSS);
   };
 
   return (
@@ -229,7 +251,7 @@ export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
             >
               {/* レイアウト関連 */}
               <div className="space-y-3">
-                <h5 className="text-sm font-medium text-muted-foreground">
+                <h5 className="  font-medium text-muted-foreground">
                   レイアウト設定
                 </h5>
                 <div className="grid grid-cols-2 gap-4  lg:grid-cols-3">
@@ -299,7 +321,7 @@ export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
 
               {/* カラー関連 */}
               <div className="space-y-3">
-                <h5 className="text-sm font-medium text-muted-foreground">
+                <h5 className="  font-medium text-muted-foreground">
                   カラー設定
                 </h5>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -371,7 +393,7 @@ export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
 
             <div className="mt-4">
               <h4 className="mb-2 font-medium">使用方法</h4>
-              <div className="space-y-2 text-sm ">
+              <div className="space-y-2   ">
                 <p>
                   上記の変数設定で基本的なレイアウトとカラーを調整できます。設定した値は自動的に保存・表示されます。
                 </p>

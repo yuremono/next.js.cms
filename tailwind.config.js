@@ -18,6 +18,22 @@ module.exports = {
     "mt-[var(--sectionMT)]",
     "mb-[var(--titleAfter)]",
     "gap-[var(--gap)]",
+    // よく使うカスタム値を事前に生成
+    "text-[20vmin]",
+    "text-[16vmin]",
+    "text-[12vmin]",
+    "opacity-[.67]",
+    "opacity-[0.5]",
+    "opacity-[0.25]",
+    "w-[200px]",
+    "w-[300px]",
+    "bg-[#ff0000]",
+    "bg-[#00ff00]",
+    "bg-[#0000ff]",
+    "h-[calc(100vh-2rem)]",
+    "text-[12px]",
+    "text-[16px]",
+    "text-[24px]",
   ],
   theme: {
     container: {
@@ -86,6 +102,14 @@ module.exports = {
         "accordion-up": "accordion-up 0.2s ease-out",
       },
     },
+  },
+  // カスタム値の使用を有効化
+  experimental: {
+    arbitraryValues: true,
+  },
+  // 開発時のパフォーマンス向上
+  future: {
+    hoverOnlyWhenSupported: true,
   },
   plugins: [],
 };

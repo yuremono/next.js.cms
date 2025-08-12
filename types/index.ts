@@ -75,6 +75,14 @@ export interface DescListSection extends BaseSection {
   dtWidth?: string; // DT幅設定（デフォルト: "20%"）
 }
 
+// HTMLコンテンツ セクション
+export interface HtmlContentSection extends BaseSection {
+  layout: "htmlContent";
+  name?: string;
+  html: string;
+  scopeStyles?: string; // CSS変数スタイル（例: "--gap: 2rem; --bg-color: #f0f0f0;"）
+}
+
 // グループ開始タグ
 export interface GroupStartSection extends BaseSection {
   layout: "group-start";
@@ -92,6 +100,7 @@ export type Section =
   | ImgTextSection
   | CardsSection
   | FormSection
+  | HtmlContentSection
   | GroupStartSection
   | GroupEndSection
   | DescListSection;
@@ -118,6 +127,7 @@ export function isSection(obj: unknown): obj is Section {
       section.layout === "imgText" ||
       section.layout === "cards" ||
       section.layout === "form" ||
+      section.layout === "htmlContent" ||
       section.layout === "group-start" ||
       section.layout === "group-end" ||
       section.layout === "descList")

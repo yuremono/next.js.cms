@@ -1,4 +1,6 @@
 ﻿tailwind.config = {
+        corePlugins: { preflight: false },
+prefix: 'tw-',
   plugins: [
     function({ addUtilities }) {
       const newUtilities = {

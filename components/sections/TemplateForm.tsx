@@ -72,7 +72,7 @@ export function TemplateForm({
         <Label htmlFor="title">タイトル</Label>
         <Input id="title" {...register("title")} />
         {errors.title && (
-          <p className="text-sm text-red-500">{errors.title.message}</p>
+          <p className="  text-red-500">{errors.title.message}</p>
         )}
       </div>
 
@@ -80,7 +80,7 @@ export function TemplateForm({
         <Label htmlFor="slug">スラッグ</Label>
         <Input id="slug" {...register("slug")} />
         {errors.slug && (
-          <p className="text-sm text-red-500">{errors.slug.message}</p>
+          <p className="  text-red-500">{errors.slug.message}</p>
         )}
       </div>
 
@@ -88,7 +88,7 @@ export function TemplateForm({
         <Label htmlFor="description">説明</Label>
         <Textarea id="description" {...register("description")} />
         {errors.description && (
-          <p className="text-sm text-red-500">{errors.description.message}</p>
+          <p className="  text-red-500">{errors.description.message}</p>
         )}
       </div>
 
@@ -103,7 +103,7 @@ export function TemplateForm({
           }}
         />
         {errors.content && (
-          <p className="text-sm text-red-500">{errors.content.message}</p>
+          <p className="  text-red-500">{errors.content.message}</p>
         )}
       </div>
 
@@ -111,7 +111,7 @@ export function TemplateForm({
         <Label htmlFor="meta_title">メタタイトル</Label>
         <Input id="meta_title" {...register("meta_title")} />
         {errors.meta_title && (
-          <p className="text-sm text-red-500">{errors.meta_title.message}</p>
+          <p className="  text-red-500">{errors.meta_title.message}</p>
         )}
       </div>
 
@@ -122,7 +122,7 @@ export function TemplateForm({
           {...register("meta_description")}
         />
         {errors.meta_description && (
-          <p className="text-sm text-red-500">
+          <p className="  text-red-500">
             {errors.meta_description.message}
           </p>
         )}

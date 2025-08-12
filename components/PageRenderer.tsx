@@ -65,15 +65,35 @@ function extractCSSVariables(customCSS: string): {
 }
 */
 
-export function PageRenderer({
-  page,
-  showEditorButton = false,
-}: PageRendererProps) {
+export function PageRenderer({ page }: PageRendererProps) {
   // CSS変数とカスタムCSSを分離
   // CSS変数を抽出（コメントアウト：CSSファイルから読み込むため不要）
   // const { variables, remainingCSS } = extractCSSVariables(page.customCSS || "");
 
   // グループ構造を解析してレンダリング
+  function parseScopeStylesToStyleObject(
+    declarations: string
+  ): Record<string, string> {
+    // 例: "--gap: 40px; --bg: #fff" → { "--gap": "40px", "--bg": "#fff" }
+    const styleObject: Record<string, string> = {};
+    if (!declarations) return styleObject;
+    // 分割: セミコロンで区切る
+    const parts = declarations
+      .split(";")
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+    for (const part of parts) {
+      const idx = part.indexOf(":");
+      if (idx === -1) continue;
+      const rawKey = part.slice(0, idx).trim();
+      const rawVal = part.slice(idx + 1).trim();
+      if (!rawKey) continue;
+      // CSSカスタムプロパティ（--で始まる）を優先してそのまま保存
+      styleObject[rawKey] = rawVal;
+    }
+    return styleObject;
+  }
+
   const renderSectionsWithGroups = () => {
     const result = [];
     let i = 0;
@@ -118,9 +138,13 @@ export function PageRenderer({
             : {};
 
           // スタイルを統合
-          let combinedGroupStyle = { ...bgStyle, ...groupWidthStyle };
+          let combinedGroupStyle: Record<string, string> | CSSProperties = {
+            ...bgStyle,
+            ...groupWidthStyle,
+          } as CSSProperties;
           if (scopeStyles) {
-            const parsedScopeStyles = JSON.parse(`{${scopeStyles}}`);
+            const parsedScopeStyles =
+              parseScopeStylesToStyleObject(scopeStyles);
             combinedGroupStyle = {
               ...combinedGroupStyle,
               ...parsedScopeStyles,
@@ -217,7 +241,7 @@ export function PageRenderer({
           >
             {section.image && (
               <div
-                className={`relative w-full ${section.imageClass || ""}`}
+                className={`relative ${section.imageClass || ""}`}
                 style={{
                   aspectRatio: section.imageAspectRatio || "auto",
                   minHeight: section.imageAspectRatio ? "auto" : "500px",
@@ -233,7 +257,7 @@ export function PageRenderer({
               </div>
             )}
             <div
-              className={`content ${section.textClass || ""}`}
+              className={`  ${section.textClass || ""}`}
               dangerouslySetInnerHTML={{
                 __html: section.html,
               }}
@@ -264,7 +288,7 @@ export function PageRenderer({
             )}
             <div className={!section.image ? "" : ""}>
               <div
-                className={`content ${section.textClass || ""}`}
+                className={`  ${section.textClass || ""}`}
                 dangerouslySetInnerHTML={{
                   __html: section.html,
                 }}
@@ -298,7 +322,7 @@ export function PageRenderer({
                   </div>
                 )}
                 <div
-                  className={`content ${card.textClass || ""}`}
+                  className={`  ${card.textClass || ""}`}
                   dangerouslySetInnerHTML={{
                     __html: card.html,
                   }}
@@ -327,6 +351,15 @@ export function PageRenderer({
             />
           </TagType>
         );
+      case "htmlContent":
+        return (
+          <TagType
+            key={index}
+            className={`HtmlContent ${sectionClass}`}
+            style={combinedStyle}
+            dangerouslySetInnerHTML={{ __html: section.html }}
+          />
+        );
       case "form":
         return (
           <TagType
@@ -335,7 +368,7 @@ export function PageRenderer({
             style={combinedStyle}
           >
             <div
-              className={`content mb-8 ${section.textClass || ""}`}
+              className={`  mb-8 ${section.textClass || ""}`}
               dangerouslySetInnerHTML={{
                 __html: section.html,
               }}
@@ -422,16 +455,17 @@ export function PageRenderer({
         className="header relative"
         dangerouslySetInnerHTML={{ __html: page.header.html }}
       />
-      {showEditorButton && (
+      {/* エディタを開くボタン */}
+      {/* {showEditorButton && (
         <div className="fixed right-4 top-4 z-50">
           <a
             href="/editor"
-            className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow"
+            className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2  font-medium text-primary-foreground shadow"
           >
             エディタを開く
           </a>
         </div>
-      )}
+      )} */}
       <main className="min-h-screen">{renderSectionsWithGroups()}</main>
       <footer
         className="footer"

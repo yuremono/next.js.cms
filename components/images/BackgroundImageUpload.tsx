@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,6 +24,8 @@ export function BackgroundImageUpload({
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const dropZoneRef = useRef<HTMLDivElement>(null);
 
   // 初期画像が変更されたら内部状態を更新
   useEffect(() => {
@@ -33,10 +35,7 @@ export function BackgroundImageUpload({
   }, [initialImage, imageUrl]);
 
   // 画像をアップロード
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const handleFileUpload = async (file: File) => {
     // 画像ファイルか確認
     if (!file.type.startsWith("image/")) {
       setError("画像ファイルを選択してください");
@@ -60,9 +59,18 @@ export function BackgroundImageUpload({
       setError(err instanceof Error ? err.message : "エラーが発生しました");
     } finally {
       setIsUploading(false);
-      // 入力フィールドをリセット
-      e.target.value = "";
     }
+  };
+
+  // ファイル入力からのアップロード
+  const handleFileInputChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await handleFileUpload(file);
+    // 入力フィールドをリセット
+    e.target.value = "";
   };
 
   // ギャラリーから画像を選択
@@ -77,27 +85,62 @@ export function BackgroundImageUpload({
     onImageChange(null);
   };
 
+  // ドラッグ&ドロップイベントハンドラー
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) {
+      await handleFileUpload(files[0]);
+    }
+  };
+
   return (
     <div className="flex flex-wrap justify-between space-y-4">
       <Label className="w-full">{label}</Label>
 
       {/* 画像アップロード */}
       <div className="">
-        <Label
-          htmlFor="bg-image-upload"
-          className="flex w-full cursor-pointer items-center gap-2 rounded border border-dashed px-4 py-2 hover:bg-gray-50"
+        <div
+          ref={dropZoneRef}
+          className={`flex w-full cursor-pointer items-center gap-2 rounded border border-dashed px-4 py-2 transition-colors ${
+            isDragOver
+              ? "border-blue-500 bg-blue-50"
+              : "border-gray-300 hover:bg-gray-50"
+          }`}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
         >
           <Upload className="h-4 w-4" />
-          <span>ファイルをアップロード</span>
+          <span>
+            {isDragOver
+              ? "ここにドロップしてください"
+              : "ファイルをアップロード"}
+          </span>
           <Input
             id="bg-image-upload"
             type="file"
             accept="image/*"
             className="hidden"
-            onChange={handleFileUpload}
+            onChange={handleFileInputChange}
             disabled={isUploading}
           />
-        </Label>
+          <Label htmlFor="bg-image-upload" className="cursor-pointer">
+            クリックして選択
+          </Label>
+        </div>
 
         <Button
           variant="outline"
@@ -109,7 +152,7 @@ export function BackgroundImageUpload({
           アップロード済み画像から選択
         </Button>
 
-        {isUploading && <span className="text-sm">アップロード中...</span>}
+        {isUploading && <span className=" ">アップロード中...</span>}
       </div>
 
       {/* 画像プレビュー */}
@@ -136,7 +179,7 @@ export function BackgroundImageUpload({
         </div>
       )}
 
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && <p className="  text-red-500">{error}</p>}
 
       {/* 画像ギャラリーモーダル */}
       <ImageGalleryModal

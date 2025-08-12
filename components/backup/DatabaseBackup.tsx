@@ -210,7 +210,7 @@ export function DatabaseBackup() {
           <div className="rounded-lg border p-4">
             <div className="flex items-start">
               <Shield className="mr-2 mt-0.5 h-5 w-5" />
-              <div className="text-sm">
+              <div className=" ">
                 <p className="mb-1 font-medium">完全なサイトデータ保護</p>
                 <p>
                   全てのページ、セクション、コンテンツをワンクリックでバックアップ・復元できます。
@@ -295,7 +295,7 @@ export function DatabaseBackup() {
           <div className="rounded-lg border p-4">
             <div className="flex items-start">
               <ImageIcon className="mr-2 mt-0.5 h-5 w-5" />
-              <div className="text-sm">
+              <div className=" ">
                 <p className="mb-1 font-medium">画像ファイルについて</p>
                 <p>
                   画像ファイルはデータベースバックアップに含まれません。
@@ -308,7 +308,7 @@ export function DatabaseBackup() {
           <div className="rounded-lg border p-4">
             <div className="flex items-start">
               <AlertCircle className="mr-2 mt-0.5 h-5 w-5" />
-              <div className="text-sm">
+              <div className=" ">
                 <p className="mb-1 font-medium">重要な注意事項</p>
                 <p>
                   復元操作は現在のデータを完全に上書きします。

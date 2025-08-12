@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import "../globals.css"; // Tailwind CSSを確実に読み込み
 import "../top.scss";
 import { Button } from "@/components/ui/button";
-import "../top.scss";
-import "../top.scss";
 // import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -46,8 +45,6 @@ import { CSSEditor } from "@/components/editor/CSSEditor";
 import { DatabaseBackup } from "@/components/backup/DatabaseBackup";
 import { PasswordAuth } from "@/components/auth/PasswordAuth";
 import { AccessibilityPanel } from "@/components/AccessibilityPanel";
-import "../top.scss";
-import "../top.scss";
 
 // デフォルトのセクションを作成する関数
 const createDefaultSection = (type: string): Section => {
@@ -105,6 +102,17 @@ const createDefaultSection = (type: string): Section => {
         dtWidth: "20%",
         html: '<dl style="--dtWidth: 20%">\n<dt>項目1</dt>\n<dd>説明1</dd>\n<dt>項目2</dt>\n<dd>説明2</dd>\n<dt>項目3</dt>\n<dd>説明3</dd>\n</dl>',
       };
+    case "htmlContent":
+      return {
+        id,
+        layout: "htmlContent",
+        class: "HtmlContent",
+        name: "HTMLコンテンツ",
+        html: "<h2>見出し</h2><p>ここにHTMLコンテンツを入力します。</p>",
+        textClass: "",
+        sectionWidth: "",
+        scopeStyles: "",
+      } as any;
     case "group-start":
       return {
         id,
@@ -231,9 +239,6 @@ export default function EditorPage() {
   // セクション追加ダイアログの状態
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
 
-  // グループ展開状態の管理
-  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
-
   // プレビューモードの状態
   const [previewMode, setPreviewMode] = useState(false);
 
@@ -246,11 +251,10 @@ export default function EditorPage() {
   // 追加: レスポンシブ用state
   const [sectionListOpen, setSectionListOpen] = useState(false);
 
-  // IDE風UI切り替え状態（常にtrueに固定）
-  const useIDEStyleUI = true;
+  // IDE風UI切り替え状態（未使用）
 
   // プレビューにデータを送信する関数
-  const sendDataToPreview = () => {
+  const sendDataToPreview = useCallback(() => {
     if (iframeRef && iframeRef.contentWindow) {
       iframeRef.contentWindow.postMessage(
         {
@@ -260,7 +264,7 @@ export default function EditorPage() {
         window.location.origin
       );
     }
-  };
+  }, [iframeRef, page]);
 
   // pageが変更されたときにプレビューを更新（通常プレビュー・分割プレビュー共通）
   useEffect(() => {
@@ -268,7 +272,7 @@ export default function EditorPage() {
       const timer = setTimeout(sendDataToPreview, 100);
       return () => clearTimeout(timer);
     }
-  }, [page, splitScreenMode, previewMode, iframeRef]);
+  }, [page, splitScreenMode, previewMode, iframeRef, sendDataToPreview]);
 
   // プレビューからのメッセージを受信
   useEffect(() => {
@@ -554,18 +558,7 @@ export default function EditorPage() {
     setActiveMenuTab("edit");
   };
 
-  // グループの展開・折りたたみ
-  const handleGroupToggle = (groupId: string) => {
-    setExpandedGroups((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(groupId)) {
-        newSet.delete(groupId);
-      } else {
-        newSet.add(groupId);
-      }
-      return newSet;
-    });
-  };
+  // グループの展開・折りたたみ（未使用）
 
   // セクションの並び替え
   const moveSection = (fromIndex: number, toIndex: number) => {
@@ -765,27 +758,48 @@ export default function EditorPage() {
     }
   };
 
-  // セクション配列を直接更新する関数（ドラッグ&ドロップグループ化用）
-  const updateSections = (newSections: Section[]) => {
-    setPage((prevPage) => {
-      // 新しい順序文字列を生成
-      const newOrder = sectionsToOrderString(newSections);
-
-      return {
-        ...prevPage,
-        sections: newSections,
-        sectionsOrder: newOrder,
-      };
-    });
-    // 選択インデックスを調整（削除された場合に備えて）
-    if (
-      activeSectionIndex !== null &&
-      activeSectionIndex >= newSections.length
-    ) {
-      setActiveSectionIndex(
-        newSections.length > 0 ? newSections.length - 1 : null
-      );
+  // 選択中セクションを複製して直後に挿入
+  const duplicateSelectedSection = () => {
+    if (activeSectionIndex === null) {
+      toast.warning("複製するセクションを選択してください");
+      return;
     }
+    const target = page.sections[activeSectionIndex];
+    if (!target) {
+      toast.warning("複製対象のセクションが見つかりません");
+      return;
+    }
+    if (target.layout === "group-start" || target.layout === "group-end") {
+      toast.warning("グループ開始/終了タグは複製できません");
+      return;
+    }
+
+    const newSectionId = `section-${Date.now()}-${Math.random()
+      .toString(36)
+      .substring(2, 9)}`;
+    // 深いコピーで新IDを付与
+    const cloned = JSON.parse(JSON.stringify(target)) as Section;
+    cloned.id = newSectionId;
+
+    setPage((prev) => {
+      const newSections = [...prev.sections];
+      const insertIndex = activeSectionIndex + 1;
+      newSections.splice(insertIndex, 0, cloned);
+
+      const currentOrder =
+        prev.sectionsOrder || sectionsToOrderString(prev.sections);
+      const newOrder = addSectionToOrderString(
+        currentOrder,
+        cloned.id,
+        insertIndex - 1
+      );
+
+      return { ...prev, sections: newSections, sectionsOrder: newOrder };
+    });
+
+    // 複製した要素を選択
+    setActiveSectionIndex((idx) => (idx === null ? null : idx + 1));
+    setActiveMenuTab("edit");
   };
 
   // ページデータの保存
@@ -923,11 +937,11 @@ export default function EditorPage() {
               <div className="space-y-4">
                 <h3>
                   DLリストコンテンツのモード切り替え
-                  <span className="ml-2 inline-block rounded-full bg-muted px-2 py-1 text-sm font-medium">
+                  <span className="ml-2 inline-block rounded-full bg-muted px-2 py-1  font-medium">
                     検討中
                   </span>
                 </h3>
-                <p className="mt-1 text-sm">
+                <p className="mt-1 ">
                   (dl → details(FAQ) / ol(Timeline) / table(比較表)
                   の切り替え機能)
                 </p>
@@ -935,31 +949,29 @@ export default function EditorPage() {
               <div className="space-y-4">
                 <h3>
                   テーブルコンテンツの実装について
-                  <span className="ml-2 inline-block rounded-full bg-muted px-2 py-1 text-sm font-medium">
+                  <span className="ml-2 inline-block rounded-full bg-muted px-2 py-1  font-medium">
                     結論
                   </span>
                 </h3>
-                <p className="mt-1 text-sm">
+                <p className="mt-1 ">
                   ユーザビリティの観点からCMS環境で制限のあるテーブル編集に慣れてもらうよりも外部サービス（Google
                   Sheets、Notion、Airtable等）を活用し、iframeで埋め込む方が建設的。既存の高機能で再利用可能なツールを選ぶことがより良いユーザー体験になる。
                   セキュリティの観点から、iframe埋め込み専用のUI導入は実装予定
                 </p>
 
                 <details className="mt-4">
-                  <summary className="cursor-pointer text-sm font-medium">
+                  <summary className="cursor-pointer  font-medium">
                     Perplexityの具体的な実装提案
                   </summary>
                   <div className="mt-2 space-y-4 pl-4">
                     <details>
-                      <summary className="cursor-pointer text-sm font-medium">
+                      <summary className="cursor-pointer  font-medium">
                         Notionを使用した価格表作成手順
                       </summary>
                       <div className="mt-2 space-y-2 pl-4">
                         <div>
-                          <h4 className="text-sm font-medium">
-                            テーブルビューの作成
-                          </h4>
-                          <ul className="mt-1 list-inside list-disc space-y-1 text-sm">
+                          <h4 className=" font-medium">テーブルビューの作成</h4>
+                          <ul className="mt-1 list-inside list-disc space-y-1 ">
                             <li>
                               Databaseから「Table
                               view」を選択し、新規ビューを作成
@@ -969,10 +981,8 @@ export default function EditorPage() {
                         </div>
 
                         <div>
-                          <h4 className="text-sm font-medium">
-                            Formula機能の活用
-                          </h4>
-                          <ul className="mt-1 list-inside list-disc space-y-1 text-sm">
+                          <h4 className=" font-medium">Formula機能の活用</h4>
+                          <ul className="mt-1 list-inside list-disc space-y-1 ">
                             <li>
                               価格計算が必要な場合、Formula機能を使用して自動計算を実装
                             </li>
@@ -983,10 +993,8 @@ export default function EditorPage() {
                         </div>
 
                         <div>
-                          <h4 className="text-sm font-medium">
-                            デザインの最適化
-                          </h4>
-                          <ul className="mt-1 list-inside list-disc space-y-1 text-sm">
+                          <h4 className=" font-medium">デザインの最適化</h4>
+                          <ul className="mt-1 list-inside list-disc space-y-1 ">
                             <li>不要な列（dummyなど）は非表示に設定</li>
                             <li>
                               テーブルの見栄えを整えるため、適切な列幅と行高を設定
@@ -997,24 +1005,20 @@ export default function EditorPage() {
                     </details>
 
                     <details>
-                      <summary className="cursor-pointer text-sm font-medium">
+                      <summary className="cursor-pointer  font-medium">
                         iframe埋め込み時の注意点
                       </summary>
                       <div className="mt-2 space-y-2 pl-4">
                         <div>
-                          <h4 className="text-sm font-medium">
-                            セキュリティ対策
-                          </h4>
-                          <p className="mt-1 text-sm">
+                          <h4 className=" font-medium">セキュリティ対策</h4>
+                          <p className="mt-1 ">
                             iframe埋め込みでは、sandbox属性の設定、X-Frame-Optionsヘッダーの適用、HTTPS通信の強制などのセキュリティ対策が必要です。
                           </p>
                         </div>
 
                         <div>
-                          <h4 className="text-sm font-medium">
-                            レスポンシブデザイン
-                          </h4>
-                          <p className="mt-1 text-sm">
+                          <h4 className=" font-medium">レスポンシブデザイン</h4>
+                          <p className="mt-1 ">
                             widthやheightパラメータを調整し、ホームページのデザインに合わせたサイズ設定を行うことで、違和感のない埋め込みが実現できます。
                           </p>
                         </div>
@@ -1022,11 +1026,11 @@ export default function EditorPage() {
                     </details>
 
                     <details>
-                      <summary className="cursor-pointer text-sm font-medium">
+                      <summary className="cursor-pointer  font-medium">
                         料金面での比較
                       </summary>
                       <div className="mt-2 space-y-2 pl-4">
-                        <ul className="list-inside list-disc space-y-1 text-sm">
+                        <ul className="list-inside list-disc space-y-1 ">
                           <li>
                             <strong>Notion:</strong>{" "}
                             基本機能は無料、カスタムドメインや高度な機能は月額1,650円から
@@ -1040,7 +1044,7 @@ export default function EditorPage() {
                             プランは月額10ドル
                           </li>
                         </ul>
-                        <p className="mt-2 text-sm">
+                        <p className="mt-2 ">
                           5×5の価格表であれば、どのサービスも無料プランで十分対応可能ですが、デザイン性とiframe埋め込みの自然さを考慮すると、Notionが最も適した選択肢となります。
                         </p>
                       </div>
@@ -1322,8 +1326,8 @@ export default function EditorPage() {
               className={`SectionPanel ${splitScreenMode ? "split-mode" : ""}`}
               aria-label="セクション一覧"
             >
-              <div className="flex w-full items-center gap-2">
-                <h2 className="text-sm font-medium">
+              <div className="flex w-full flex-wrap items-center gap-2">
+                <h2 className=" font-medium md:w-full">
                   セクション ({page.sections.length})
                 </h2>
 
@@ -1342,10 +1346,19 @@ export default function EditorPage() {
                 <Button
                   size="sm"
                   onClick={() => setIsSelectorOpen(true)}
-                  className="ml-auto"
+                  className="ml-auto "
                 >
                   <Plus className="h-3 w-3" />
                   追加
+                </Button>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={duplicateSelectedSection}
+                  className=" "
+                >
+                  <Plus className="h-3 w-3" />
+                  複製
                 </Button>
                 <Button
                   size="sm"
@@ -1431,7 +1444,7 @@ export default function EditorPage() {
               >
                 <div className="border-b p-2">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-medium">プレビュー</h3>
+                    <h3 className=" font-medium">プレビュー</h3>
                     <div className="flex items-center gap-2">
                       {/* ビューポート選択 */}
                       <div className="flex items-center gap-1">

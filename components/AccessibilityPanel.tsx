@@ -91,7 +91,7 @@ export function AccessibilityPanel() {
       {isOpen && (
         <Card className="absolute bottom-16 right-0 max-h-96 w-96 shadow-lg">
           <CardHeader className="pb-3">
-            <CardTitle className="flex items-center justify-between text-sm">
+            <CardTitle className="flex items-center justify-between  ">
               <span>アクセシビリティテスト</span>
               <div className="flex items-center gap-2">
                 <Button
@@ -150,7 +150,7 @@ export function AccessibilityPanel() {
                 {violationCount === 0 && (
                   <div className="py-4 text-center text-green-600">
                     <CheckCircle className="mx-auto mb-2 h-8 w-8" />
-                    <p className="text-sm">
+                    <p className=" ">
                       アクセシビリティ違反は見つかりませんでした！
                     </p>
                   </div>
@@ -160,7 +160,7 @@ export function AccessibilityPanel() {
 
             {!results && (
               <div className="py-4 text-center text-muted-foreground">
-                <p className="text-sm">
+                <p className=" ">
                   テストを実行してアクセシビリティをチェックしましょう
                 </p>
                 <p className="mt-1 text-xs text-gray-400">
@@ -230,7 +230,7 @@ function ViolationItem({ violation }: ViolationItemProps) {
                   {violation.impact || "unknown"}
                 </Badge>
               </div>
-              <p className="mt-1 text-sm text-foreground">{violation.help}</p>
+              <p className="mt-1   text-foreground">{violation.help}</p>
             </div>
             {isExpanded ? (
               <ChevronDown className="mt-1 h-4 w-4" />

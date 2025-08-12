@@ -24,7 +24,7 @@ export function VariableColorField({
 
   return (
     <div className={`space-y-2 ${className}`}>
-      <Label className="w-full text-sm" htmlFor={id}>
+      <Label className="w-full  " htmlFor={id}>
         {label}
       </Label>
       <div className="flex gap-2">
@@ -39,7 +39,7 @@ export function VariableColorField({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="flex-1 text-sm"
+          className="flex-1  "
         />
       </div>
     </div>

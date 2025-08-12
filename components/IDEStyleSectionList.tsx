@@ -10,7 +10,8 @@ import {
   Mail,
   Copy,
   FolderOpen,
-  FileText,
+        FileText,
+  SquareCode,
 } from "lucide-react";
 import {
   DndContext,
@@ -124,10 +125,12 @@ export default function IDEStyleSectionList({
         return "お問い合わせフォーム";
       case "descList":
         return "DLリスト";
+      case "htmlContent":
+        return section.name || "HTMLコンテンツ";
       case "group-start":
-        return `<article>${section.name || "グループ開始"}`;
+        return `<グループ開始> ${section.name || "グループ開始"}`;
       case "group-end":
-        return "</article>";
+        return "</グループ終了>";
       default:
         return "不明なセクション";
     }
@@ -150,6 +153,8 @@ export default function IDEStyleSectionList({
         return <Mail className="mr-1 w-3 flex-shrink-0 text-orange-500" />;
       case "descList":
         return <FileText className="mr-1 w-3 flex-shrink-0 text-cyan-500" />;
+      case "htmlContent":
+        return <SquareCode className="mr-1 w-3 flex-shrink-0 text-slate-600" />;
       case "group-start":
         return <FolderOpen className="mr-1 w-3 flex-shrink-0 text-current" />;
       case "group-end":

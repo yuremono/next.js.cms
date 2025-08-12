@@ -30,8 +30,8 @@
 
                 <!-- 5) Tailwind CSS 設定＋読み込み -->
                 <link rel="preload" as="script" href="https://cdn.tailwindcss.com">
-                <script src="https://cdn.tailwindcss.com"></script>
                 <script src="tailwind.config.js"></script>
+                <script src="https://cdn.tailwindcss.com"></script>
 
 
                 <!-- 6) 外部フォント -->
@@ -52,10 +52,8 @@
                 <link href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css"
                       rel="stylesheet" type="text/css" media="all" />
 
-                <!-- 9) カスタムCSS -->
-                <link href="../app/globals.css" rel="stylesheet" media="all">
-                <link href="scss/common.css" rel="stylesheet" media="all">
-                <!-- <link href="./compiled.css" rel="stylesheet" media="all"> -->
+
+                <!-- <link href="scss/common.css" rel="stylesheet" media="all"> -->
 
                 <script src="function.js"></script>
 
@@ -76,8 +74,11 @@
                         });
                 </script> -->
         </head>
+        <!-- 9) カスタムCSS -->
 
         <body>
+                <link href="../app/globals.css" rel="stylesheet" media="all">
+                <link href="scss/common.css" rel="stylesheet" media="all">
 
                 <main>
                         <!-- <div class="bg-white mt12 p16 rounded8 shadow-md w320">
@@ -94,40 +95,80 @@
                                         <span class="text16">高さ80px / 幅160px</span>
                                 </div>
                         </div> -->
-<!-- 背景 -->
-<section class="bgLayer fullWidth">
-        <div class="bgItem" style="background-image: url(five/00.jpg)"></div>
-        <div class="bgItem" style="background-image: url(five/02.jpg)"></div>
-        <div class="bgItem" style="background-image: url(five/04.jpg)"></div>
-      </section>
-      
-      <!-- セクション（data-bg-index付き） -->
-      <section class="js-bgTrigger fullWidth" data-bg-index="0">
-        <section class="one-third">
-          <img src="five/01.jpg" alt="Main Visual">
-          <h1>メインタイトル</h1>
-          <p>サブタイトル：ここにテキストを入力</p>
-        </section>
-      </section>
-      
-      <section class="js-bgTrigger fullWidth" data-bg-index="1">
-        <section class="one-third __left">
-          <img src="five/03.jpg" alt="Main Visual">
-          <h1>メインタイトル</h1>
-          <p>サブタイトル：ここにテキストを入力</p>
-        </section>
-      </section>
-      <section class="js-bgTrigger fullWidth" data-bg-index="1">
-        <section class="one-third __right">
-          <img src="five/05.jpg" alt="Main Visual">
-          <h1>メインタイトル</h1>
-          <p>サブタイトル：ここにテキストを入力</p>
-        </section>
-      </section>
-      
-      <!-- ナビゲーション（JSで自動生成） -->
-      <!-- <nav class="bgNav" aria-label="セクションナビゲーション"></nav> -->
-      
+                        <!-- 背景 -->
+                        <!-- <section class="bgLayer fullWidth">
+        <div class="bgItem __glitch" ><img src="five/00.jpg" alt="" width="100%" height="100%"></div>
+        <div class="bgItem __glitch"><img src="five/02.jpg" alt="" width="100%" height="100%"></div>
+        <div class="bgItem __glitch" ><img src="five/04.jpg" alt="" width="100%" height="100%"></div>
+      </section> -->
+<section class="fullWidth   text-center ">
+<div class="about mindMap  fontJost font-thin " >
+<h1 class="mmPin about_tx  text-left about_tx fontZen ">
+WEB制作会社で約3年間デザインとコーディングを担当。<br>
+Photoshopでデザイン、自社CMS(webアプリ)でHTML構築、<br>VScodeでCSS,JavaScript編集を行っています。<br>
+新しい技術や視覚表現、AI活用に強い関心があります。</h1>
+<p class="" style="font-size: 4em">Generative</p>
+<p class="" style="font-size: 4em">Web</p>
+<p class="" style="font-size: 4em">Creation</p>
+<p class="txgr fw200 text-left" style="font-size: 3em">Seiji<br>Yano<br>Works</p>
+</div>
+</section>
+<section class=" fullWidth  text-center mt-0">
+        <div class="knowledge mindMap fontJost font-thin ">
+<div class="mmPin knowledge_tx  text-left  fontZen ">このページは全てのコンテンツを編集するオリジナルCMSを想定し、UI/UXを重視して制作しました。<br>
+<a href="/editor">/editor</a></div>
+<div class="mmPin knowledge_tx  knowledge_right text-right  fontZen ">このページは全てのコンテンツを編集するオリジナルCMSを想定し、UI/UXを重視して制作しました。<br>
+<a href="/editor">/editor</a></div>
+<p class="" style="font-size: 3em">Cursor IDE</p>
+<p class="" style="font-size: 3em">javascript</p>
+<p class="" style="font-size: 2em">Next.js</p>
+<p class="" style="font-size: 2em">Photoshop</p>
+<p class="mmStatic" style="font-size: 1.5em;">Tailwind CSS</p>
+<p class="mmStatic" style="font-size: 1.5em;">TypeScript</p>
+<p class="" style="font-size: 1.5em;">canvas</p>
+<p class="" style="font-size: 1.5em;">VScode<br>Extension</p>
+<p class="" style="font-size: 1.5em">GSAP</p>
+<p class="mmStatic" style="font-size: 1.5em">Figma</p>
+<p class="mmStatic" style="font-size: 1.5em">Astro</p>
+<p class="mmStatic" style="font-size: 1em">Puppeteer</p>
+<p class="mmStatic" style="font-size: 1em">Three.js</p>
+<p class="mmStatic" style="font-size: 1em">D3.js</p>
+<p class="mmStatic" style="font-size: 1em">Dify</p>
+<p class="mmStatic" style="font-size: 1em">Notion API</p>
+                <!-- <div class="mmStatic text-left about_tx fontZen" style="font-size: 1em">
+web制作会社で約3年間デザインとコーディングを担当。<br>
+Photoshopでデザイン、特殊CMS(webアプリ)でHTML構築、VScodeでCSS,JavaScript編集を行っています。<br>
+新しい技術や視覚表現に関心が強く、難易度の高いコーディングを多く担当してきました。
+</div> -->
+        </div>
+
+</section>
+                        <section class="js-bgTrigger fullWidth">
+                                <section class="one-third">
+                                        <img src="five/01.jpg" alt="Main Visual">
+                                        <h1>メインタイトル</h1>
+                                        <p>サブタイトル：ここにテキストを入力</p>
+                                </section>
+                        </section>
+
+                        <section class="js-bgTrigger fullWidth">
+                                <section class="one-third __left">
+                                        <img src="five/03.jpg" alt="Main Visual">
+                                        <h1>メインタイトル</h1>
+                                        <p>サブタイトル：ここにテキストを入力</p>
+                                </section>
+                        </section>
+                        <section class="js-bgTrigger fullWidth">
+                                <section class="one-third __right">
+                                        <img src="five/05.jpg" alt="Main Visual">
+                                        <h1>メインタイトル</h1>
+                                        <p>サブタイトル：ここにテキストを入力</p>
+                                </section>
+                        </section>
+
+                        <!-- ナビゲーション（JSで自動生成） -->
+                        <!-- <nav class="bgNav" aria-label="セクションナビゲーション"></nav> -->
+
 
                         <!-- <section class=" fullWidth js-bg" >
                                 <div class="bgFix" style="background-image: url(five/00.jpg)"></div>
@@ -168,9 +209,9 @@
                                 </section>
                         </section> -->
 
-                        <section class=" ImgText  grid grid-cols-1 items-center gap-8 md:grid-cols-2 ImgText　mt">
-                                <div class=" "><img src="five/06.jpg" alt="Main Visual"
-                                             width="100%" height="400"></div>
+                        <section
+                                 class="opacity-10 ImgText  grid grid-cols-1 items-center gap-8 md:grid-cols-2 ImgText　mt">
+                                <div class=" "><img src="five/06.jpg" alt="Main Visual" width="100%" height="400"></div>
                                 <div class="">
                                         <div class="content  js-bottom">
                                                 <h2>セクシトル</h2>

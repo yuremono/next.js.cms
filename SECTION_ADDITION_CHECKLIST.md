@@ -16,7 +16,7 @@
 - [ ] **isSection 関数に条件追加**
 
 ### ⚠️ 見落としがちなポイント
-- **layout名は必ずkebab-case**（例: `descList`, `imgText`）
+- **layout名は必ずcamelCase**（例: `descList`, `imgText`）
 - **プロパティ名はcamelCase**（例: `dtWidth`, `imageClass`）
 
 ```typescript
@@ -175,6 +175,25 @@ CREATE INDEX IF NOT EXISTS idx_new_section_sections_section_id ON new_section_se
 
 ---
 
+## 🧭 並び順（sectionsOrder）に関する注意点（除外・再構成ポリシー）
+
+次のケースでは、並び順の再構成時に「除外」または「特別扱い」されます。新規タイプ追加時はこのポリシーに準拠してください。
+
+- **グループ境界**:
+  - `group-start` / `group-end` は「表示用タグ」であり、実セクションコンテンツではないため、複製不可・単独移動により不整合が起きないように制御します。
+  - 並び順文字列 `sections_order` には両方が含まれ、再構成でも維持されます。
+- **並び順の最終確定**:
+  - 保存APIでは、受信した配列順から `sections_order` を再生成しDBへ書き戻します（IDは `section-<numericId>` 形式）。
+  - クライアント一時IDとDB数値IDが異なる場合でも、保存時にサーバが正しい順序文字列へ正規化します。
+- **例外扱い（除外）**
+  - 将来的にドラフト型など保存対象外が登場する場合は `sections_order` に含めない運用を想定。現状は全タイプを含めます。
+
+チェックリスト（新タイプ追加時）:
+- [ ] 並び順の生成/更新ロジックに新タイプが参加しているか（例: `sections.map(id)`）
+- [ ] `group-start / group-end` と衝突する特性がないか（ネスト構造維持）
+
+---
+
 ## 🎯 **4. エディターコンポーネント作成**
 
 ### ✅ 必須項目
@@ -276,22 +295,9 @@ case "newSection":
 
 ## 🎯 **7. CSS設計**
 
-### ✅ 必須項目
-- [ ] **globals.cssにスタイル追加**
-- [ ] **レスポンシブ対応**
-- [ ] **CSS変数の活用**
 
-```css
-/* NewSection - 新セクション */
-.NewSection {
-  /* 基本スタイル */
-}
 
-.NewSection .custom-element {
-  /* カスタムプロパティ活用 */
-  width: var(--customWidth, 100%);
-}
-```
+
 
 ---
 
@@ -343,20 +349,36 @@ case "newSection":
 
 ---
 
-## 📝 **実装完了の確認**
+## 🔒 RLSポリシーの一括設定例（Supabase）
 
-全ての項目にチェックが入ったら、以下のコマンドで最終確認：
+以下は、`sections` 本体＋各詳細テーブル（例として `html_content_sections`）の基本RLS例です。匿名（anon）でも編集できる開発用の緩い設定。本番では適宜Roleを限定してください。
 
-```bash
-# 開発サーバー起動
-npm run dev
+```sql
+-- 1回目実行: RLS有効化と基本ポリシー
+ALTER TABLE sections ENABLE ROW LEVEL SECURITY;
+CREATE POLICY sections_select ON sections FOR SELECT USING (true);
+CREATE POLICY sections_insert ON sections FOR INSERT WITH CHECK (true);
+CREATE POLICY sections_update ON sections FOR UPDATE USING (true);
+CREATE POLICY sections_delete ON sections FOR DELETE USING (true);
 
-# デバッグページでデータベース状態確認
-http://localhost:3000/debug
+ALTER TABLE html_content_sections ENABLE ROW LEVEL SECURITY;
+CREATE POLICY html_content_select ON html_content_sections FOR SELECT USING (true);
+CREATE POLICY html_content_insert ON html_content_sections FOR INSERT WITH CHECK (true);
+CREATE POLICY html_content_update ON html_content_sections FOR UPDATE USING (true);
+CREATE POLICY html_content_delete ON html_content_sections FOR DELETE USING (true);
 
-# エディターで全機能テスト
-http://localhost:3000/editor
+-- 他の詳細テーブル(main_visual_sections, img_text_sections, cards_sections, form_sections,
+-- group_start_sections, group_end_sections)にも同様に適用する。
 ```
+
+注意:
+- `upsert` を使うテーブルの `onConflict` には UNIQUE 制約が必須（例: `section_id`）
+- `sections.type` のチェック制約/enumの更新を忘れない
+
+## 📝 **実装完了の確認**
+ユーザーが表示中の開発画面で確認
+
+
 
 ---
 

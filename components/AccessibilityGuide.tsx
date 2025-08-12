@@ -58,7 +58,7 @@ export function AccessibilityGuide({
                 <h3 className="mb-2 font-semibold">
                   アクセシビリティテストとは
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className=" text-gray-600">
                   Webサイトが障害を持つユーザーにとっても使いやすいかどうかを自動的にチェックするツールです。
                   WCAG 2.1
                   AA基準に基づいて、色のコントラスト、キーボードナビゲーション、スクリーンリーダー対応などを評価します。
@@ -67,7 +67,7 @@ export function AccessibilityGuide({
 
               <div>
                 <h3 className="mb-2 font-semibold">なぜ重要なのか</h3>
-                <ul className="space-y-1 text-sm text-gray-600">
+                <ul className="space-y-1  text-gray-600">
                   <li>
                     • <strong>法的要件:</strong>{" "}
                     多くの国や地域でアクセシビリティ対応が法的に求められています
@@ -96,7 +96,7 @@ export function AccessibilityGuide({
                     <h4 className="font-medium text-blue-900">
                       方法1: ボタンクリック
                     </h4>
-                    <p className="mt-1 text-sm text-blue-700">
+                    <p className="mt-1  text-blue-700">
                       画面右下の青い🔍ボタンをクリックして「テスト実行」を押します
                     </p>
                   </div>
@@ -105,7 +105,7 @@ export function AccessibilityGuide({
                     <h4 className="font-medium text-green-900">
                       方法2: キーボードショートカット
                     </h4>
-                    <p className="mt-1 text-sm text-green-700">
+                    <p className="mt-1  text-green-700">
                       <kbd className="rounded border bg-white px-2 py-1 text-xs">
                         Ctrl
                       </kbd>{" "}
@@ -125,11 +125,11 @@ export function AccessibilityGuide({
 
               <div>
                 <h3 className="mb-2 font-semibold">テスト範囲</h3>
-                <p className="text-sm text-gray-600">
+                <p className=" text-gray-600">
                   現在表示されているページ全体をスキャンし、WCAG 2.1
                   AA基準に基づいて以下の項目をチェックします：
                 </p>
-                <ul className="ml-4 mt-2 space-y-1 text-sm text-gray-600">
+                <ul className="ml-4 mt-2 space-y-1  text-gray-600">
                   <li>• 色のコントラスト比</li>
                   <li>• ボタンやリンクのアクセシブル名</li>
                   <li>• 画像のalt属性</li>
@@ -150,7 +150,7 @@ export function AccessibilityGuide({
                       <Badge variant="destructive" className="mb-1">
                         Critical
                       </Badge>
-                      <p className="text-sm">
+                      <p className="">
                         緊急修正が必要。ユーザーが全く利用できない可能性があります
                       </p>
                     </div>
@@ -162,7 +162,7 @@ export function AccessibilityGuide({
                       <Badge variant="outline" className="mb-1">
                         Serious
                       </Badge>
-                      <p className="text-sm">
+                      <p className="">
                         重要な修正が必要。多くのユーザーに影響があります
                       </p>
                     </div>
@@ -174,7 +174,7 @@ export function AccessibilityGuide({
                       <Badge variant="outline" className="mb-1">
                         Moderate
                       </Badge>
-                      <p className="text-sm">
+                      <p className="">
                         中程度の修正が必要。一部のユーザーに影響があります
                       </p>
                     </div>
@@ -186,7 +186,7 @@ export function AccessibilityGuide({
                       <Badge variant="outline" className="mb-1">
                         Minor
                       </Badge>
-                      <p className="text-sm">軽微な修正で改善できます</p>
+                      <p className="">軽微な修正で改善できます</p>
                     </div>
                   </div>
                 </div>
@@ -194,7 +194,7 @@ export function AccessibilityGuide({
 
               <div>
                 <h3 className="mb-2 font-semibold">コンソール出力の確認</h3>
-                <p className="mb-2 text-sm text-gray-600">
+                <p className="mb-2  text-gray-600">
                   開発者ツールのコンソールでも詳細な結果を確認できます：
                 </p>
                 <div className="rounded-md bg-gray-900 p-3 font-mono text-xs text-green-400">
@@ -217,15 +217,15 @@ export function AccessibilityGuide({
                     <h4 className="mb-2 font-medium text-red-600">
                       color-contrast
                     </h4>
-                    <p className="mb-2 text-sm">
+                    <p className="mb-2 ">
                       <strong>問題:</strong>{" "}
                       文字色と背景色のコントラスト比が不足
                     </p>
-                    <p className="mb-2 text-sm">
+                    <p className="mb-2 ">
                       <strong>修正:</strong>{" "}
                       より濃い色を使用するか、背景色を調整
                     </p>
-                    <p className="text-sm text-gray-600">
+                    <p className=" text-gray-600">
                       最小要件: 4.5:1（通常テキスト）、3:1（大きなテキスト）
                     </p>
                   </div>
@@ -234,10 +234,10 @@ export function AccessibilityGuide({
                     <h4 className="mb-2 font-medium text-red-600">
                       button-name
                     </h4>
-                    <p className="mb-2 text-sm">
+                    <p className="mb-2 ">
                       <strong>問題:</strong> ボタンに識別可能なテキストがない
                     </p>
-                    <p className="mb-2 text-sm">
+                    <p className="mb-2 ">
                       <strong>修正:</strong> aria-labelまたはテキストを追加
                     </p>
                     <code className="rounded bg-gray-100 p-1 text-xs">
@@ -248,10 +248,10 @@ export function AccessibilityGuide({
 
                   <div className="rounded-md border p-3">
                     <h4 className="mb-2 font-medium text-red-600">image-alt</h4>
-                    <p className="mb-2 text-sm">
+                    <p className="mb-2 ">
                       <strong>問題:</strong> 画像にalt属性がない
                     </p>
-                    <p className="mb-2 text-sm">
+                    <p className="mb-2 ">
                       <strong>修正:</strong>{" "}
                       意味のある画像には説明を、装飾的な画像には空のaltを設定
                     </p>
@@ -264,10 +264,10 @@ export function AccessibilityGuide({
                     <h4 className="mb-2 font-medium text-orange-600">
                       landmark-one-main
                     </h4>
-                    <p className="mb-2 text-sm">
+                    <p className="mb-2 ">
                       <strong>問題:</strong> ページにmainランドマークがない
                     </p>
-                    <p className="mb-2 text-sm">
+                    <p className="mb-2 ">
                       <strong>修正:</strong>{" "}
                       メインコンテンツを&lt;main&gt;要素で囲む
                     </p>
@@ -280,7 +280,7 @@ export function AccessibilityGuide({
 
               <div>
                 <h3 className="mb-2 font-semibold">修正の優先順位</h3>
-                <ol className="space-y-1 text-sm text-gray-600">
+                <ol className="space-y-1  text-gray-600">
                   <li>
                     1. <strong>Critical違反</strong>を最優先で修正
                   </li>
