@@ -214,6 +214,35 @@
     }
     container.style.minHeight = `${Math.round(stageHeight)}px`;
 
+    // 10×10 グリッド（.mmR-C 初期配置用）
+    const gridRows = 10;
+    const gridCols = 10;
+    const innerW = stageWidth - innerPadding * 2;
+    const innerH = stageHeight - innerPadding * 2;
+    const cellW = innerW / gridCols;
+    const cellH = innerH / gridRows;
+
+    function centerOfCell(row, col, halfW, halfH) {
+      const r = Math.round(clamp(row, 1, gridRows));
+      const c = Math.round(clamp(col, 1, gridCols));
+      const cx = innerPadding + (c - 0.5) * cellW;
+      const cy = innerPadding + (r - 0.5) * cellH;
+      return {
+        x: clamp(cx, innerPadding + halfW, stageWidth - innerPadding - halfW),
+        y: clamp(cy, innerPadding + halfH, stageHeight - innerPadding - halfH),
+      };
+    }
+
+    function getGridRC(el) {
+      for (const cls of el.classList) {
+        const m = /^mm(\d+)-(\d+)$/.exec(cls);
+        if (m) {
+          return { row: parseInt(m[1], 10), col: parseInt(m[2], 10) };
+        }
+      }
+      return null;
+    }
+
     // 直下の*対象
     const elements = Array.from(container.querySelectorAll(":scope > *"));
     if (elements.length === 0) return;
@@ -291,6 +320,7 @@
           stageHeight,
           halfH
         );
+        const gridRC = getGridRC(el); // .mmR-C の取得
         const diag = Math.sqrt(halfW * halfW + halfH * halfH);
         // 大きいものから置くための優先度半径
         const placeRadius =
@@ -304,6 +334,7 @@
           isStatic,
           dataX,
           dataY,
+          gridRC,
           placeRadius,
         };
       })
@@ -372,14 +403,58 @@
       return false;
     }
 
+    // 指定セルが衝突する場合、近傍セルをリング状に探索
+    function findNearestFreeCell(pref, halfW, halfH, maxRadius = 9) {
+      if (!pref) return null;
+      for (let d = 0; d <= maxRadius; d++) {
+        for (let dr = -d; dr <= d; dr++) {
+          for (let dc = -d; dc <= d; dc++) {
+            if (Math.abs(dr) !== d && Math.abs(dc) !== d) continue; // 外周のみ
+            const r = pref.row + dr;
+            const c = pref.col + dc;
+            if (r < 1 || r > gridRows || c < 1 || c > gridCols) continue;
+            const pos = centerOfCell(r, c, halfW, halfH);
+            if (!collides(pos.x, pos.y, halfW, halfH)) {
+              return { row: r, col: c, ...pos };
+            }
+          }
+        }
+      }
+      return null;
+    }
+
     for (const it of items) {
       let x, y;
-      if (it.dataX != null && it.dataY != null) {
-        // 明示座標は尊重（重なりチェックはしない）
+      if (it.gridRC) {
+        // 1) .mmR-C（セル中心）を最優先
+        const pos = centerOfCell(it.gridRC.row, it.gridRC.col, it.halfW, it.halfH);
+        x = pos.x;
+        y = pos.y;
+        if (collides(x, y, it.halfH, it.halfH)) {
+          // 近傍セルを探索
+          const alt = findNearestFreeCell(it.gridRC, it.halfW, it.halfH);
+          if (alt) {
+            x = alt.x;
+            y = alt.y;
+          } else {
+            // フォールバック：非衝突ランダム
+            let tries = 0;
+            let rnd;
+            do {
+              rnd = randInside(it.w, it.h, it.halfW, it.halfH);
+              x = rnd.x;
+              y = rnd.y;
+              tries++;
+              if (tries > 240) break;
+            } while (collides(x, y, it.halfW, it.halfH));
+          }
+        }
+      } else if (it.dataX != null && it.dataY != null) {
+        // 2) 明示座標（%/px）
         x = it.dataX;
         y = it.dataY;
       } else {
-        // ランダム試行で非重なり位置を探索
+        // 3) ランダム試行で非重なり位置を探索
         let tries = 0;
         let pos;
         do {
