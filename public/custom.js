@@ -403,52 +403,21 @@
       return false;
     }
 
-    // 指定セルが衝突する場合、近傍セルをリング状に探索
-    function findNearestFreeCell(pref, halfW, halfH, maxRadius = 9) {
-      if (!pref) return null;
-      for (let d = 0; d <= maxRadius; d++) {
-        for (let dr = -d; dr <= d; dr++) {
-          for (let dc = -d; dc <= d; dc++) {
-            if (Math.abs(dr) !== d && Math.abs(dc) !== d) continue; // 外周のみ
-            const r = pref.row + dr;
-            const c = pref.col + dc;
-            if (r < 1 || r > gridRows || c < 1 || c > gridCols) continue;
-            const pos = centerOfCell(r, c, halfW, halfH);
-            if (!collides(pos.x, pos.y, halfW, halfH)) {
-              return { row: r, col: c, ...pos };
-            }
-          }
-        }
-      }
-      return null;
-    }
+    // .mmR-C 指定時は近傍セルへの自動回避を行わない（指定セル中心に固定）
 
     for (const it of items) {
       let x, y;
       if (it.gridRC) {
-        // 1) .mmR-C（セル中心）を最優先
-        const pos = centerOfCell(it.gridRC.row, it.gridRC.col, it.halfW, it.halfH);
+        // 1) .mmR-C（セル中心）を最優先。衝突有無に関わらず指定セル中心へ配置。
+        const pos = centerOfCell(
+          it.gridRC.row,
+          it.gridRC.col,
+          it.halfW,
+          it.halfH
+        );
         x = pos.x;
         y = pos.y;
-        if (collides(x, y, it.halfH, it.halfH)) {
-          // 近傍セルを探索
-          const alt = findNearestFreeCell(it.gridRC, it.halfW, it.halfH);
-          if (alt) {
-            x = alt.x;
-            y = alt.y;
-          } else {
-            // フォールバック：非衝突ランダム
-            let tries = 0;
-            let rnd;
-            do {
-              rnd = randInside(it.w, it.h, it.halfW, it.halfH);
-              x = rnd.x;
-              y = rnd.y;
-              tries++;
-              if (tries > 240) break;
-            } while (collides(x, y, it.halfW, it.halfH));
-          }
-        }
+        // 自動回避は行わない
       } else if (it.dataX != null && it.dataY != null) {
         // 2) 明示座標（%/px）
         x = it.dataX;
