@@ -22,9 +22,9 @@ if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
 }
 
 export const metadata: Metadata = {
-  title: "簡易CMS - テンプレートベースのWebサイト構築",
+  title: "Seiji Yano Works",
   description:
-    "AIによるテキスト生成機能を備えた簡易CMSで、簡単にWebサイトを編集できます。",
+    "Next.JsでCMS管理画面を構築し、編集したページをポートフォリオサイトとして公開しています",
   viewport: "width=device-width, initial-scale=1",
 };
 

@@ -21,21 +21,27 @@ export function MediaRenderer({
   priority = false,
   fill = false,
 }: MediaRendererProps) {
-  const [isVideo, setIsVideo] = useState<boolean | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
+  const [isVideo, setIsVideo] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
     // クライアントサイドでファイルタイプを判別
     const fileType = getFileType(src);
     setIsVideo(fileType === "video");
   }, [src]);
 
-  // ハイドレーション前（SSR時）は何も判別せず、デフォルト表示
-  if (isVideo === null) {
-    // SSR時はdivプレースホルダーで表示し、ハイドレーション後に適切なコンポーネントに置き換える
+  // SSR時は常に画像として扱い、クライアントサイドでのみ動画判定
+  if (!isMounted) {
     return (
-      <div 
+      <Image
+        src={src}
+        alt={alt}
+        fill={fill}
         className={className}
         style={style}
+        priority={priority}
+        unoptimized={src.includes("_local") || src.startsWith("data:")}
         suppressHydrationWarning
       />
     );
@@ -50,7 +56,6 @@ export function MediaRenderer({
         controls
         preload="metadata"
         style={style}
-        suppressHydrationWarning
       >
         お使いのブラウザは動画をサポートしていません。
       </video>
@@ -67,7 +72,6 @@ export function MediaRenderer({
       style={style}
       priority={priority}
       unoptimized={src.includes("_local") || src.startsWith("data:")}
-      suppressHydrationWarning
     />
   );
 }
