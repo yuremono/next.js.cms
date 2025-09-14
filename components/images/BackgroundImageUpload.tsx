@@ -107,7 +107,7 @@ export function BackgroundImageUpload({
   };
 
   return (
-    <div className="flex flex-wrap justify-between space-y-4">
+    <div className="flex flex-wrap justify-between space-y-2">
       <Label className="w-full">{label}</Label>
 
       {/* 画像アップロード */}

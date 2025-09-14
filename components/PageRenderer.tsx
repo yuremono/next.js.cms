@@ -10,6 +10,7 @@ import {
   extractHtmlContents,
   analyzeMultipleHtmlContents,
 } from "@/lib/html-tag-utils";
+import { MediaRenderer } from "@/components/MediaRenderer";
 import "../app/top.scss";
 
 interface PageRendererProps {
@@ -247,12 +248,21 @@ export function PageRenderer({ page }: PageRendererProps) {
                   minHeight: section.imageAspectRatio ? "auto" : "500px",
                 }}
               >
-                <Image
+                <MediaRenderer
                   src={section.image}
                   alt="Main Visual"
                   fill
                   className="object-cover"
                   priority
+                  style={{
+                    position: "absolute",
+                    height: "100%",
+                    width: "100%",
+                    left: 0,
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                  }}
                 />
               </div>
             )}
@@ -278,11 +288,20 @@ export function PageRenderer({ page }: PageRendererProps) {
                   aspectRatio: section.imageAspectRatio || "auto",
                 }}
               >
-                <Image
+                <MediaRenderer
                   src={section.image}
                   alt="Section Image"
                   fill
                   className="rounded-lg object-cover"
+                  style={{
+                    position: "absolute",
+                    height: "100%",
+                    width: "100%",
+                    left: 0,
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                  }}
                 />
               </div>
             )}
@@ -304,7 +323,7 @@ export function PageRenderer({ page }: PageRendererProps) {
             style={combinedStyle}
           >
             {section.cards.map((card, idx) => (
-              <div key={idx}>
+              <div key={idx} className={card.cardClass || ""}>
                 {card.image && (
                   <div
                     className={`relative w-full ${card.imageClass || ""}`}
@@ -313,11 +332,20 @@ export function PageRenderer({ page }: PageRendererProps) {
                       minHeight: card.imageAspectRatio ? "auto" : "200px",
                     }}
                   >
-                    <Image
+                    <MediaRenderer
                       src={card.image}
                       alt={`Card ${idx + 1}`}
                       fill
                       className="object-cover"
+                      style={{
+                        position: "absolute",
+                        height: "100%",
+                        width: "100%",
+                        left: 0,
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                      }}
                     />
                   </div>
                 )}

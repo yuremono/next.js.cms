@@ -13,14 +13,14 @@ body section .contout, footer .contout, header .contout, .blog #contents .contou
   margin-inline: var(--contout);
   max-width: unset;
 }
-body section .incontL, footer .incontL, header .incontL, .blog #contents .incontL {
-  padding-left: var(--incont);
+body section .inBaseL, footer .inBaseL, header .inBaseL, .blog #contents .inBaseL {
+  padding-left: var(--inBase);
 }
-body section .incontR, footer .incontR, header .incontR, .blog #contents .incontR {
-  padding-right: var(--incont);
+body section .inBaseR, footer .inBaseR, header .inBaseR, .blog #contents .inBaseR {
+  padding-right: var(--inBase);
 }
-body section .incont, footer .incont, header .incont, .blog #contents .incont {
-  padding-inline: var(--incont);
+body section .inBase, footer .inBase, header .inBase, .blog #contents .inBase {
+  padding-inline: var(--inBase);
 }
 body section .in1800, footer .in1800, header .in1800, .blog #contents .in1800 {
   padding-inline: var(--in1800);
@@ -184,7 +184,7 @@ body section .child480 > *, footer .child480 > *, header .child480 > *, .blog #c
   --bl2 :calc(var(--bl)*2.0);
   --bl25:calc(var(--bl)*2.5);
   --bl3 :calc(var(--bl)*3.0); */
-  --incont:calc(50vw - clamp(0px,50vw - var(--spaceX,20px), (var(--base) / 2) ));
+  --inBase:calc(50vw - clamp(0px,50vw - var(--spaceX,20px), (var(--base) / 2) ));
   --in1800:calc(50vw - clamp(0px,50vw - var(--spaceX,20px), 900px ));
   --in1740:calc(50vw - clamp(0px,50vw - var(--spaceX,20px), 870px ));
   --in1728:calc(50vw - clamp(0px,50vw - var(--spaceX,20px), 864px ));
@@ -212,8 +212,8 @@ body section .child480 > *, footer .child480 > *, header .child480 > *, .blog #c
   width: var(--base);
   max-width: calc(100% - var(--spaceX) * 2);
 }
-.left-incont {
-  left: var(--incont);
+.left-inBase {
+  left: var(--inBase);
 }
 
 section {

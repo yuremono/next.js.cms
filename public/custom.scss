@@ -1,119 +1,220 @@
 :root {
-        --base: 1200px;
-        --head: 80px;
-        --sectionMT: 6%;
-        --titleAfter: 24px;
-        --sectionPY: 60px;
-        --spaceX: 5%;
-        --gap: 24px;
+        @media (max-width: 834px) {
+          --sectionMT: 80px;
+          --sectionPY: 80px;
+        }
       }
-      body{
+
+body {
         line-height: 2;
-        font-family: "Jost","Zen kaku Gothic New",;
-      }
-      
-      main > * {
+        font-family: "Jost", "Zen kaku Gothic New";
+}
+
+main>* {
         position: relative;
         width: var(--base);
         max-width: calc(100% - var(--spaceX) * 2);
         margin-inline: auto;
-        + * {
-          margin-top: var(--sectionMT); 
-        } 
-      }   
 
-      .fullWidth {
+        +* {
+                margin-top: var(--sectionMT);
+        }
+}
+
+main a {
+        font-size: 1.375em;
+}
+
+.fullWidth {
         width: 100%;
         max-width: 100%;
-      }
-      .leftIncont{
-              left: var(--incont);
-      }
-      .container {
+}
+
+.fullWidthIn {
+        width: 100%;
+        max-width: 100%;
+        padding-inline: var(--inBase);
+}
+
+.container {
         padding-inline: 0;
         width: var(--base);
         max-width: calc(100% - var(--spaceX) * 2);
-      } 
-      
-.mindMap{
-        aspect-ratio: 2/1;
-        font-size: 2rem;
-        >*{
+}
+
+:root {
+        --mmFZ: 2rem;
+
+        @media (max-width: 640px) {
+                --mmFZ: 1rem;
+        }
+}
+
+:where(.mindMap) {
+        // aspect-ratio: 2/1;
+        height: 100vh;
+        font-size: var(--mmFZ);
+        align-content: center;
+
+        >* {
                 font-weight: inherit;
-                display: inline-block; 
+                display: inline-block;
                 cursor: default;
                 transition: .4s;
                 line-height: 1;
         }
-        >*:not(.mmStatic):hover{
-                font-weight: 200; 
+
+        >*:not(.mmStatic):hover {
+                font-weight: 200;
         }
-        >div{
+
+        >div {
                 font-weight: inherit;
                 cursor: default;
                 text-align: left;
                 line-height: 2;
         }
-} 
-.mmStatic{
-        font-weight: 200;
-        color: var(--gr); 
-}
-.mmPin{
-        position: absolute;
-        font-weight: 200;
-        line-height: 2;
-        font-family: "Zen kaku Gothic New", sans-serif;
-        color: var(--tx);
-        font-size: var(--h1FZ);
-        background-color: var(--wh70);
-        z-index: 1;
-        padding: 1rem;
-}
-.about{
-        // display: flex;
-        // align-content: center;
-        &_tx{
-                line-height: 2.5;
-                width: calc(var(--base)*0.5 );
-                max-width: 50%;
-                // height: 100%;
-                // right: var(--incont);
-                left: 50%;
-                top: 50%;
-                translate: 0 -50%;
+        >*:not(h1,h2,.about_tx,.about_p,.knowledge_tx){
+                @media (max-width: 834px){
+                    color: #bbb;
+                    pointer-events: none;
+                }
         }
 }
-.knowledge{
-        &_tx{
-                width: calc(var(--base)*0.5 );
-                max-width: 50%; 
-                left: 50%;
 
-                bottom: 50%;
-        }
-        &_bottom{
-                left:0;
-                bottom: 0%;
-                width: 100%; 
-                mix-blend-mode: difference; 
-                text-align-last: justify;
-                padding: 0 1em;
-        }
-}
 .mindWobble {
-        font-size: 2rem;
-        line-height: 1;  
-        --mmWobbleAmp: 15;        /* 全体振幅(px) */
-        --mmWobbleAmpX: 15;       /* 横振幅(px) */
-        --mmWobbleAmpY: 15;       /* 縦振幅(px) */
-        --mmWobbleFreqX: 0.0003;  /* 横周波数 */
-        --mmWobbleFreqY: 0.0003;  /* 縦周波数 */
+        font-size: calc(var(--mmFZ)*3);
+        line-height: 1;
+        --mmWobbleAmp: 15;
+        /* 全体振幅(px) */
+        --mmWobbleAmpX: 15;
+        /* 横振幅(px) */
+        --mmWobbleAmpY: 15;
+        /* 縦振幅(px) */
+        --mmWobbleFreqX: 0.0003;
+        /* 横周波数 */
+        --mmWobbleFreqY: 0.0003;
+        /* 縦周波数 */
         // >*{
         //         // &:hover {
         //         //         filter: url(#mm-warp-8);
         //         // }
         // }
+}
+
+.mmStatic {
+        font-weight: 200;
+        color: var(--gr);
+}
+
+.mmPin {
+        position: absolute;
+        font-weight: 200;
+        color: var(--tx);
+        font-size: var(--h1FZ);
+        background-color: var(--wh50);
+        z-index: 1;
+        // padding: 1rem;
+}
+
+.about {
+
+        // display: flex;
+        // align-content: center;
+        &_tx {
+                line-height: 2.5;
+                font-family: "Zen kaku Gothic New";
+                // width: calc(var(--base)*0.5 );
+                // max-width: 50%;
+                // height: 100%;
+                // right: var(--inBase);
+                left: 50%;
+                top: 50%;
+                translate: 0 -50%;
+                // width: calc(var(--base)*0.5 );
+                // max-width: 50%;
+                // height: 100%;
+                // right: var(--inBase);
+
+                z-index: 1;
+
+                @media (max-width: 1080px) {
+                        //         translate: -50% -0%;
+                        //     width: fit-content;
+                        padding: 1em;
+                        position: relative;
+                        inset: unset;
+                        translate: unset;
+                        //     text-align: center;
+                }
+        }
+
+        &_p {
+                // max-width: 50%;
+                padding: 0.25em 1em;
+                // height: 100%;
+                // right: var(--inBase);
+                right: 50%;
+                bottom: 50%;
+                translate: 0 50%;
+
+                @media (max-width: 1080px) {
+                        //         translate: -50% -0%;
+                        //     width: fit-content;
+                        position: relative;
+                        inset: unset;
+                        translate: unset;
+                        //     text-align: center;
+                }
+        }
+}
+
+.knowledge {
+        &_tx {
+                line-height: 2;
+                font-family: "Zen kaku Gothic New";
+                // width: calc(var(--base)*0.5 );
+                // max-width: 50%;
+                // height: 100%;
+                // right: var(--inBase);
+                left: 50%;
+                top: 50%;
+                translate: 0 -50%;
+                z-index: 1;
+
+                @media (max-width: 960px) {
+                        //         translate: -50% -0%;
+                        //     width: fit-content;
+                        padding: 1em;
+                        position: relative;
+                        inset: unset;
+                        translate: unset;
+                        //     text-align: center;
+                }
+        }
+
+        &_bottom {
+                left: 0;
+                bottom: 0%;
+                width: 100%;
+                mix-blend-mode: difference;
+                text-align-last: justify;
+                padding: 0 1em 0.125em;
+        }
+}
+
+.sectionPY {
+        padding-block: var(--sectionPY);
+}
+
+.inBase {
+        padding-inline: var(--inBase);
+}
+
+.dl_center {
+        dt {
+                text-align: right;
+        }
 }
 
 //       .MainVisual {
@@ -130,4 +231,3 @@
 //       /* .Form {
 //                     margin-top: var(--sectionMT);
 //                   } */
-      

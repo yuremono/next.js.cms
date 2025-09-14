@@ -240,7 +240,7 @@ $menu: 960px;
     --bl2 :calc(var(--bl)*2.0);
     --bl25:calc(var(--bl)*2.5);
     --bl3 :calc(var(--bl)*3.0);
-    --incont:calc(50vw - clamp(0px,50vw - var(--pad,20px), (var(--base) / 2) ));
+    --inBase:calc(50vw - clamp(0px,50vw - var(--pad,20px), (var(--base) / 2) ));
     --in1800:calc(50vw - clamp(0px,50vw - var(--pad,20px), 900px ));
     --in1740:calc(50vw - clamp(0px,50vw - var(--pad,20px), 870px ));
     --in1728:calc(50vw - clamp(0px,50vw - var(--pad,20px), 864px ));
@@ -287,7 +287,7 @@ $menu: 960px;
 %bg100in ,.bg100in{
     margin-inline: var(--contout)!important;
     max-width: unset;
-    padding-inline: var(--incont);
+    padding-inline: var(--inBase);
 }
 %bg100,.bg100 {
     margin-inline: var(--contout)!important;
@@ -307,7 +307,7 @@ $menu: 960px;
 %wrapper100in ,.wrapper100in{
     margin-inline: var(--contout)!important;
     max-width: unset;
-    padding-inline: var(--incont);
+    padding-inline: var(--inBase);
     padding-block: var(--Wpdb);
     background-size: cover;
 

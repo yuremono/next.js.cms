@@ -1,12 +1,9 @@
 @charset "UTF-8";
-:root {
-  --base: 1200px;
-  --head: 80px;
-  --sectionMT: 6%;
-  --titleAfter: 24px;
-  --sectionPY: 60px;
-  --spaceX: 5%;
-  --gap: 24px;
+@media (max-width: 834px) {
+  :root {
+    --sectionMT: 80px;
+    --sectionPY: 80px;
+  }
 }
 
 body {
@@ -24,13 +21,19 @@ main > * + * {
   margin-top: var(--sectionMT);
 }
 
+main a {
+  font-size: 1.375em;
+}
+
 .fullWidth {
   width: 100%;
   max-width: 100%;
 }
 
-.leftIncont {
-  left: var(--incont);
+.fullWidthIn {
+  width: 100%;
+  max-width: 100%;
+  padding-inline: var(--inBase);
 }
 
 .container {
@@ -39,11 +42,22 @@ main > * + * {
   max-width: calc(100% - var(--spaceX) * 2);
 }
 
-.mindMap {
-  aspect-ratio: 2/1;
-  font-size: 2rem;
+:root {
+  --mmFZ: 2rem;
 }
-.mindMap > * {
+@media (max-width: 640px) {
+  :root {
+    --mmFZ: 1rem;
+  }
+}
+
+:where(.mindMap) {
+  height: 100vh;
+  font-size: var(--mmFZ);
+  -ms-flex-line-pack: center;
+      align-content: center;
+}
+:where(.mindMap) > * {
   font-weight: inherit;
   display: inline-block;
   cursor: default;
@@ -51,14 +65,35 @@ main > * + * {
   transition: 0.4s;
   line-height: 1;
 }
-.mindMap > *:not(.mmStatic):hover {
+:where(.mindMap) > *:not(.mmStatic):hover {
   font-weight: 200;
 }
-.mindMap > div {
+:where(.mindMap) > div {
   font-weight: inherit;
   cursor: default;
   text-align: left;
   line-height: 2;
+}
+@media (max-width: 834px) {
+  :where(.mindMap) > *:not(h1, h2, .about_tx, .about_p, .knowledge_tx) {
+    color: #bbb;
+    pointer-events: none;
+  }
+}
+
+.mindWobble {
+  font-size: calc(var(--mmFZ) * 3);
+  line-height: 1;
+  --mmWobbleAmp: 15;
+  /* 全体振幅(px) */
+  --mmWobbleAmpX: 15;
+  /* 横振幅(px) */
+  --mmWobbleAmpY: 15;
+  /* 縦振幅(px) */
+  --mmWobbleFreqX: 0.0003;
+  /* 横周波数 */
+  --mmWobbleFreqY: 0.0003;
+  /* 縦周波数 */
 }
 
 .mmStatic {
@@ -69,29 +104,57 @@ main > * + * {
 .mmPin {
   position: absolute;
   font-weight: 200;
-  line-height: 2;
-  font-family: "Zen kaku Gothic New", sans-serif;
   color: var(--tx);
   font-size: var(--h1FZ);
-  background-color: var(--wh70);
+  background-color: var(--wh50);
   z-index: 1;
-  padding: 1rem;
 }
 
 .about_tx {
   line-height: 2.5;
-  width: calc(var(--base) * 0.5);
-  max-width: 50%;
+  font-family: "Zen kaku Gothic New";
   left: 50%;
   top: 50%;
   translate: 0 -50%;
+  z-index: 1;
+}
+@media (max-width: 1080px) {
+  .about_tx {
+    padding: 1em;
+    position: relative;
+    inset: unset;
+    translate: unset;
+  }
+}
+.about_p {
+  padding: 0.25em 1em;
+  right: 50%;
+  bottom: 50%;
+  translate: 0 50%;
+}
+@media (max-width: 1080px) {
+  .about_p {
+    position: relative;
+    inset: unset;
+    translate: unset;
+  }
 }
 
 .knowledge_tx {
-  width: calc(var(--base) * 0.5);
-  max-width: 50%;
+  line-height: 2;
+  font-family: "Zen kaku Gothic New";
   left: 50%;
-  bottom: 50%;
+  top: 50%;
+  translate: 0 -50%;
+  z-index: 1;
+}
+@media (max-width: 960px) {
+  .knowledge_tx {
+    padding: 1em;
+    position: relative;
+    inset: unset;
+    translate: unset;
+  }
 }
 .knowledge_bottom {
   left: 0;
@@ -100,15 +163,17 @@ main > * + * {
   mix-blend-mode: difference;
   -moz-text-align-last: justify;
        text-align-last: justify;
-  padding: 0 1em;
+  padding: 0 1em 0.125em;
 }
 
-.mindWobble {
-  font-size: 2rem;
-  line-height: 1;
-  --mmWobbleAmp: 15; /* 全体振幅(px) */
-  --mmWobbleAmpX: 15; /* 横振幅(px) */
-  --mmWobbleAmpY: 15; /* 縦振幅(px) */
-  --mmWobbleFreqX: 0.0003; /* 横周波数 */
-  --mmWobbleFreqY: 0.0003; /* 縦周波数 */
+.sectionPY {
+  padding-block: var(--sectionPY);
+}
+
+.inBase {
+  padding-inline: var(--inBase);
+}
+
+.dl_center dt {
+  text-align: right;
 }

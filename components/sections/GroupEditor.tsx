@@ -31,7 +31,7 @@ export function GroupEditor({ section, onUpdate }: GroupEditorProps) {
   const handleBgImageChange = (img: string | null) => {
     onUpdate({
       ...section,
-      bgImage: img || undefined,
+      bgImage: img || "", // undefinedではなく空文字列に設定
     });
   };
 

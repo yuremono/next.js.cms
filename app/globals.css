@@ -31,7 +31,7 @@
     --secondary: hsl(215, 32.10%, 89.60%);
     --secondary-foreground: hsl(0, 0%, 10%);
     --muted: hsl(0, 0%, 95%);
-    --muted-foreground: hsl(0, 0%, 35%);
+    --muted-foreground: hsl(0, 0%, 70%);
     --accent: hsl(0, 0%, 95%);
     --accent-foreground: hsl(0, 0%, 10%);
     --destructive: hsl(0, 84%, 60%);
@@ -54,7 +54,7 @@
     --secondary: hsl(0, 0%, 18%);
     --secondary-foreground: hsl(0, 0%, 98%);
     --muted: hsl(0, 0%, 25%);
-    --muted-foreground: hsl(0, 0%, 65%);
+    --muted-foreground: hsl(0, 0%, 30%);
     --accent: hsl(0, 0%, 18%);
     --accent-foreground: hsl(0, 0%, 98%);
     --destructive: hsl(0, 84%, 60%);
@@ -69,13 +69,16 @@
   * {
     @apply border-border;
   }
-
+  html{
+        overflow-x: hidden;
+  }
   body {
     @apply bg-background text-foreground;
     font-feature-settings:
       "rlig" 1,
       "calt" 1;
     font-family: var(--font-family-base);
+    overflow-x: hidden;
   }
 
   /* label要素のテキスト選択を可能にする */
@@ -97,7 +100,7 @@
         --hls:0.02em;
         --bigFZ:clamp(36px, 8vw, 64px);
     
-        --h1FZ:clamp(16px, 2.4vw, 20px);
+        --h1FZ:clamp(14px, 2.4vw, 20px);
         --h2FZ:clamp(24px, 3vw, 32px);
         --h3FZ:clamp(20px, 2.4vw, 24px);
         --PFZ:clamp(20px, 2.4vw, 24px);
@@ -139,7 +142,7 @@
   --bl2: calc(var(--bl) * 2);
   --bl25: calc(var(--bl) * 2.5);
   --bl3: calc(var(--bl) * 3); */
-  --incont: calc(
+  --inBase: calc(
     50vw - clamp(0px, 50vw - var(--spaceX, 20px), (var(--base) / 2))
   );
   --in1800: calc(50vw - clamp(0px, 50vw - var(--spaceX, 20px), 900px));
@@ -194,6 +197,9 @@ body>*{
         .fontJost{font-family: 'Jost', sans-serif;}
         .txgr, .txgr *{color: var(--gr);}
 }
+b, strong{
+        font-weight: 700;
+}
 
 /* CMSスタイル定義 */
 .field-sizing-content {
@@ -201,16 +207,20 @@ body>*{
 }
 
 .Cards {
-  --col: var(--cms-col, 3);
-  max-width: var(--base);
+  --col: 3;
+  @media (max-width: 480px){
+          --col: 4;
+}
   margin-inline: auto;
   display: grid;
-  gap: var(--gap);
+  gap: calc(var(--gap)*1) var(--gap);
   grid-template-columns: repeat(
     auto-fit,
     minmax(calc(var(--base) / var(--col) - var(--gap)), 1fr)
   );
-
+        >*{
+                max-width:100%;
+        }
 }
 
 
@@ -289,7 +299,7 @@ body>*{
 }
 
 /* レスポンシブフォントサイズ - Tailwind変数を活用 */
-@media (max-width: 834px) {
+@media (max-width: 960px) {
   :root {
     --text-base: 0.875rem;
     /* 14px */
@@ -322,7 +332,7 @@ body>*{
   flex-wrap: wrap;
   overflow: hidden;
   min-height: calc(100vh - 80px);
-  /* @container editor (width >= 834px) {
+  /* @container editor (width >= 960px) {
     flex-direction: row;
   } */
 }
@@ -424,8 +434,8 @@ body>*{
   flex-direction: column;
 }
 
-/* WorkspaceLayoutのコンテナクエリ - デスクトップレイアウト（834px以上） */
-@container workspace (width >=834px) {
+/* WorkspaceLayoutのコンテナクエリ - デスクトップレイアウト（960px以上） */
+@container workspace (width >=960px) {
   div.SortableSectionsOuter {
     display: block;
   }
@@ -460,7 +470,7 @@ body>*{
 }
 
 /* 分割モード時の調整（split-modeクラスが付いている場合） */
-@container (width >=834px) {
+@container (width >=960px) {
   /* .TabsPanel.split-mode {
     width: 12rem; 
   }
@@ -479,25 +489,27 @@ body>*{
 /* DescList Section - 定義リスト */
 .DescList dl {
   display: grid;
-  grid-template-columns: var(--dtWidth, 20%) 1fr;
-  gap: 0.5rem 1rem;
+  grid-template-columns: calc(var(--dtWidth, 20%)) 1fr;
+  /* gap: var(--gap); */
   margin: 0;
 }
 
 .DescList dt {
   font-weight: 600;
   margin: 0;
-  padding: 0.5rem 0;
+  padding-inline: calc(var(--gap)/2) ;
+  padding-block: 1em;
   align-self: start;
 }
 
 .DescList dd {
-  margin: 0;
-  padding: 0.5rem 0;
+        margin: 0;
+        padding-inline: calc(var(--gap)/2) ;
+  padding-block: 1em;
   align-self: start;
 }
 
-@media (max-width: 640px) {
+/* @media (max-width: 640px) {
   .DescList dl {
     grid-template-columns: 1fr;
     gap: 0.25rem;
@@ -513,4 +525,22 @@ body>*{
     padding-left: 1rem;
     margin-bottom: 1rem;
   }
+} */
+
+/* RTL（Right-to-Left）サポート */
+
+.dir-rtl {
+  direction: rtl;
+}
+
+.dir-ltr {
+  direction: ltr;
+}
+
+.rtl {
+  direction: rtl;
+}
+
+.ltr {
+  direction: ltr;
 }

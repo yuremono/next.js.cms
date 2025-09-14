@@ -232,7 +232,7 @@ h1, .h1FZ, .h1FZ *, .blog h1, .title1 p {
   --bl2:calc(var(--bl)*2.0);
   --bl25:calc(var(--bl)*2.5);
   --bl3:calc(var(--bl)*3.0);
-  --incont:calc(50vw - clamp(0px,50vw - var(--pad,20px), (var(--base) / 2) ));
+  --inBase:calc(50vw - clamp(0px,50vw - var(--pad,20px), (var(--base) / 2) ));
   --in1800:calc(50vw - clamp(0px,50vw - var(--pad,20px), 900px ));
   --in1740:calc(50vw - clamp(0px,50vw - var(--pad,20px), 870px ));
   --in1728:calc(50vw - clamp(0px,50vw - var(--pad,20px), 864px ));
@@ -270,7 +270,7 @@ h1, .h1FZ, .h1FZ *, .blog h1, .title1 p {
 .bg100in {
   margin-inline: var(--contout) !important;
   max-width: unset;
-  padding-inline: var(--incont);
+  padding-inline: var(--inBase);
 }
 
 .title1, .mv, .fb_spot, .head_01, .bg100 {
@@ -293,7 +293,7 @@ h1, .h1FZ, .h1FZ *, .blog h1, .title1 p {
 .wrapper100in {
   margin-inline: var(--contout) !important;
   max-width: unset;
-  padding-inline: var(--incont);
+  padding-inline: var(--inBase);
   padding-block: var(--Wpdb);
   background-size: cover;
 }
@@ -5281,7 +5281,7 @@ div:has(> .bgToright, > .bgToBottom) {
 
 .head_01 {
   margin-top: var(--bl06);
-  padding-inline: var(--incont);
+  padding-inline: var(--inBase);
   padding-block: 1.5em;
   background-color: var(--bc);
 }
@@ -7129,7 +7129,7 @@ div:has(> .bgToright, > .bgToBottom) {
   width: calc(50% - var(--g));
 }
 .fb_spot > :nth-child(2):is(.__rev *) article > div {
-  padding-inline: var(--incont) var(--pad);
+  padding-inline: var(--inBase) var(--pad);
 }
 .fb_spot > :nth-child(2):is(.__rev *) article img {
   margin-inline: 0 auto;
@@ -7175,7 +7175,7 @@ div:has(> .bgToright, > .bgToBottom) {
   gap: 1.5em;
   width: 100%;
   height: 100%;
-  padding-inline: var(--pad) var(--incont);
+  padding-inline: var(--pad) var(--inBase);
 }
 .fb_spot > :nth-child(2) > article > div em {
   font-size: var(--f20);
@@ -13663,7 +13663,7 @@ p:has(a) {
   -webkit-box-pack: center;
       -ms-flex-pack: center;
           justify-content: center;
-  padding-inline: var(--incont);
+  padding-inline: var(--inBase);
   min-height: var(--h);
   width: 100%;
 }
@@ -13720,7 +13720,7 @@ p:has(a) {
   display: grid;
   place-items: end;
   place-content: unset;
-  padding-inline: var(--incont);
+  padding-inline: var(--inBase);
   padding-block: var(--bl05);
   height: 100%;
   color: var(--wh);
@@ -14109,11 +14109,11 @@ p:has(a) {
 }
 .it01.imgOut .im, .ti01.imgOut .im {
   margin-inline: var(--contout);
-  max-width: calc(var(--imgW) + var(--incont));
-  width: calc(var(--imgW) + var(--incont));
+  max-width: calc(var(--imgW) + var(--inBase));
+  width: calc(var(--imgW) + var(--inBase));
 }
 .it01.imgOut article, .ti01.imgOut article {
-  padding-inline: var(--incont);
+  padding-inline: var(--inBase);
 }
 @media (width <= 834px) {
   .it01.imgOut > *:is(#contents .im), .ti01.imgOut > *:is(#contents .im) {
@@ -14310,7 +14310,7 @@ p:has(a) {
 }
 .it01.kasouIT .im, .ti01.kasouIT .im {
   overflow: hidden;
-  width: calc(55% + var(--incont));
+  width: calc(55% + var(--inBase));
 }
 .it01.kasouIT .im img, .ti01.kasouIT .im img {
   border-radius: unset;
@@ -14805,7 +14805,7 @@ p:has(a) {
   pointer-events: none;
   position: absolute;
   bottom: 0%;
-  left: var(--incont);
+  left: var(--inBase);
   width: 24em;
   max-width: calc(100% - var(--pad2));
   aspect-ratio: 2/1;
@@ -15254,14 +15254,14 @@ body section .contout, footer .contout, header .contout, .blog #contents .contou
   margin-inline: var(--contout);
   max-width: unset;
 }
-body section .incontL, footer .incontL, header .incontL, .blog #contents .incontL {
-  padding-left: var(--incont);
+body section .inBaseL, footer .inBaseL, header .inBaseL, .blog #contents .inBaseL {
+  padding-left: var(--inBase);
 }
-body section .incontR, footer .incontR, header .incontR, .blog #contents .incontR {
-  padding-right: var(--incont);
+body section .inBaseR, footer .inBaseR, header .inBaseR, .blog #contents .inBaseR {
+  padding-right: var(--inBase);
 }
-body section .incont, footer .incont, header .incont, .blog #contents .incont {
-  padding-inline: var(--incont);
+body section .inBase, footer .inBase, header .inBase, .blog #contents .inBase {
+  padding-inline: var(--inBase);
 }
 body section .in1800, footer .in1800, header .in1800, .blog #contents .in1800 {
   padding-inline: var(--in1800);
@@ -15639,14 +15639,14 @@ body section .pad10mi, footer .pad10mi, header .pad10mi, .blog #contents .pad10m
 body section .pad12mi, footer .pad12mi, header .pad12mi, .blog #contents .pad12mi {
   padding: 12vmin;
 }
-body section .pr-incont, footer .pr-incont, header .pr-incont, .blog #contents .pr-incont {
-  padding-right: var(--incont);
+body section .pr-inBase, footer .pr-inBase, header .pr-inBase, .blog #contents .pr-inBase {
+  padding-right: var(--inBase);
 }
-body section .pl-incont, footer .pl-incont, header .pl-incont, .blog #contents .pl-incont {
-  padding-left: var(--incont);
+body section .pl-inBase, footer .pl-inBase, header .pl-inBase, .blog #contents .pl-inBase {
+  padding-left: var(--inBase);
 }
-body section .py-incont, footer .py-incont, header .py-incont, .blog #contents .py-incont {
-  padding-inline: var(--incont);
+body section .py-inBase, footer .py-inBase, header .py-inBase, .blog #contents .py-inBase {
+  padding-inline: var(--inBase);
 }
 
 body section .ptB3, footer .ptB3, header .ptB3, .blog #contents .ptB3 {
@@ -17797,7 +17797,7 @@ main > * + * {
   max-width: 50%;
   -ms-flex-line-pack: center;
       align-content: center;
-  right: var(--incont);
+  right: var(--inBase);
   top: 50%;
   translate: 0 -50%;
 }
@@ -17805,7 +17805,7 @@ main > * + * {
 .knowledge_tx {
   width: calc(var(--base) * 0.5);
   max-width: 50%;
-  left: var(--incont);
+  left: var(--inBase);
   top: 0;
 }
 .knowledge_bottom {

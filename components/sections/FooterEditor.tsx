@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Card } from "../ui/card";
 import { Footer } from "@/types";
-import { SimpleHtmlEditor } from "../ui/simple-html-editor";
+import { SimpleHtmlEditor } from "../ui/SimpleHtmlEditor";
 import { Label } from "../ui/label";
 interface FooterEditorProps {
 	footer: Footer;

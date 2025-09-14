@@ -1,0 +1,17 @@
+:root {
+  /* レイアウト関連の変数 */
+  --base: 1200px;
+  --head: 80px;
+  --sectionMT: 120px;
+  --titleAfter: 24px;
+  --sectionPY: 120px;
+  --spaceX: 5%;
+  --gap: 6vmin;
+
+  /* カラー関連の変数 */
+  --mc: #3b82f6;
+  --sc: #64748b;
+  --ac: #f59e0b;
+  --bc: #ffffff;
+  --tx: #1f2937;
+}

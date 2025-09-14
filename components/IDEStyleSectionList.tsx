@@ -248,7 +248,7 @@ export default function IDEStyleSectionList({
         (activeElement.tagName === "TEXTAREA" ||
           activeElement.tagName === "INPUT" ||
           (activeElement as HTMLElement).contentEditable === "true" ||
-          activeElement.closest(".simple-html-editor") ||
+          activeElement.closest(".SimpleHtmlEditor") ||
           activeElement.closest(".monaco-editor") ||
           activeElement.closest("[data-keybinding-context]") || // Monaco Editor内部要素
           activeElement.classList.contains("monaco-editor") ||

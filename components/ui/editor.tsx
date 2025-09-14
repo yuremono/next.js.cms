@@ -1,7 +1,7 @@
 "use client";
 
 import { MonacoEditor } from "./monaco-editor";
-import { SimpleHtmlEditor } from "./simple-html-editor";
+import { SimpleHtmlEditor } from "./SimpleHtmlEditor";
 
 interface EditorProps {
   content: string;

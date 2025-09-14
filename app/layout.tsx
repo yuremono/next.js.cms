@@ -5,6 +5,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import { CustomCSSLoader } from "@/components/CustomCSSLoader";
 import { CustomJSLoader } from "@/components/CustomJSLoader";
+import { VariablesLoader } from "@/components/VariablesLoader";
 import Script from "next/script";
 
 // <html>や<body>は既存のまま
@@ -12,7 +13,7 @@ import Script from "next/script";
 <Script
   src="https://unpkg.com/budoux/bundle/budoux-ja.min.js"
   strategy="afterInteractive"
-/>
+/>;
 // 開発環境でのみaxe-coreを初期化
 if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
   import("@axe-core/react").then((axe) => {
@@ -36,6 +37,8 @@ export default function RootLayout({
     <html lang="ja" suppressHydrationWarning>
       <head />
       <body>
+        {/* CSS読み込み順序: variables.css → custom.css */}
+        <VariablesLoader />
         <CustomCSSLoader />
         <CustomJSLoader />
         {children}

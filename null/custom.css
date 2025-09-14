@@ -23,8 +23,8 @@ main > * + * {
   max-width: 100%;
 }
 
-.leftIncont {
-  left: var(--incont);
+.leftinBase {
+  left: var(--inBase);
 }
 
 .container {

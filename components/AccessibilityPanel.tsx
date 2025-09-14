@@ -44,7 +44,7 @@ export function AccessibilityPanel() {
         (activeElement.tagName === "TEXTAREA" ||
           activeElement.tagName === "INPUT" ||
           activeElement.contentEditable === "true" ||
-          activeElement.closest(".simple-html-editor") ||
+          activeElement.closest(".SimpleHtmlEditor") ||
           activeElement.closest(".monaco-editor") ||
           activeElement.closest("[data-keybinding-context]") ||
           activeElement.classList.contains("monaco-editor") ||

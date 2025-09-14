@@ -1399,7 +1399,7 @@
         }
         >:nth-child(2){
             &:is(.__rev *){
-                article>div{padding-inline: var(--incont) var(--pad)}
+                article>div{padding-inline: var(--inBase) var(--pad)}
                 article img{
                     margin-inline: 0 auto;
                     @include bp960{
@@ -1432,7 +1432,7 @@
                     gap: 1.5em;
                     width: 100%;
                     height: 100%;
-                    padding-inline: var(--pad) var(--incont) ;
+                    padding-inline: var(--pad) var(--inBase) ;
                     em{
                         font-size: var(--f20);font-weight: bold;
                         padding: .5em 1em;

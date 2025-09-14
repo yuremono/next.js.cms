@@ -431,7 +431,7 @@ p:has(a){
 
     &_inner, article{
         display: flex;flex-direction: column;justify-content: center;
-        padding-inline: var(--incont);
+        padding-inline: var(--inBase);
         min-height: var(--h);
         width: 100%;
         @media (width <= 1440px){
@@ -488,7 +488,7 @@ p:has(a){
         .title1_inner{
             display: grid;place-items: end;
             place-content: unset;
-            padding-inline: var(--incont);
+            padding-inline: var(--inBase);
             padding-block: var(--bl05);
             height: 100%;
             color: var(--wh);
@@ -979,12 +979,12 @@ p:has(a){
         &.ti01 img{border-radius: var(--rad) 0 0 var(--rad) ;}
         .im{
             margin-inline: var(--contout);
-            max-width: calc(var(--imgW) + var(--incont) );
-            width: calc(var(--imgW) + var(--incont) );
+            max-width: calc(var(--imgW) + var(--inBase) );
+            width: calc(var(--imgW) + var(--inBase) );
 
         }
         article{
-            padding-inline: var(--incont);
+            padding-inline: var(--inBase);
         }
         @media (width <= 834px){
             >*:is(#contents .im){
@@ -1145,7 +1145,7 @@ p:has(a){
         +.KasouIT{margin-top: unset;}
         .im{
             overflow: hidden;
-            width: calc(55% + var(--incont));
+            width: calc(55% + var(--inBase));
             img{
                 border-radius: unset;
                 height: 100%!important;
@@ -1771,7 +1771,7 @@ p:has(a){
     }
     position: absolute;
     bottom: 0%;
-    left:var(--incont);
+    left:var(--inBase);
     width: 24em;
     max-width: calc(100% - var(--pad2));
     aspect-ratio: 2/1;

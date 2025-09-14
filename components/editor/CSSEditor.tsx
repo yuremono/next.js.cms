@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { SimpleHtmlEditor } from "@/components/ui/simple-html-editor";
+import { SimpleHtmlEditor } from "../ui/SimpleHtmlEditor";
 import { VariableField } from "@/components/ui/variable-field";
 import { VariableColorField } from "@/components/ui/variable-color-field";
 import { ChevronDown } from "lucide-react";
@@ -34,7 +34,7 @@ interface CSSVariables {
 export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
   const [css, setCSS] = useState(initialCSS || "");
 
-  // CSS変数の状態（デフォルト値なし）
+  // CSS変数の状態
   const [cssVariables, setCssVariables] = useState<CSSVariables>({
     contentMaxWidth: "",
     headerHeight: "",
@@ -59,12 +59,24 @@ export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
   // 初期CSSが更新された場合に状態を更新
   useEffect(() => {
     setCSS(initialCSS || "");
-    // 初期CSSから変数を抽出してフォームに設定
-    if (initialCSS) {
-      const extractedVariables = extractCSSVariables(initialCSS);
-      setCssVariables(extractedVariables);
-    }
   }, [initialCSS]);
+
+  // 初期化時にvariables.cssから変数を読み込み
+  useEffect(() => {
+    const loadVariables = async () => {
+      try {
+        const response = await fetch("/api/variables");
+        if (response.ok) {
+          const { css: variablesCss } = await response.json();
+          const extractedVariables = extractCSSVariables(variablesCss);
+          setCssVariables(extractedVariables);
+        }
+      } catch (error) {
+        console.warn("変数の読み込みに失敗しました:", error);
+      }
+    };
+    loadVariables();
+  }, []);
 
   // CSSの変更を処理
   const handleCSSChange = (newCSS: string) => {
@@ -124,6 +136,8 @@ export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
   const generateVariablesCSS = (variables: CSSVariables) => {
     const variablesList = [];
 
+    // レイアウト関連のコメント
+    variablesList.push("  /* レイアウト関連の変数 */");
     if (variables.contentMaxWidth)
       variablesList.push(`  --base: ${variables.contentMaxWidth};`);
     if (variables.headerHeight)
@@ -137,6 +151,10 @@ export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
     if (variables.sectionPaddingX)
       variablesList.push(`  --spaceX: ${variables.sectionPaddingX};`);
     if (variables.cardGap) variablesList.push(`  --gap: ${variables.cardGap};`);
+
+    // カラー関連のコメント
+    variablesList.push("");
+    variablesList.push("  /* カラー関連の変数 */");
     if (variables.primaryColor)
       variablesList.push(`  --mc: ${variables.primaryColor};`);
     if (variables.secondaryColor)
@@ -148,25 +166,7 @@ export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
     if (variables.textColor)
       variablesList.push(`  --tx: ${variables.textColor};`);
 
-    if (variablesList.length === 0) return "";
-
-    return `:root {\n${variablesList.join("\n")}\n}\n\n`;
-  };
-
-  // 変数CSSとカスタムCSSを統合
-  const mergeVariablesWithCustomCSS = (
-    variablesCSS: string,
-    customCSS: string
-  ) => {
-    if (!variablesCSS) return customCSS;
-
-    // 既存のカスタムCSSから:rootブロックを除去
-    const cssWithoutVariables = customCSS
-      .replace(/:root\s*\{[^}]*\}\s*/g, "")
-      .trim();
-
-    // 変数CSSと残りのCSSを結合
-    return variablesCSS + (cssWithoutVariables ? cssWithoutVariables : "");
+    return `:root {\n${variablesList.join("\n")}\n}`;
   };
 
   // 変数CSSファイル更新（デバウンス）
@@ -179,7 +179,7 @@ export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
       debounceTimerRef.current = setTimeout(async () => {
         try {
           const variablesCSS = generateVariablesCSS(variables);
-          const response = await fetch("/api/css", {
+          const response = await fetch("/api/variables", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -206,14 +206,8 @@ export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
     };
     setCssVariables(newVariables);
 
-    // 変数をpublic/custom.cssに保存（カスタムCSSとは独立）
+    // 変数をpublic/variables.cssに保存
     debouncedUpdateVariablesFile(newVariables);
-
-    // 現在のカスタムCSSと変数CSSを統合してカスタムCSS編集エリアも更新
-    const variablesCSS = generateVariablesCSS(newVariables);
-    const updatedCSS = mergeVariablesWithCustomCSS(variablesCSS, css);
-    setCSS(updatedCSS);
-    onUpdate(updatedCSS);
   };
 
   return (
@@ -395,7 +389,7 @@ export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
               <h4 className="mb-2 font-medium">使用方法</h4>
               <div className="space-y-2   ">
                 <p>
-                  上記の変数設定で基本的なレイアウトとカラーを調整できます。設定した値は自動的に保存・表示されます。
+                  上記の変数設定で基本的なレイアウトとカラーを調整できます。設定した値は自動的にvariables.cssに保存・表示されます。
                 </p>
                 <p>
                   カスタムCSSエリアでは、設定した変数を{" "}

@@ -28,6 +28,11 @@ export function SimpleHtmlEditor({
   const [previewMode, setPreviewMode] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // アンドゥ・リドゥ履歴管理
+  const [history, setHistory] = useState<string[]>([value]);
+  const [historyIndex, setHistoryIndex] = useState(0);
+  const [isUndoRedoOperation, setIsUndoRedoOperation] = useState(false);
+
   const convertLineBreaksToHtml = useCallback((text: string): string => {
     return text.replace(/\r?\n/g, "<br>");
   }, []);
@@ -35,6 +40,65 @@ export function SimpleHtmlEditor({
   const convertHtmlToLineBreaks = useCallback((html: string): string => {
     return html.replace(/<br\s*\/?>/gi, "\n");
   }, []);
+
+  // 履歴に新しい値を追加
+  const addToHistory = useCallback(
+    (newValue: string) => {
+      if (isUndoRedoOperation) return;
+
+      setHistory((prev) => {
+        const newHistory = prev.slice(0, historyIndex + 1);
+        newHistory.push(newValue);
+        // 履歴の上限を50に制限
+        if (newHistory.length > 50) {
+          newHistory.shift();
+          return newHistory;
+        }
+        return newHistory;
+      });
+      setHistoryIndex((prev) => prev + 1);
+    },
+    [historyIndex, isUndoRedoOperation]
+  );
+
+  // アンドゥ実行
+  const performUndo = useCallback(() => {
+    if (historyIndex > 0) {
+      const newIndex = historyIndex - 1;
+      const previousValue = history[newIndex];
+      setHistoryIndex(newIndex);
+      setIsUndoRedoOperation(true);
+      onChange(previousValue);
+
+      // 次のフレームでフラグをリセット
+      requestAnimationFrame(() => {
+        setIsUndoRedoOperation(false);
+      });
+    }
+  }, [history, historyIndex, onChange]);
+
+  // リドゥ実行
+  const performRedo = useCallback(() => {
+    if (historyIndex < history.length - 1) {
+      const newIndex = historyIndex + 1;
+      const nextValue = history[newIndex];
+      setHistoryIndex(newIndex);
+      setIsUndoRedoOperation(true);
+      onChange(nextValue);
+
+      // 次のフレームでフラグをリセット
+      requestAnimationFrame(() => {
+        setIsUndoRedoOperation(false);
+      });
+    }
+  }, [history, historyIndex, onChange]);
+
+  // プロパティのvalueが外部から変更された時に履歴を更新
+  useEffect(() => {
+    if (!isUndoRedoOperation && value !== history[historyIndex]) {
+      addToHistory(value);
+    }
+  }, [value, history, historyIndex, isUndoRedoOperation, addToHistory]);
 
   const getDisplayValue = useCallback((): string => {
     if (autoConvertLineBreaks) {
@@ -52,12 +116,16 @@ export function SimpleHtmlEditor({
       const cursorStart = textarea.selectionStart;
       const cursorEnd = textarea.selectionEnd;
 
+      let finalValue: string;
       if (autoConvertLineBreaks) {
-        const htmlValue = convertLineBreaksToHtml(newValue);
-        onChange(htmlValue);
+        finalValue = convertLineBreaksToHtml(newValue);
       } else {
-        onChange(newValue);
+        finalValue = newValue;
       }
+
+      // 履歴に追加
+      addToHistory(finalValue);
+      onChange(finalValue);
 
       // React再レンダリング後にカーソル位置を復元
       requestAnimationFrame(() => {
@@ -66,7 +134,7 @@ export function SimpleHtmlEditor({
         }
       });
     },
-    [autoConvertLineBreaks, convertLineBreaksToHtml, onChange]
+    [autoConvertLineBreaks, convertLineBreaksToHtml, onChange, addToHistory]
   );
 
   // カーソル位置を安全に設定するヘルパー関数
@@ -116,6 +184,9 @@ export function SimpleHtmlEditor({
         const newValue = autoConvertLineBreaks
           ? convertLineBreaksToHtml(newText)
           : newText;
+
+        // 履歴に追加
+        addToHistory(newValue);
         onChange(newValue);
 
         // カーソル位置を調整
@@ -148,6 +219,9 @@ export function SimpleHtmlEditor({
         const newValue = autoConvertLineBreaks
           ? convertLineBreaksToHtml(newText)
           : newText;
+
+        // 履歴に追加
+        addToHistory(newValue);
         onChange(newValue);
 
         // カーソル位置を調整
@@ -164,6 +238,7 @@ export function SimpleHtmlEditor({
       autoConvertLineBreaks,
       convertLineBreaksToHtml,
       setCursorPosition,
+      addToHistory,
     ]
   );
 
@@ -216,6 +291,9 @@ export function SimpleHtmlEditor({
     const newValue = autoConvertLineBreaks
       ? convertLineBreaksToHtml(newText)
       : newText;
+
+    // 履歴に追加
+    addToHistory(newValue);
     onChange(newValue);
 
     setCursorPosition(textarea, newStart, newEnd);
@@ -226,6 +304,7 @@ export function SimpleHtmlEditor({
     convertLineBreaksToHtml,
     commentStyle,
     setCursorPosition,
+    addToHistory,
   ]);
 
   // インデントの実装（改善版）
@@ -243,6 +322,9 @@ export function SimpleHtmlEditor({
       const newValue = autoConvertLineBreaks
         ? convertLineBreaksToHtml(newText)
         : newText;
+
+      // 履歴に追加
+      addToHistory(newValue);
       onChange(newValue);
 
       setCursorPosition(textarea, start + 4, start + 4);
@@ -260,6 +342,9 @@ export function SimpleHtmlEditor({
       const newValue = autoConvertLineBreaks
         ? convertLineBreaksToHtml(newText)
         : newText;
+
+      // 履歴に追加
+      addToHistory(newValue);
       onChange(newValue);
 
       setCursorPosition(textarea, start, start + indentedText.length);
@@ -270,6 +355,7 @@ export function SimpleHtmlEditor({
     autoConvertLineBreaks,
     convertLineBreaksToHtml,
     setCursorPosition,
+    addToHistory,
   ]);
 
   // アンインデントの実装（改善版）
@@ -291,6 +377,9 @@ export function SimpleHtmlEditor({
         const newValue = autoConvertLineBreaks
           ? convertLineBreaksToHtml(newText)
           : newText;
+
+        // 履歴に追加
+        addToHistory(newValue);
         onChange(newValue);
 
         setCursorPosition(textarea, start - 4, start - 4);
@@ -299,6 +388,9 @@ export function SimpleHtmlEditor({
         const newValue = autoConvertLineBreaks
           ? convertLineBreaksToHtml(newText)
           : newText;
+
+        // 履歴に追加
+        addToHistory(newValue);
         onChange(newValue);
 
         setCursorPosition(textarea, start - 1, start - 1);
@@ -324,6 +416,9 @@ export function SimpleHtmlEditor({
       const newValue = autoConvertLineBreaks
         ? convertLineBreaksToHtml(newText)
         : newText;
+
+      // 履歴に追加
+      addToHistory(newValue);
       onChange(newValue);
 
       setCursorPosition(textarea, start, start + unindentedText.length);
@@ -334,6 +429,7 @@ export function SimpleHtmlEditor({
     autoConvertLineBreaks,
     convertLineBreaksToHtml,
     setCursorPosition,
+    addToHistory,
   ]);
 
   // キーボードショートカットのハンドラー
@@ -378,13 +474,22 @@ export function SimpleHtmlEditor({
 
       // Undo: Cmd+Z (macOS) または Ctrl+Z (Windows/Linux)
       if (ctrlKey && e.key === "z" && !e.shiftKey) {
-        // ブラウザのデフォルトのundo機能を使用
+        e.preventDefault();
+        performUndo();
         return;
       }
 
-      // Redo: Cmd+Shift+Z を復元（Cmd+Yは削除）
+      // Redo: Cmd+Shift+Z (macOS) または Ctrl+Shift+Z (Windows/Linux)
       if (ctrlKey && e.key === "z" && e.shiftKey) {
-        // ブラウザのデフォルトのredo機能を使用
+        e.preventDefault();
+        performRedo();
+        return;
+      }
+
+      // Redo: Cmd+Y (macOS) または Ctrl+Y (Windows/Linux) - 代替ショートカット
+      if (ctrlKey && e.key === "y") {
+        e.preventDefault();
+        performRedo();
         return;
       }
 
@@ -399,7 +504,14 @@ export function SimpleHtmlEditor({
         return;
       }
     },
-    [moveLines, toggleComment, handleIndent, handleUnindent]
+    [
+      moveLines,
+      toggleComment,
+      handleIndent,
+      handleUnindent,
+      performUndo,
+      performRedo,
+    ]
   );
 
   const insertTag = useCallback(
@@ -476,12 +588,16 @@ export function SimpleHtmlEditor({
         insertText +
         currentDisplayValue.substring(end);
 
+      let finalValue: string;
       if (autoConvertLineBreaks) {
-        const htmlValue = convertLineBreaksToHtml(newDisplayValue);
-        onChange(htmlValue);
+        finalValue = convertLineBreaksToHtml(newDisplayValue);
       } else {
-        onChange(newDisplayValue);
+        finalValue = newDisplayValue;
       }
+
+      // 履歴に追加
+      addToHistory(finalValue);
+      onChange(finalValue);
 
       // カーソル位置を設定
       setCursorPosition(textarea, start + cursorOffset, start + cursorOffset);
@@ -492,12 +608,13 @@ export function SimpleHtmlEditor({
       autoConvertLineBreaks,
       convertLineBreaksToHtml,
       setCursorPosition,
+      addToHistory,
     ]
   );
 
   return (
     <div
-      className={`simple-html-editor ${className} flex flex-col`}
+      className={`SimpleHtmlEditor ${className} flex flex-1 flex-col`}
       style={style}
     >
       <div className="flex flex-wrap gap-2 rounded-t-md border-b">

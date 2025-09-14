@@ -45,6 +45,7 @@ export interface ImgTextSection extends BaseSection {
 }
 
 export interface Card {
+  cardClass?: string; // カードコンテナのクラス
   image?: string;
   imageClass?: string;
   imageAspectRatio?: string; // 画像比率 (例: "4/3", "16/9")

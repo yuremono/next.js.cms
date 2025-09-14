@@ -1,7 +1,7 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./tabs";
-import { SimpleHtmlEditor } from "./simple-html-editor";
+import { SimpleHtmlEditor } from "./SimpleHtmlEditor";
 import { useState } from "react";
 
 interface HeaderFooterEditorProps {

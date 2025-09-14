@@ -75,9 +75,9 @@ body section,footer,header,.blog #contents{//padding centering
     .contoutL{        margin-left: var(--contout);  max-width: unset;   }
     .contoutR{        margin-right: var(--contout); max-width: unset;    }
     .contout{        margin-inline: var(--contout);max-width: unset;    }
-    .incontL{        padding-left: var(--incont);    }
-    .incontR{        padding-right: var(--incont);    }
-    .incont{        padding-inline: var(--incont);    }
+    .inBaseL{        padding-left: var(--inBase);    }
+    .inBaseR{        padding-right: var(--inBase);    }
+    .inBase{        padding-inline: var(--inBase);    }
     .in1800{        padding-inline: var(--in1800);    }
     .in1740{        padding-inline: var(--in1740);    }
     .in1680{        padding-inline: var(--in1680);    }
@@ -233,9 +233,9 @@ body section,footer,header,.blog #contents{//padding others
     .pad10mi{padding: 10vmin;}
     .pad12mi{padding: 12vmin;}
     
-    .pr-incont{padding-right: var(--incont);}
-    .pl-incont{padding-left: var(--incont);}
-    .py-incont{padding-inline: var(--incont);}
+    .pr-inBase{padding-right: var(--inBase);}
+    .pl-inBase{padding-left: var(--inBase);}
+    .py-inBase{padding-inline: var(--inBase);}
 }
 body section,footer,header,.blog #contents{//padding top bottom
     .ptB3 {padding-top: calc(3.0*var(--bl));}

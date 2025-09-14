@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { SimpleHtmlEditor } from "@/components/ui/simple-html-editor";
+import { SimpleHtmlEditor } from "@/components/ui/SimpleHtmlEditor";
 import { ImageUpload } from "@/components/images/ImageUpload";
 import { BackgroundImageUpload } from "@/components/images/BackgroundImageUpload";
 import { FormField } from "@/components/ui/form-field";
@@ -12,7 +12,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CardsSection, Card as CardType } from "@/types";
 import { Plus, Trash2, GripVertical } from "lucide-react";
-import { getImageAspectRatio } from "@/lib/image-utils";
+import { getMediaAspectRatio } from "@/lib/mediaUtils";
 
 import {
   DndContext,
@@ -127,15 +127,17 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
     if (key === "image") {
       if (value) {
         try {
-          // 画像比率を取得
-          const aspectRatio = await getImageAspectRatio(value);
+          console.log(`カード画像変更: ${value}`);
+          // メディア比率を取得（画像・動画対応）
+          const aspectRatio = await getMediaAspectRatio(value);
+          console.log(`取得されたアスペクト比: ${aspectRatio}`);
           updatedCards[index] = {
             ...updatedCards[index],
             image: value,
             imageAspectRatio: aspectRatio,
           };
         } catch (error) {
-          console.error("画像比率の取得に失敗しました:", error);
+          console.error("メディア比率の取得に失敗しました:", error);
           updatedCards[index] = {
             ...updatedCards[index],
             image: value,
@@ -171,6 +173,7 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
     }
 
     const newCard: CardType = {
+      cardClass: "",
       image: "",
       imageClass: "",
       imageAspectRatio: "auto",
@@ -267,7 +270,7 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
   const handleBgImageChange = (img: string | null) => {
     onUpdate({
       ...section,
-      bgImage: img || undefined,
+      bgImage: img || "", // undefinedではなく空文字列に設定
     });
   };
 
@@ -397,56 +400,97 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
                           <h4 className="text-md mb-4 font-medium">
                             カード {activeCardIndex + 1} を編集
                           </h4>
-                          <div className="space-y-4">
-                            <div className="flex flex-col gap-4 md:flex-row md:items-center">
-                              <div className="w-full">
-                                <ImageUpload
-                                  label="画像クラス"
-                                  initialImage={
-                                    section.cards[activeCardIndex]?.image
-                                  }
-                                  initialClass={
-                                    section.cards[activeCardIndex]
-                                      ?.imageClass || ""
-                                  }
-                                  onImageChange={(url) =>
-                                    updateCard(activeCardIndex, "image", url)
-                                  }
-                                  onClassChange={(className) =>
-                                    updateCard(
-                                      activeCardIndex,
-                                      "imageClass",
-                                      className
-                                    )
-                                  }
-                                />
-                              </div>
+
+                          {/* 3つのクラス設定を上部に配置 */}
+                          <div className="mb-4 grid grid-cols-1 gap-4 xl:grid-cols-3">
+                            <div className="">
+                              <Label
+                                htmlFor={`card-${activeCardIndex}-card-class`}
+                              >
+                                カードクラス
+                              </Label>
+                              <Input
+                                id={`card-${activeCardIndex}-card-class`}
+                                className="mt-2"
+                                value={
+                                  section.cards[activeCardIndex]?.cardClass ||
+                                  ""
+                                }
+                                onChange={(e) =>
+                                  updateCard(
+                                    activeCardIndex,
+                                    "cardClass",
+                                    e.target.value
+                                  )
+                                }
+                                placeholder="例: card bg-white shadow"
+                              />
                             </div>
-                            <div className="space-y-2">
-                              <div className="flex items-center gap-4">
-                                <Label
-                                  className=""
-                                  htmlFor={`card-${activeCardIndex}-text-class`}
-                                >
-                                  テキストクラス
-                                </Label>
-                                <Input
-                                  id={`card-${activeCardIndex}-text-class`}
-                                  className="flex-1"
-                                  value={
-                                    section.cards[activeCardIndex]?.textClass ||
-                                    ""
-                                  }
-                                  onChange={(e) =>
-                                    updateCard(
-                                      activeCardIndex,
-                                      "textClass",
-                                      e.target.value
-                                    )
-                                  }
-                                  placeholder="例: card-content"
-                                />
-                              </div>
+                            <div className="">
+                              <Label
+                                htmlFor={`card-${activeCardIndex}-image-class`}
+                              >
+                                画像クラス
+                              </Label>
+                              <Input
+                                id={`card-${activeCardIndex}-image-class`}
+                                className="mt-2"
+                                value={
+                                  section.cards[activeCardIndex]?.imageClass ||
+                                  ""
+                                }
+                                onChange={(e) =>
+                                  updateCard(
+                                    activeCardIndex,
+                                    "imageClass",
+                                    e.target.value
+                                  )
+                                }
+                                placeholder="例: object-cover rounded"
+                              />
+                            </div>
+                            <div className="">
+                              <Label
+                                htmlFor={`card-${activeCardIndex}-text-class`}
+                              >
+                                テキストクラス
+                              </Label>
+                              <Input
+                                id={`card-${activeCardIndex}-text-class`}
+                                className="mt-2"
+                                value={
+                                  section.cards[activeCardIndex]?.textClass ||
+                                  ""
+                                }
+                                onChange={(e) =>
+                                  updateCard(
+                                    activeCardIndex,
+                                    "textClass",
+                                    e.target.value
+                                  )
+                                }
+                                placeholder="例: p-4 text-center"
+                              />
+                            </div>
+                          </div>
+
+                          {/* 画像アップロードとHTMLエディタ */}
+                          <div className="space-y-4">
+                            <div className="">
+                              <ImageUpload
+                                label="画像"
+                                initialImage={
+                                  section.cards[activeCardIndex]?.image
+                                }
+                                onImageChange={(url) =>
+                                  updateCard(activeCardIndex, "image", url)
+                                }
+                              />
+                            </div>
+                            <div className="">
+                              <Label htmlFor={`card-${activeCardIndex}-html`}>
+                                HTMLコンテンツ
+                              </Label>
                               <SimpleHtmlEditor
                                 value={
                                   section.cards[activeCardIndex]?.html || ""
@@ -456,6 +500,7 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
                                 }
                                 autoConvertLineBreaks={true}
                                 compact={true}
+                                className="mt-2"
                               />
                             </div>
                           </div>

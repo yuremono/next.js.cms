@@ -21,19 +21,19 @@ try {
 }
 
 /**
- * 画像ファイルを最適化してSupabaseストレージにアップロードする
+ * メディアファイル（画像・動画）をSupabaseストレージにアップロードする
  * または環境変数が設定されていない場合はDataURIを返す
- * @param file 画像ファイル
+ * @param file メディアファイル（画像・動画）
  * @param folder 保存先フォルダ名
- * @returns アップロードされた画像のURL
+ * @returns アップロードされたメディアのURL
  */
 export async function uploadAndOptimizeImage(
-	file: File,
-	folder = "images"
+  file: File,
+  folder = "media"
 ): Promise<string | null> {
-	try {
-		// 環境変数が設定されていない場合はDataURIを使用
-		if (!isSupabaseConfigured) {
+  try {
+    // 環境変数が設定されていない場合はDataURIを使用
+    if (!isSupabaseConfigured) {
       // DataURLを生成
       const dataUrl = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
@@ -42,57 +42,58 @@ export async function uploadAndOptimizeImage(
         reader.readAsDataURL(file);
       });
 
-      // 一意のIDを生成してイメージマップに保存
-      const imageId = `local-image-${uuidv4()}`;
-      imageStore.set(imageId, dataUrl);
+      // 一意のIDを生成してメディアマップに保存
+      const mediaId = `local-media-${uuidv4()}`;
+      imageStore.set(mediaId, dataUrl);
 
       // グローバルキャッシュにも保存
       if (localImageCache) {
-        localImageCache[imageId] = dataUrl;
+        localImageCache[mediaId] = dataUrl;
       }
 
-      // Local image stored with ID: ${imageId}
+      // Local media stored with ID: ${mediaId}
 
       // 直接APIルートを指すURLを返す - 絶対パスを使用
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
-      return `${baseUrl}/api/images/_local/${imageId}`;
+      return `${baseUrl}/api/images/_local/${mediaId}`;
     }
 
-		// 以下、Supabaseストレージを使用する場合の処理
-		// ファイル名を一意のものに変更
-		const fileExt = file.name.split(".").pop();
-		const fileName = `${uuidv4()}.${fileExt}`;
-		const filePath = `${folder}/${fileName}`;
+    // 以下、Supabaseストレージを使用する場合の処理
+    // ファイル名を一意のものに変更
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${uuidv4()}.${fileExt}`;
+    const filePath = `${folder}/${fileName}`;
 
-		// 画像の最適化処理
-		// ここで画像を最適化する処理を実装する（例：サイズ変更、WebP変換など）
-		// 実際のプロジェクトでは画像処理ライブラリを使用する
+    // メディアファイルの処理
+    // 画像の場合は最適化処理を実装可能（例：サイズ変更、WebP変換など）
+    // 動画の場合はそのままアップロード
+    // 実際のプロジェクトでは画像処理ライブラリを使用する
 
-		// Supabaseストレージにアップロード
-		const { error } = await supabase.storage
-			.from("cms-images") // バケット名
-			.upload(filePath, file);
+    // Supabaseストレージにアップロード
+    const { error } = await supabase.storage
+      .from("cms-images") // バケット名（画像・動画共用）
+      .upload(filePath, file);
 
-		if (error) {
-			console.error("画像アップロードエラー:", error);
-			return null;
-		}
+    if (error) {
+      console.error("メディアアップロードエラー:", error);
+      return null;
+    }
 
-		// 公開URLを取得
-		const { data: urlData } = supabase.storage
-			.from("cms-images")
-			.getPublicUrl(filePath);
+    // 公開URLを取得
+    const { data: urlData } = supabase.storage
+      .from("cms-images")
+      .getPublicUrl(filePath);
 
-		return urlData.publicUrl;
-	} catch (error) {
-		console.error("画像処理エラー:", error);
-		return null;
-	}
+    return urlData.publicUrl;
+  } catch (error) {
+    console.error("メディア処理エラー:", error);
+    return null;
+  }
 }
 
 /**
- * ローカルに保存されている画像データを取得
- * @param imageId 画像ID
+ * ローカルに保存されているメディアデータを取得
+ * @param imageId メディアID
  * @returns データURL
  */
 export function getLocalImage(imageId: string): string | null {
@@ -109,8 +110,8 @@ export function getLocalImage(imageId: string): string | null {
 }
 
 /**
- * ローカル画像を削除
- * @param imageId 画像ID
+ * ローカルメディアを削除
+ * @param imageId メディアID
  * @returns 成功したかどうか
  */
 export function deleteLocalImage(imageId: string): boolean {
@@ -126,8 +127,8 @@ export function deleteLocalImage(imageId: string): boolean {
 }
 
 /**
- * すべてのローカル画像を取得
- * @returns 画像情報の配列
+ * すべてのローカルメディアを取得
+ * @returns メディア情報の配列
  */
 export function getAllLocalImages(): { name: string; url: string }[] {
 	const images: { name: string; url: string }[] = [];

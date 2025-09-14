@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Card } from "../ui/card";
 import { Header } from "@/types";
-import { SimpleHtmlEditor } from "../ui/simple-html-editor";
+import { SimpleHtmlEditor } from "../ui/SimpleHtmlEditor";
 import { Label } from "../ui/label";
 
 interface HeaderEditorProps {

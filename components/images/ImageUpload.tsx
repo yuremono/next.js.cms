@@ -7,25 +7,21 @@ import { Label } from "@/components/ui/label";
 import { ImageIcon, Upload, X } from "lucide-react";
 import { uploadAndOptimizeImage } from "@/lib/imageUtils";
 import { ImageGalleryModal } from "./ImageGalleryModal";
+import { getFileType } from "@/lib/mediaUtils";
 import Image from "next/image";
 
 interface ImageUploadProps {
   initialImage?: string;
-  initialClass?: string;
   onImageChange: (url: string | null) => void;
-  onClassChange?: (className: string) => void;
   label?: string;
 }
 
 export function ImageUpload({
   initialImage,
-  initialClass = "",
   onImageChange,
-  onClassChange,
   label = "画像",
 }: ImageUploadProps) {
   const [imageUrl, setImageUrl] = useState<string | null>(initialImage || null);
-  const [imageClass, setImageClass] = useState(initialClass);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
@@ -39,17 +35,11 @@ export function ImageUpload({
     }
   }, [initialImage, imageUrl]);
 
-  useEffect(() => {
-    if (initialClass !== imageClass) {
-      setImageClass(initialClass);
-    }
-  }, [initialClass, imageClass]);
-
-  // 画像をアップロード
+  // ファイルをアップロード（画像・動画対応）
   const handleFileUpload = async (file: File) => {
-    // 画像ファイルか確認
-    if (!file.type.startsWith("image/")) {
-      setError("画像ファイルを選択してください");
+    // 画像または動画ファイルか確認
+    if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
+      setError("画像または動画ファイルを選択してください");
       return;
     }
 
@@ -57,14 +47,14 @@ export function ImageUpload({
     setError(null);
 
     try {
-      // 画像をアップロードして最適化
-      const optimizedImageUrl = await uploadAndOptimizeImage(file);
+      // ファイルをアップロード（画像・動画対応）
+      const uploadedFileUrl = await uploadAndOptimizeImage(file);
 
-      if (optimizedImageUrl) {
-        setImageUrl(optimizedImageUrl);
-        onImageChange(optimizedImageUrl);
+      if (uploadedFileUrl) {
+        setImageUrl(uploadedFileUrl);
+        onImageChange(uploadedFileUrl);
       } else {
-        throw new Error("画像のアップロードに失敗しました");
+        throw new Error("ファイルのアップロードに失敗しました");
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "エラーが発生しました");
@@ -96,15 +86,6 @@ export function ImageUpload({
     onImageChange(null);
   };
 
-  // 画像クラスを変更
-  const handleClassChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newClass = e.target.value;
-    setImageClass(newClass);
-    if (onClassChange) {
-      onClassChange(newClass);
-    }
-  };
-
   // ドラッグ&ドロップイベントハンドラー
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -127,22 +108,14 @@ export function ImageUpload({
   };
 
   return (
-    <div className="flex flex-wrap justify-between space-y-4">
-      <div className="flex w-full gap-4 space-y-2">
-        <Label className="">{label}</Label>
-        <Input
-          className="flex-1"
-          placeholder="例: object-cover rounded"
-          value={imageClass}
-          onChange={handleClassChange}
-        />
-      </div>
+    <div className="flex flex-wrap justify-between space-y-2">
+      <Label className="w-full">{label}</Label>
 
       {/* 画像アップロード */}
       <div className="">
         <div
           ref={dropZoneRef}
-          className={`flex w-full cursor-pointer items-center gap-4 rounded border border-dashed px-4 py-2 transition-colors ${
+          className={`flex w-full cursor-pointer items-center gap-2 rounded border border-dashed px-4 py-2 transition-colors ${
             isDragOver
               ? "border-blue-500 bg-blue-50"
               : "border-gray-300 hover:bg-gray-50"
@@ -160,7 +133,7 @@ export function ImageUpload({
           <Input
             id="image-upload"
             type="file"
-            accept="image/*"
+            accept="image/*,video/*"
             className="hidden"
             onChange={handleFileInputChange}
             disabled={isUploading}
@@ -177,30 +150,41 @@ export function ImageUpload({
           className="mt-1 flex items-center gap-4"
         >
           <ImageIcon className="h-4 w-4" />
-          アップロード済み画像から選択
+          アップロード済みメディアから選択
         </Button>
 
         {isUploading && <span className=" ">アップロード中...</span>}
       </div>
 
-      {/* 画像プレビュー */}
+      {/* メディアプレビュー（画像・動画対応） */}
       {imageUrl && (
         <div className="relative h-[200px] w-1/2">
-          <Image
-            src={imageUrl}
-            alt="Uploaded image"
-            fill
-            className="object-contain"
-            unoptimized={
-              imageUrl.includes("_local") || imageUrl.startsWith("data:")
-            }
-          />
+          {getFileType(imageUrl) === "video" ? (
+            <video
+              src={imageUrl}
+              controls
+              className="h-full w-full object-contain"
+              preload="metadata"
+            >
+              お使いのブラウザは動画をサポートしていません。
+            </video>
+          ) : (
+            <Image
+              src={imageUrl}
+              alt="Uploaded image"
+              fill
+              className="object-contain"
+              unoptimized={
+                imageUrl.includes("_local") || imageUrl.startsWith("data:")
+              }
+            />
+          )}
           <Button
             variant="destructive"
             size="icon"
             className="absolute right-2 top-2"
             onClick={removeImage}
-            aria-label="画像を削除"
+            aria-label="メディアを削除"
           >
             <X className="h-4 w-4" />
           </Button>

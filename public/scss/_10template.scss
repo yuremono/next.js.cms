@@ -3488,7 +3488,7 @@ div:has(>.bgToright,>.bgToBottom){
     &01{
         margin-top: var(--bl06);
         @extend %bg100;
-        padding-inline: var(--incont);
+        padding-inline: var(--inBase);
         padding-block: 1.5em;
         background-color: var(--bc);
         h1,h2,h3{

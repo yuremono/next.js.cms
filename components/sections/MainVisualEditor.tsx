@@ -1,12 +1,12 @@
 "use client";
 
-import { SimpleHtmlEditor } from "@/components/ui/simple-html-editor";
+import { SimpleHtmlEditor } from "@/components/ui/SimpleHtmlEditor";
 import { ImageUpload } from "@/components/images/ImageUpload";
 import { BackgroundImageUpload } from "@/components/images/BackgroundImageUpload";
 import { FormField } from "@/components/ui/form-field";
 import { Card } from "@/components/ui/card";
 import { MainVisualSection } from "@/types";
-import { getImageAspectRatio } from "@/lib/image-utils";
+import { getMediaAspectRatio } from "@/lib/mediaUtils";
 
 interface MainVisualEditorProps {
   section: MainVisualSection;
@@ -33,14 +33,17 @@ export function MainVisualEditor({ section, onUpdate }: MainVisualEditorProps) {
   const handleImageChange = async (img: string | null) => {
     if (img) {
       try {
-        // 画像比率を取得
-        const aspectRatio = await getImageAspectRatio(img);
+        console.log(`メインビジュアル画像変更: ${img}`);
+        // メディア比率を取得（画像・動画対応）
+        const aspectRatio = await getMediaAspectRatio(img);
+        console.log(`取得されたアスペクト比: ${aspectRatio}`);
         onUpdate({
           ...section,
           image: img,
           imageAspectRatio: aspectRatio,
         });
-      } catch {
+      } catch (error) {
+        console.error("メディア比率の取得に失敗しました:", error);
         onUpdate({
           ...section,
           image: img,
@@ -80,7 +83,7 @@ export function MainVisualEditor({ section, onUpdate }: MainVisualEditorProps) {
   const handleBgImageChange = (img: string | null) => {
     onUpdate({
       ...section,
-      bgImage: img || undefined,
+      bgImage: img || "", // undefinedではなく空文字列に設定
     });
   };
 
@@ -122,12 +125,17 @@ export function MainVisualEditor({ section, onUpdate }: MainVisualEditorProps) {
             onImageChange={handleBgImageChange}
             label="背景画像"
           />
+          <FormField
+            id="mainvisual-image-class"
+            label="画像クラス"
+            value={section.imageClass || ""}
+            onChange={handleImageClassChange}
+            placeholder="例: object-cover w-full h-screen"
+          />
           <ImageUpload
             initialImage={section.image}
-            initialClass={section.imageClass || ""}
             onImageChange={handleImageChange}
-            onClassChange={handleImageClassChange}
-            label="画像クラス"
+            label="画像"
           />
           <FormField
             id="MainVisual-text-class"

@@ -214,9 +214,9 @@ app/top.scss
 分割プレビュー
 └─ 編集エリア
     ├─ components/sections/HeaderEditor.tsx
-    │   └─ components/ui/simple-html-editor.tsx
+    │   └─ components/ui/SimpleHtmlEditor.tsx
     ├─ components/sections/FooterEditor.tsx
-    │   └─ components/ui/simple-html-editor.tsx
+    │   └─ components/ui/SimpleHtmlEditor.tsx
     ├─ components/editor/CSSEditor.tsx
     │   └─ components/ui/editor.tsx (RichTextEditor)
     ├─ components/sections/TextGenerator.tsx
@@ -231,7 +231,7 @@ app/top.scss
     │   └─ components/ui/alert.tsx
     └─ components/editor/SectionEditorRenderer.tsx
         ├─ components/sections/MainVisualEditor.tsx
-        │   ├─ components/ui/simple-html-editor.tsx (改行自動変換対応)
+        │   ├─ components/ui/SimpleHtmlEditor.tsx (改行自動変換対応)
         │   ├─ components/images/ImageUpload.tsx
         │   ├─ components/images/BackgroundImageUpload.tsx
         │   ├─ components/ui/input.tsx

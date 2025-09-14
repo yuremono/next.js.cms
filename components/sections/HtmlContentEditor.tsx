@@ -4,7 +4,7 @@ import { HtmlContentSection } from "@/types";
 import { Card } from "@/components/ui/card";
 import { FormField } from "@/components/ui/form-field";
 import { Label } from "@/components/ui/label";
-import { SimpleHtmlEditor } from "@/components/ui/simple-html-editor";
+import { SimpleHtmlEditor } from "@/components/ui/SimpleHtmlEditor";
 import { BackgroundImageUpload } from "@/components/images/BackgroundImageUpload";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -13,7 +13,10 @@ interface HtmlContentEditorProps {
   onUpdate: (section: HtmlContentSection) => void;
 }
 
-export function HtmlContentEditor({ section, onUpdate }: HtmlContentEditorProps) {
+export function HtmlContentEditor({
+  section,
+  onUpdate,
+}: HtmlContentEditorProps) {
   const handleNameChange = (value: string) => {
     onUpdate({ ...section, name: value });
   };
@@ -26,12 +29,14 @@ export function HtmlContentEditor({ section, onUpdate }: HtmlContentEditorProps)
     onUpdate({ ...section, sectionWidth: value });
   };
 
-  const handleScopeStylesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleScopeStylesChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     onUpdate({ ...section, scopeStyles: e.target.value });
   };
 
   const handleBgImageChange = (img: string | null) => {
-    onUpdate({ ...section, bgImage: img || undefined });
+    onUpdate({ ...section, bgImage: img || "" }); // undefinedではなく空文字列に設定
   };
 
   const handleHtmlChange = (value: string) => {
@@ -69,14 +74,16 @@ export function HtmlContentEditor({ section, onUpdate }: HtmlContentEditorProps)
           {/* テキストコンテナのクラスは不要になったため削除 */}
 
           <div className="mt-4">
-            <Label htmlFor="html-scope-styles">セクションのstyle属性（CSS変数）</Label>
+            <Label htmlFor="html-scope-styles">
+              セクションのstyle属性（CSS変数）
+            </Label>
             <Textarea
               id="html-scope-styles"
               value={section.scopeStyles || ""}
               onChange={handleScopeStylesChange}
               placeholder="例: --gap: 2rem; --bg-color: #f0f0f0; --text-color: #333;"
               rows={4}
-              className="mt-2 font-mono"
+              className="mt-4 font-mono "
             />
           </div>
 
@@ -88,9 +95,9 @@ export function HtmlContentEditor({ section, onUpdate }: HtmlContentEditorProps)
               placeholder="ここにHTMLを入力..."
               compact={true}
               style={{ minHeight: "10rem" }}
+              className="mt-4"
             />
           </div>
-
 
           <BackgroundImageUpload
             initialImage={section.bgImage}
@@ -102,5 +109,3 @@ export function HtmlContentEditor({ section, onUpdate }: HtmlContentEditorProps)
     </div>
   );
 }
-
-

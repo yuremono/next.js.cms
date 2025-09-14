@@ -18,6 +18,10 @@ module.exports = {
     "mt-[var(--sectionMT)]",
     "mb-[var(--titleAfter)]",
     "gap-[var(--gap)]",
+    // RTL（Right-to-Left）関連のクラス
+    "direction-rtl",
+    "dir-rtl",
+    "rtl",
     // よく使うカスタム値を事前に生成
     "text-[20vmin]",
     "text-[16vmin]",
@@ -46,6 +50,11 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: ["var(--font-family-base)"],
+      },
+      // RTL関連のユーティリティを追加
+      direction: {
+        rtl: "rtl",
+        ltr: "ltr",
       },
       colors: {
         border: "var(--border)",

@@ -29,7 +29,18 @@ export function CustomCSSLoader() {
             link.rel = "stylesheet";
             link.href = "/custom.css";
             link.type = "text/css";
-            document.head.appendChild(link);
+
+            // variables.cssの後に挿入するための処理
+            const variablesCSSLink = document.querySelector(
+              'link[href="/variables.css"]'
+            );
+            if (variablesCSSLink && variablesCSSLink.nextSibling) {
+              // variables.cssが存在する場合は、その直後に挿入
+              document.head.insertBefore(link, variablesCSSLink.nextSibling);
+            } else {
+              // variables.cssがない場合は、headの最後に追加
+              document.head.appendChild(link);
+            }
           }
         } else {
           // /editorページでは既存のcustom.cssリンクを削除
@@ -45,6 +56,7 @@ export function CustomCSSLoader() {
       }
     };
 
+    // 即座に実行（位置制御のみで順序を保証）
     loadCustomCSS();
   }, [pathname]);
 

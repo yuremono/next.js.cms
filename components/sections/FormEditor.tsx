@@ -1,6 +1,6 @@
 "use client";
 
-import { SimpleHtmlEditor } from "@/components/ui/simple-html-editor";
+import { SimpleHtmlEditor } from "@/components/ui/SimpleHtmlEditor";
 import { BackgroundImageUpload } from "@/components/images/BackgroundImageUpload";
 import { FormField } from "@/components/ui/form-field";
 import { Label } from "@/components/ui/label";
@@ -39,7 +39,7 @@ export function FormEditor({ section, onUpdate }: FormEditorProps) {
   const handleBgImageChange = (img: string | null) => {
     onUpdate({
       ...section,
-      bgImage: img || undefined,
+      bgImage: img || "", // undefinedではなく空文字列に設定
     });
   };
 

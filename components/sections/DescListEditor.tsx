@@ -19,16 +19,22 @@ interface DescListItem {
   dd: string;
 }
 
-// HTMLパース関数
+// HTMLパース関数（改行対応）
 const parseDLHTML = (html: string): DescListItem[] => {
   if (!html) return [];
 
-  // <dt>と<dd>のペアを抽出
-  const dtRegex = /<dt>(.*?)<\/dt>/g;
-  const ddRegex = /<dd>(.*?)<\/dd>/g;
+  // <dt>と<dd>のペアを抽出（改行を含む内容に対応）
+  const dtRegex = /<dt>([\s\S]*?)<\/dt>/g; // [\s\S]で改行を含む
+  const ddRegex = /<dd>([\s\S]*?)<\/dd>/g; // [\s\S]で改行を含む
 
-  const dts = Array.from(html.matchAll(dtRegex), (m) => m[1] || "");
-  const dds = Array.from(html.matchAll(ddRegex), (m) => m[1] || "");
+  const dts = Array.from(html.matchAll(dtRegex), (m) => {
+    // <br>タグを改行文字に変換
+    return (m[1] || "").replace(/<br\s*\/?>/gi, "\n");
+  });
+  const dds = Array.from(html.matchAll(ddRegex), (m) => {
+    // <br>タグを改行文字に変換
+    return (m[1] || "").replace(/<br\s*\/?>/gi, "\n");
+  });
 
   const maxLength = Math.max(dts.length, dds.length);
   const result: DescListItem[] = [];
@@ -43,7 +49,7 @@ const parseDLHTML = (html: string): DescListItem[] => {
   return result.length > 0 ? result : [{ dt: "", dd: "" }];
 };
 
-// HTML生成関数
+// HTML生成関数（改行対応）
 const generateDLHTML = (items: DescListItem[], dtWidth: string): string => {
   const filteredItems = items.filter(
     (item) => item.dt.trim() || item.dd.trim()
@@ -52,7 +58,12 @@ const generateDLHTML = (items: DescListItem[], dtWidth: string): string => {
   if (filteredItems.length === 0) return "";
 
   const dlContent = filteredItems
-    .map((item) => `<dt>${item.dt}</dt>\n<dd>${item.dd}</dd>`)
+    .map((item) => {
+      // 改行を<br>タグに変換
+      const dtContent = item.dt.replace(/\n/g, "<br>");
+      const ddContent = item.dd.replace(/\n/g, "<br>");
+      return `<dt>${dtContent}</dt>\n<dd>${ddContent}</dd>`;
+    })
     .join("\n");
 
   return `<dl style="--dtWidth: ${dtWidth}">\n${dlContent}\n</dl>`;
@@ -95,7 +106,7 @@ export function DescListEditor({ section, onUpdate }: DescListEditorProps) {
   const handleBgImageChange = (img: string | null) => {
     onUpdate({
       ...section,
-      bgImage: img || undefined,
+      bgImage: img || "", // undefinedではなく空文字列に設定
     });
   };
 
@@ -159,13 +170,47 @@ export function DescListEditor({ section, onUpdate }: DescListEditorProps) {
     });
   };
 
-  // セル移動処理（インデント・アンインデント処理を置き換え）
+  // セル移動処理（改行サポート）
   const handleKeyDown = (
     index: number,
     field: "dt" | "dd",
     e: React.KeyboardEvent<HTMLTextAreaElement>
   ) => {
-    if (e.key === "Tab") {
+    if (e.key === "Enter") {
+      // Enterキーでの改行を許可（デフォルト動作）
+      // Ctrl+Enter または Shift+Enter で次のセルに移動
+      if (e.ctrlKey || e.shiftKey) {
+        e.preventDefault();
+
+        let nextIndex = index;
+        let nextField: "dt" | "dd" = field;
+
+        if (field === "dt") {
+          nextField = "dd";
+        } else {
+          nextIndex = index + 1;
+          nextField = "dt";
+
+          // 最下行の場合、新しい行を追加
+          if (nextIndex >= items.length) {
+            const currentItem = items[index];
+            if (currentItem.dt.trim() || currentItem.dd.trim()) {
+              addRow();
+            } else {
+              nextIndex = 0;
+              nextField = "dt";
+            }
+          }
+        }
+
+        // フォーカス移動
+        setTimeout(() => {
+          const key = `${nextIndex}-${nextField}`;
+          cellRefs.current[key]?.focus();
+        }, 10);
+      }
+      // 通常のEnterは改行として処理される（preventDefault不要）
+    } else if (e.key === "Tab") {
       e.preventDefault();
 
       let nextIndex = index;
@@ -308,9 +353,10 @@ export function DescListEditor({ section, onUpdate }: DescListEditorProps) {
                     onChange={(e) =>
                       handleItemChange(index, "dt", e.target.value)
                     }
-                    placeholder="項目名"
-                    className="min-h-[2em] resize-none rounded-none border-0 bg-transparent focus:border-0 focus:ring-0"
+                    placeholder="項目名（Enterで改行）"
+                    className="min-h-[3em] resize-y rounded-none border-0 bg-transparent focus:border-0 focus:ring-0"
                     onKeyDown={(e) => handleKeyDown(index, "dt", e)}
+                    rows={1}
                   />
                 </div>
                 <div className="col-span-8 border-r border-gray-200">
@@ -322,9 +368,10 @@ export function DescListEditor({ section, onUpdate }: DescListEditorProps) {
                     onChange={(e) =>
                       handleItemChange(index, "dd", e.target.value)
                     }
-                    placeholder="説明"
-                    className="min-h-[2em] resize-none rounded-none border-0 bg-transparent focus:border-0 focus:ring-0"
+                    placeholder="説明（Enterで改行、Ctrl+Enterで次のセル）"
+                    className="min-h-[3em] resize-y rounded-none border-0 bg-transparent focus:border-0 focus:ring-0"
                     onKeyDown={(e) => handleKeyDown(index, "dd", e)}
+                    rows={1}
                   />
                 </div>
                 <div className="col-span-1 flex items-center justify-center p-2">

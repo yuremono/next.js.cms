@@ -218,6 +218,7 @@ export async function GET() {
           name: cs?.name ?? "",
           sectionWidth: cs?.section_width ?? "",
           cards: (cards ?? []).map((c) => ({
+            cardClass: c.card_class ?? "",
             image: c.image ?? "",
             imageClass: c.image_class ?? "",
             textClass: c.text_class ?? "",
@@ -567,7 +568,7 @@ export async function POST(req: NextRequest) {
           const { error } = await supabase.from("main_visual_sections").upsert({
             section_id: section.id,
             class: section.class,
-            bg_image: section.bgImage,
+            bg_image: section.bgImage || null,
             name: section.name,
             html: section.html,
             image: section.image ?? null,
@@ -581,7 +582,7 @@ export async function POST(req: NextRequest) {
           const { error } = await supabase.from("img_text_sections").upsert({
             section_id: section.id,
             class: section.class,
-            bg_image: section.bgImage,
+            bg_image: section.bgImage || null,
             name: section.name,
             html: section.html,
             image: section.image ?? null,
@@ -597,7 +598,7 @@ export async function POST(req: NextRequest) {
             .upsert({
               section_id: section.id,
               class: section.class,
-              bg_image: section.bgImage,
+              bg_image: section.bgImage || null,
               name: section.name,
               section_width: section.sectionWidth ?? null,
             });
@@ -612,6 +613,7 @@ export async function POST(req: NextRequest) {
           if (section.cards && section.cards.length > 0) {
             const cardsToInsert = section.cards.map((card, j) => ({
               cards_section_id: section.id,
+              card_class: card.cardClass ?? null,
               image: card.image ?? null,
               image_class: card.imageClass ?? null,
               text_class: card.textClass ?? null,
@@ -628,7 +630,7 @@ export async function POST(req: NextRequest) {
           const { error } = await supabase.from("form_sections").upsert({
             section_id: section.id,
             class: section.class,
-            bg_image: section.bgImage,
+            bg_image: section.bgImage || null,
             name: section.name,
             html: section.html,
             endpoint: section.endpoint,
@@ -640,7 +642,7 @@ export async function POST(req: NextRequest) {
             {
               section_id: section.id,
               class: section.class,
-              bg_image: section.bgImage,
+              bg_image: section.bgImage || null, // 空文字列もnullに変換
               name: section.name,
               title: section.title,
               html: section.html,
@@ -655,7 +657,7 @@ export async function POST(req: NextRequest) {
             {
               section_id: section.id,
               class: section.class,
-              bg_image: section.bgImage,
+              bg_image: section.bgImage || null,
               name: section.name,
               scope_styles: section.scopeStyles,
               section_width: section.sectionWidth ?? null,
@@ -668,7 +670,7 @@ export async function POST(req: NextRequest) {
             {
               section_id: section.id,
               class: section.class,
-              bg_image: section.bgImage,
+              bg_image: section.bgImage || null,
               section_width: section.sectionWidth ?? null,
             },
             { onConflict: "section_id" }
@@ -679,7 +681,7 @@ export async function POST(req: NextRequest) {
             {
               section_id: section.id,
               class: section.class,
-              bg_image: section.bgImage,
+              bg_image: section.bgImage || null,
               name: section.name,
               html: section.html,
               section_width: section.sectionWidth ?? null,
@@ -728,7 +730,7 @@ export async function POST(req: NextRequest) {
             supabase.from("main_visual_sections").insert({
               section_id: sectionId,
               class: section.class,
-              bg_image: section.bgImage,
+              bg_image: section.bgImage || null,
               name: section.name,
               html: section.html,
               image: section.image ?? null,
@@ -743,7 +745,7 @@ export async function POST(req: NextRequest) {
             supabase.from("img_text_sections").insert({
               section_id: sectionId,
               class: section.class,
-              bg_image: section.bgImage,
+              bg_image: section.bgImage || null,
               name: section.name,
               html: section.html,
               image: section.image ?? null,
@@ -759,7 +761,7 @@ export async function POST(req: NextRequest) {
             supabase.from("cards_sections").insert({
               section_id: sectionId,
               class: section.class,
-              bg_image: section.bgImage,
+              bg_image: section.bgImage || null,
               name: section.name,
               section_width: section.sectionWidth ?? null,
             })
@@ -769,6 +771,7 @@ export async function POST(req: NextRequest) {
           if (section.cards && section.cards.length > 0) {
             const cardsToInsert = section.cards.map((card, j) => ({
               cards_section_id: sectionId,
+              card_class: card.cardClass ?? null,
               image: card.image ?? null,
               image_class: card.imageClass ?? null,
               text_class: card.textClass ?? null,
@@ -783,7 +786,7 @@ export async function POST(req: NextRequest) {
             supabase.from("form_sections").insert({
               section_id: sectionId,
               class: section.class,
-              bg_image: section.bgImage,
+              bg_image: section.bgImage || null,
               name: section.name,
               html: section.html,
               endpoint: section.endpoint,
@@ -795,7 +798,7 @@ export async function POST(req: NextRequest) {
             supabase.from("desc_list_sections").insert({
               section_id: sectionId,
               class: section.class,
-              bg_image: section.bgImage,
+              bg_image: section.bgImage || null, // 空文字列もnullに変換
               name: section.name,
               title: section.title,
               html: section.html,
@@ -808,7 +811,7 @@ export async function POST(req: NextRequest) {
             supabase.from("group_start_sections").insert({
               section_id: sectionId,
               class: section.class,
-              bg_image: section.bgImage,
+              bg_image: section.bgImage || null,
               name: section.name,
               scope_styles: section.scopeStyles,
               section_width: section.sectionWidth ?? null,
@@ -819,7 +822,7 @@ export async function POST(req: NextRequest) {
             supabase.from("group_end_sections").insert({
               section_id: sectionId,
               class: section.class,
-              bg_image: section.bgImage,
+              bg_image: section.bgImage || null,
               section_width: section.sectionWidth ?? null,
             })
           );
@@ -828,7 +831,7 @@ export async function POST(req: NextRequest) {
             supabase.from("html_content_sections").insert({
               section_id: sectionId,
               class: section.class,
-              bg_image: section.bgImage,
+              bg_image: section.bgImage || null,
               name: section.name,
               html: section.html,
               section_width: section.sectionWidth ?? null,

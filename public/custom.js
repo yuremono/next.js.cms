@@ -57,7 +57,6 @@
         position: absolute; 
         will-change: transform;
         touch-action: none;
-        display: inline-block;
       }
       @media (prefers-reduced-motion: reduce) {
         ${MINDMAP_CONTAINER_SELECTOR} .mindMapNode { transition: none !important; }
@@ -243,7 +242,7 @@
     if (getComputedStyle(container).position === "static") {
       container.style.position = "relative";
     }
-    container.style.minHeight = `${Math.round(stageHeight)}px`;
+//     container.style.minHeight = `${Math.round(stageHeight)}px`;
 
     // 10×10 グリッド（.mmR-C 初期配置用）
     const gridRows = 10;
@@ -733,7 +732,7 @@
         const r = container.getBoundingClientRect();
         const w = Math.max(200, r.width);
         const h = Math.max(200, r.height);
-        container.style.minHeight = `${Math.round(h)}px`;
+        // container.style.minHeight = `${Math.round(h)}px`;
         sim.force("center", window.d3.forceCenter(w / 2, h / 2));
         sim.alpha(0.5).restart();
       }, 150);

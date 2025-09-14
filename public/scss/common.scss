@@ -88,7 +88,7 @@ main>* {
                 max-width: 50%;
                 // height: 100%;
                 align-content: center; 
-                right: var(--incont);
+                right: var(--inBase);
                 top: 50%;
                 translate: 0 -50%;
         }
@@ -97,7 +97,7 @@ main>* {
         &_tx{
                 width: calc(var(--base)*0.5 );
                 max-width: 50%;
-                left: var(--incont);
+                left: var(--inBase);
                 top: 0;
         }
         &_bottom{
