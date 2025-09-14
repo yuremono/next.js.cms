@@ -432,7 +432,7 @@ export function SimpleHtmlEditor({
           cursorOffset = insertText.length;
           break;
         case "bold":
-          insertText = `<strong>${selectedText || "テキスト"}</strong>`;
+          insertText = `<b>${selectedText || "テキスト"}</b>`;
           cursorOffset = insertText.length;
           break;
         case "italic":
@@ -684,7 +684,7 @@ export function SimpleHtmlEditor({
 
       {autoConvertLineBreaks && (
         <div className="mt-2 text-xs text-muted-foreground">
-          💡 改行は自動的に&lt;br&gt;タグに変換されます
+          改行は&lt;br&gt;タグに変換されます
         </div>
       )}
     </div>

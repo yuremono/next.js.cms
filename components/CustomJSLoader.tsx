@@ -43,6 +43,15 @@ export function CustomJSLoader() {
     };
 
     loadCustomJS();
+    // 既に読み込み済みならスキップ
+    if (document.querySelector('script[src*="budoux-ja.min.js"]')) return;
+    const s = document.createElement("script");
+    s.src = "https://unpkg.com/budoux/bundle/budoux-ja.min.js";
+    s.defer = true;
+    document.head.appendChild(s);
+    return () => {
+      s.remove();
+    };
   }, [pathname]);
 
   return null; // 何も表示しない

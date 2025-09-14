@@ -594,9 +594,6 @@ export default function IDEStyleSectionList({
             ...indentStyle,
             ...groupWidthStyle,
             borderLeftColor: groupColors.border,
-        //     backgroundColor: isActive
-        //       ? `color-mix(in srgb, var(--primary) 50%, transparent)`
-        //       : undefined,
             color: isActive ? undefined : undefined,
             touchAction: "none", // モバイルでのスクロール防止
           }}
@@ -604,7 +601,7 @@ export default function IDEStyleSectionList({
           {...listeners}
           variant="ghost"
           size="sm"
-          className={`h-6 min-w-[51%] justify-start px-2 py-1 text-left font-normal ${
+          className={`text-sm min-w-[51%] justify-start px-2 py-1 text-left font-normal ${
             isFocused ? "ring-2 ring-slate-400 ring-offset-1" : ""
           } ${
             isSelected && focusMode
@@ -659,7 +656,7 @@ export default function IDEStyleSectionList({
         {...listeners}
         variant="ghost"
         size="sm"
-        className={`h-6 min-w-[51%] justify-start px-2 py-1 text-left font-normal ${
+        className={`text-sm min-w-[51%] justify-start px-2 py-1 text-left font-normal ${
           isFocused ? "ring-2 ring-slate-400 ring-offset-1" : ""
         } ${
           isSelected && focusMode ? "bg-slate-500/20 ring-1 ring-slate-300" : ""

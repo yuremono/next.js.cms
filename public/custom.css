@@ -1,11 +1,17 @@
+@charset "UTF-8";
 :root {
   --base: 1200px;
   --head: 80px;
-  --sectionMT: 60px;
+  --sectionMT: 6%;
   --titleAfter: 24px;
   --sectionPY: 60px;
   --spaceX: 5%;
   --gap: 24px;
+}
+
+body {
+  line-height: 2;
+  font-family: "Jost", "Zen kaku Gothic New";
 }
 
 main > * {
@@ -76,9 +82,7 @@ main > * + * {
   line-height: 2.5;
   width: calc(var(--base) * 0.5);
   max-width: 50%;
-  -ms-flex-line-pack: center;
-      align-content: center;
-  right: var(--incont);
+  left: 50%;
   top: 50%;
   translate: 0 -50%;
 }
@@ -86,12 +90,25 @@ main > * + * {
 .knowledge_tx {
   width: calc(var(--base) * 0.5);
   max-width: 50%;
-  left: var(--incont);
-  top: 0;
+  left: 50%;
+  bottom: 50%;
 }
-.knowledge_right {
-  left: unset;
-  right: var(--incont);
-  top: unset;
-  top: 50%;
+.knowledge_bottom {
+  left: 0;
+  bottom: 0%;
+  width: 100%;
+  mix-blend-mode: difference;
+  -moz-text-align-last: justify;
+       text-align-last: justify;
+  padding: 0 1em;
+}
+
+.mindWobble {
+  font-size: 2rem;
+  line-height: 1;
+  --mmWobbleAmp: 15; /* 全体振幅(px) */
+  --mmWobbleAmpX: 15; /* 横振幅(px) */
+  --mmWobbleAmpY: 15; /* 縦振幅(px) */
+  --mmWobbleFreqX: 0.0003; /* 横周波数 */
+  --mmWobbleFreqY: 0.0003; /* 縦周波数 */
 }

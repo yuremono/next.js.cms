@@ -172,6 +172,7 @@ export async function GET() {
           name: mv?.name ?? "",
           image: mv?.image ?? "",
           imageClass: mv?.image_class ?? "",
+          textClass: mv?.text_class ?? "",
           html: mv?.html ?? "",
           imageAspectRatio: mv?.image_aspect_ratio ?? "auto",
           sectionWidth: mv?.section_width ?? "",
@@ -190,6 +191,7 @@ export async function GET() {
           name: it?.name ?? "",
           image: it?.image ?? "",
           imageClass: it?.image_class ?? "",
+          textClass: it?.text_class ?? "",
           html: it?.html ?? "",
           imageAspectRatio: it?.image_aspect_ratio ?? "auto",
           sectionWidth: it?.section_width ?? "",
@@ -218,6 +220,7 @@ export async function GET() {
           cards: (cards ?? []).map((c) => ({
             image: c.image ?? "",
             imageClass: c.image_class ?? "",
+            textClass: c.text_class ?? "",
             html: c.html ?? "",
             imageAspectRatio: c.image_aspect_ratio ?? "auto",
           })),
@@ -569,6 +572,7 @@ export async function POST(req: NextRequest) {
             html: section.html,
             image: section.image ?? null,
             image_class: section.imageClass ?? null,
+            text_class: section.textClass ?? null,
             image_aspect_ratio: section.imageAspectRatio ?? "auto",
             section_width: section.sectionWidth ?? null,
           });
@@ -582,6 +586,7 @@ export async function POST(req: NextRequest) {
             html: section.html,
             image: section.image ?? null,
             image_class: section.imageClass ?? null,
+            text_class: section.textClass ?? null,
             image_aspect_ratio: section.imageAspectRatio ?? "auto",
             section_width: section.sectionWidth ?? null,
           });
@@ -609,6 +614,7 @@ export async function POST(req: NextRequest) {
               cards_section_id: section.id,
               image: card.image ?? null,
               image_class: card.imageClass ?? null,
+              text_class: card.textClass ?? null,
               html: card.html,
               position: j,
               image_aspect_ratio: card.imageAspectRatio ?? "auto",

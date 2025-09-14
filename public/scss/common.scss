@@ -100,11 +100,11 @@ main>* {
                 left: var(--incont);
                 top: 0;
         }
-        &_right{
+        &_bottom{
                 left:unset;
-                right: var(--incont);
                 top:unset;
-                top: 50%;
+                bottom: 0%;
+                width: 100%; 
         }
 }
 

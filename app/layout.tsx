@@ -5,7 +5,14 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import { CustomCSSLoader } from "@/components/CustomCSSLoader";
 import { CustomJSLoader } from "@/components/CustomJSLoader";
+import Script from "next/script";
 
+// <html>や<body>は既存のまま
+// どこかでグローバルに読み込む
+<Script
+  src="https://unpkg.com/budoux/bundle/budoux-ja.min.js"
+  strategy="afterInteractive"
+/>
 // 開発環境でのみaxe-coreを初期化
 if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
   import("@axe-core/react").then((axe) => {

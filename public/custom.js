@@ -4,21 +4,31 @@
 (function () {
   // 例: DOMが準備できたら実行
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", onReady);
+          document.addEventListener("DOMContentLoaded", onReady);
+
   } else {
     onReady();
   }
 
   function onReady() {
     // ここにサイト固有の初期化処理を記述
-    // console.log("custom.js loaded");
+          // console.log("custom.js loaded");
+          document.querySelectorAll('.budoux').forEach(e => {
+                const wrapper = document.createElement('budoux-ja'); // 新しい要素作成
+                while (e.firstChild) {
+                  wrapper.appendChild(e.firstChild); // 子要素を移動
+                }
+                e.appendChild(wrapper); // 包み込んだ要素を追加
+        });
+
   }
 })();
+
 
 (function () {
   // MindMap (force-directed words)
 
-        const MINDMAP_CONTAINER_SELECTOR = ".mindMap";
+  const MINDMAP_CONTAINER_SELECTOR = ".mindMap";
 
   function loadD3IfNeeded() {
     return new Promise((resolve, reject) => {
@@ -41,7 +51,7 @@
     const style = document.createElement("style");
     style.id = styleId;
     style.textContent = `
-      ${MINDMAP_CONTAINER_SELECTOR} { position: relative; transition: opacity 240ms ease; }
+      ${MINDMAP_CONTAINER_SELECTOR} { position: relative; transition: opacity 600ms ease; }
       ${MINDMAP_CONTAINER_SELECTOR} > * { margin: 0; }
       ${MINDMAP_CONTAINER_SELECTOR} .mindMapNode {
         position: absolute; 
@@ -113,6 +123,21 @@
     mmDisplacement = displacement;
   }
 
+  // 単体要素に軽量ゆらぎを付与するためのスタイル
+  function ensureWobbleStyles() {
+    const styleId = "mindwobble-inline-style";
+    if (document.getElementById(styleId)) return;
+    const style = document.createElement("style");
+    style.id = styleId;
+    style.textContent = `
+      .mindWobble { display: inline-block; will-change: transform; }
+      @media (prefers-reduced-motion: reduce) {
+        .mindWobble { transform: none !important; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
   // レイアウトが安定するまで待つ（フォント/画像読み込み + 連続フレームでサイズ不変）
   function delay(ms) {
     return new Promise((res) => setTimeout(res, ms));
@@ -131,23 +156,29 @@
     if (imgs.length === 0) return;
     const tasks = imgs
       .filter((img) => !(img.complete && img.naturalWidth > 0))
-      .map((img) => (img.decode ? img.decode().catch(() => {}) : Promise.resolve()));
+      .map((img) =>
+        img.decode ? img.decode().catch(() => {}) : Promise.resolve()
+      );
     if (tasks.length === 0) return;
-    await Promise.race([
-      Promise.allSettled(tasks),
-      delay(timeoutMs),
-    ]);
+    await Promise.race([Promise.allSettled(tasks), delay(timeoutMs)]);
   }
 
   function snapshotChildRects(container) {
     const els = Array.from(container.querySelectorAll(":scope > *"));
-    return els.map((el) => {
-      const r = el.getBoundingClientRect();
-      return `${Math.round(r.width)}x${Math.round(r.height)}`;
-    }).join("|");
+    return els
+      .map((el) => {
+        const r = el.getBoundingClientRect();
+        return `${Math.round(r.width)}x${Math.round(r.height)}`;
+      })
+      .join("|");
   }
 
-  async function waitForStableLayout(container, maxWaitMs = 1800, pollMs = 80, stableFrames = 3) {
+  async function waitForStableLayout(
+    container,
+    maxWaitMs = 1800,
+    pollMs = 80,
+    stableFrames = 3
+  ) {
     await waitForFonts();
     await waitForImages(container);
     let last = snapshotChildRects(container);
@@ -208,7 +239,7 @@
     const containerRect = container.getBoundingClientRect();
     const stageWidth = Math.max(200, containerRect.width);
     const stageHeight = Math.max(200, containerRect.height);
-    const innerPadding = 48; // コンテナ内側の安全余白
+    const innerPadding = 24; // コンテナ内側の安全余白
     if (getComputedStyle(container).position === "static") {
       container.style.position = "relative";
     }
@@ -453,6 +484,10 @@
         wobbleFreqX: 0.00012 + Math.random() * 0.00024,
         wobbleFreqY: 0.0001 + Math.random() * 0.00008,
         wobbleAmp: it.isStatic ? 0 : prefersReduced ? 0 : 32.0,
+        // すべてのノードに初期位置アンカーを付与（中央吸引を防止）
+        homeX: x,
+        homeY: y,
+        isGrid: Boolean(it.gridRC),
       });
       placed.push({ x, y, halfW: it.halfW, halfH: it.halfH });
     }
@@ -466,7 +501,7 @@
     });
 
     // 力学モデル設定（矩形サイズベースの当たり判定）
-    const rectPadding = 100; // ノード矩形同士の最低距離
+    const rectPadding = 12; // ノード矩形同士の最低距離
     const rectIterations = prefersReduced ? 1 : 2;
 
     // d3のforceに矩形ベースの衝突回避を追加
@@ -512,11 +547,26 @@
       .forceSimulation(nodes)
       .alpha(1)
       .alphaDecay(prefersReduced ? 0.12 : 0.03)
-      .force("charge", window.d3.forceManyBody().strength(-30))
-      .force("center", window.d3.forceCenter(stageWidth / 2, stageHeight / 2))
+      // グリッド指定は弱め、それ以外は中程度の反発
+      .force(
+        "charge",
+        window.d3.forceManyBody().strength((d) => (d.isGrid ? -5 : -15))
+      )
+      // center力は使わず、homeアンカーに吸着
+      .force(
+        "homeX",
+        window.d3
+          .forceX((d) => d.homeX)
+          .strength((d) => (d.isGrid ? 1.0 : 0.25))
+      )
+      .force(
+        "homeY",
+        window.d3
+          .forceY((d) => d.homeY)
+          .strength((d) => (d.isGrid ? 1.0 : 0.25))
+      )
       .force("rectCollide", rectCollisionForce(rectPadding, rectIterations))
-      // 常時わずかに動かす（ゆらぎやポインタ反応のため）
-      .alphaTarget(prefersReduced ? 0 : 0.015);
+      .alphaTarget(prefersReduced ? 0 : 0.01);
 
     // カーソル回避（PCのみ）
     const pointer = { x: 0, y: 0, active: false };
@@ -690,30 +740,121 @@
     });
   }
 
+  // 単体要素向け「ゆらぎ」アニメーション（transformのみ、D3不使用）
+  function initMindWobble() {
+    const prefersReduced =
+      window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const all = Array.from(document.querySelectorAll(".mindWobble"));
+    if (!all.length) return;
+
+    // MindMap配下は除外（競合を避ける）
+    const els = all.filter((el) => !el.closest(".mindMap"));
+    if (!els.length) return;
+
+    ensureWobbleStyles();
+
+    const isVisible = new WeakMap();
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => isVisible.set(e.target, e.isIntersecting));
+      },
+      { root: null, threshold: 0 }
+    );
+
+    const items = els.map((el) => {
+      io.observe(el);
+      const cs = getComputedStyle(el);
+      const varAmp =
+        parseFloat(cs.getPropertyValue("--mmWobbleAmp")) || undefined;
+      const varAmpX =
+        parseFloat(cs.getPropertyValue("--mmWobbleAmpX")) || undefined;
+      const varAmpY =
+        parseFloat(cs.getPropertyValue("--mmWobbleAmpY")) || undefined;
+      const varFreqX =
+        parseFloat(cs.getPropertyValue("--mmWobbleFreqX")) || undefined;
+      const varFreqY =
+        parseFloat(cs.getPropertyValue("--mmWobbleFreqY")) || undefined;
+
+      const dataAmp =
+        parseFloat(el.getAttribute("data-wobble-amp")) || undefined;
+      const dataAmpX =
+        parseFloat(el.getAttribute("data-wobble-amp-x")) || undefined;
+      const dataAmpY =
+        parseFloat(el.getAttribute("data-wobble-amp-y")) || undefined;
+      const dataFreqX =
+        parseFloat(el.getAttribute("data-wobble-freq-x")) || undefined;
+      const dataFreqY =
+        parseFloat(el.getAttribute("data-wobble-freq-y")) || undefined;
+
+      const amp = varAmp ?? dataAmp ?? 16;
+      const ampX = varAmpX ?? dataAmpX ?? amp;
+      const ampY = varAmpY ?? dataAmpY ?? Math.max(6, amp * 0.6);
+      // performance.now() は ms 基準なので周波数は小さめ
+      const freqX = varFreqX ?? dataFreqX ?? 0.0008;
+      const freqY = varFreqY ?? dataFreqY ?? 0.0006;
+
+      return {
+        el,
+        phaseX: Math.random() * Math.PI * 2,
+        phaseY: Math.random() * Math.PI * 2,
+        ampX,
+        ampY,
+        freqX,
+        freqY,
+      };
+    });
+
+    if (prefersReduced) {
+      // 低減指定時はtransformをリセットして終了
+      for (const it of items) it.el.style.transform = "none";
+      return;
+    }
+
+    const tick = (now) => {
+      for (const it of items) {
+        const vis = isVisible.get(it.el) !== false;
+        if (!vis) continue;
+        const dx = Math.sin(now * it.freqX + it.phaseX) * it.ampX;
+        const dy = Math.sin(now * it.freqY + it.phaseY) * it.ampY;
+        it.el.style.transform = `translate3d(${dx.toFixed(2)}px, ${dy.toFixed(2)}px, 0)`;
+      }
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
   (function bootstrap() {
-          const run = () => {
-                    // 直下の <br> を先に除去してから .mindMap を処理
-    document.querySelectorAll(".mindMap > br").forEach((br) => br.remove());
-          const containers = Array.from(document.querySelectorAll(".mindMap"));
-          if (!containers.length) return;
-          // 配置完了まで不可視（フェードイン用）
-          containers.forEach((c) => { c.style.opacity = "0"; });
-          loadD3IfNeeded()
-            .then(async () => {
-              for (const c of containers) {
-                // レンダリング完了・サイズ安定を待ってから初期化
-                await waitForStableLayout(c);
-                initMindMapFor(c);
-                // 初期化完了後にフェードイン
-                requestAnimationFrame(() => { c.style.opacity = "1"; });
-              }
-            })
-            .catch(() => {});
-        };
-        if (document.readyState === "loading") {
-          document.addEventListener("DOMContentLoaded", run);
-        } else {
-          run();
-        }
-      })();
+    const run = () => {
+      // 単体要素のゆらぎを初期化（MindMapとは独立）
+      initMindWobble();
+      // 直下の <br> を先に除去してから .mindMap を処理
+      document.querySelectorAll(".mindMap > br").forEach((br) => br.remove());
+      const containers = Array.from(document.querySelectorAll(".mindMap"));
+      if (!containers.length) return;
+      // 配置完了まで不可視（フェードイン用）
+      containers.forEach((c) => {
+        c.style.opacity = "0";
+      });
+      loadD3IfNeeded()
+        .then(async () => {
+          for (const c of containers) {
+            // レンダリング完了・サイズ安定を待ってから初期化
+            await waitForStableLayout(c);
+            initMindMapFor(c);
+            // 初期化完了後にフェードイン
+            requestAnimationFrame(() => {
+              c.style.opacity = "1";
+            });
+          }
+        })
+        .catch(() => {});
+    };
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", run);
+    } else {
+      run();
+    }
+  })();
 })();
