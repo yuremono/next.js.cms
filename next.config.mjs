@@ -7,7 +7,6 @@ const nextConfig = {
 				hostname: "**",
 			},
 		],
-		domains: ["localhost", "next-js-cms.vercel.app", "vercel.app"],
 		unoptimized: process.env.NODE_ENV === "production",
 	},
 	typescript: {
@@ -15,27 +14,15 @@ const nextConfig = {
 		ignoreBuildErrors: true,
 		tsconfigPath: "./tsconfig.json",
 	},
-	eslint: {
-		// ESLintエラーを完全に無視
-		ignoreDuringBuilds: true,
-		dirs: [],
-	},
 	experimental: {
 		esmExternals: true,
 	},
+	// Next.js 16でTurbopackがデフォルト - 空の設定で有効化
+	turbopack: {},
 	// サーバーコンポーネント外部パッケージ
 	serverExternalPackages: ["jsdom", "dompurify"],
 	poweredByHeader: false,
 	reactStrictMode: false,
-	// 存在しないファイルを無視
-	webpack: (config) => {
-		config.resolve.fallback = { fs: false, path: false };
-		// Lintingを完全に無効化
-		config.module.rules = config.module.rules.filter(
-			(rule) => !(rule.use && rule.use.loader === "next-eslint-loader")
-		);
-		return config;
-	},
 	// ESLintとTypeScriptエラーを無視
 	onDemandEntries: {
 		maxInactiveAge: 25 * 1000,
