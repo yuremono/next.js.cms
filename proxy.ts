@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-export function middleware(request: NextRequest) {
-  // Middleware processing: ${request.nextUrl.pathname}
+export function proxy(request: NextRequest) {
+  // Proxy processing: ${request.nextUrl.pathname}
   const { pathname } = request.nextUrl;
 
   // ローカル画像URLを処理
