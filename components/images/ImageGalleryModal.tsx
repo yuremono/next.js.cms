@@ -88,12 +88,13 @@ export function ImageGalleryModal({
 
       // 成功したら一覧を更新
       await fetchImages();
+      // 削除が成功したら確認ダイアログを閉じる
+      setDeleteConfirmOpen(false);
+      setImageToDelete(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "画像の削除に失敗しました");
     } finally {
       setDeleting(false);
-      setDeleteConfirmOpen(false);
-      setImageToDelete(null);
     }
   };
 
@@ -221,7 +222,10 @@ export function ImageGalleryModal({
               キャンセル
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => imageToDelete && deleteImage(imageToDelete)}
+              onClick={(e) => {
+                e.preventDefault();
+                if (imageToDelete) deleteImage(imageToDelete);
+              }}
               disabled={deleting}
               className="bg-red-600 text-white hover:bg-red-700"
             >

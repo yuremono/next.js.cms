@@ -96,8 +96,9 @@ export function FormEditor({ section, onUpdate }: FormEditorProps) {
             label="背景画像"
           />
           <div className="space-y-2">
-            <Label>コンテンツ</Label>
+            <Label htmlFor="form-html-editor">コンテンツ</Label>
             <SimpleHtmlEditor
+              id="form-html-editor"
               value={section.html}
               onChange={handleHtmlChange}
               autoConvertLineBreaks={true}

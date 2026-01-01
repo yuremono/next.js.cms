@@ -1,3 +1,4 @@
+import React from "react";
 import { Card } from "@/components/ui/card";
 import {
   ImageIcon,
@@ -5,7 +6,7 @@ import {
   Mail,
   Copy,
   Folder,
-        FileText,
+  FileText,
   SquareCode,
 } from "lucide-react";
 
@@ -60,21 +61,35 @@ export function SectionSelector({ onSelect }: SectionSelectorProps) {
   ];
 
   return (
-    <div className="SectionSelector p-4">
-      <h3 className="mb-4">セクションを追加</h3>
-      <p className="mb-6">追加したいセクションのタイプを選択してください</p>
+    <div className="SectionSelector">
+      <p className="mb-4 text-sm text-muted-foreground sm:mb-6">
+        追加したいセクションのタイプを選択してください
+      </p>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 ">
         {sectionTypes.map((section) => (
           <Card
             key={section.type}
-            className="cursor-pointer p-6 transition-colors hover:border-slate-300"
+            className="cursor-pointer p-3 transition-colors hover:border-slate-300 sm:py-6"
             onClick={() => onSelect(section.type)}
           >
-            <div className="flex flex-col items-center p-4 text-center">
-              {section.icon}
-              <h4 className="mb-1 mt-3 font-medium">{section.title}</h4>
-              <p className="">{section.description}</p>
+            <div className="flex flex-row items-center gap-3 text-left sm:flex-col sm:gap-0  sm:text-center">
+              <div className="shrink-0 sm:mb-3">
+                {/* アイコンサイズをモバイルで少し小さく */}
+                {React.cloneElement(section.icon as React.ReactElement, {
+                  className:
+                    "h-8 w-8 sm:h-10 sm:w-10 " +
+                    (section.icon as React.ReactElement).props.className,
+                })}
+              </div>
+              <div>
+                <h4 className="text-sm font-medium sm:text-base">
+                  {section.title}
+                </h4>
+                <p className="line-clamp-2 text-xs sm:line-clamp-none sm:text-sm">
+                  {section.description}
+                </p>
+              </div>
             </div>
           </Card>
         ))}

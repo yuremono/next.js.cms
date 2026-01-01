@@ -152,8 +152,9 @@ export function ImgTextEditor({ section, onUpdate }: ImgTextEditorProps) {
           />
 
           <div className="space-y-2">
-            <Label>コンテンツ</Label>
+            <Label htmlFor="imgtext-html-editor">コンテンツ</Label>
             <SimpleHtmlEditor
+              id="imgtext-html-editor"
               value={section.html}
               onChange={handleHtmlChange}
               autoConvertLineBreaks={true}

@@ -937,9 +937,14 @@ export default function EditorPage() {
           <div className="h-full space-y-6">
             <div className="space-y-6 rounded-lg border bg-card p-6 shadow-sm">
               <div className="space-y-2">
-                <Label className="text-lg font-medium">Rare Classes</Label>
+                <Label
+                  htmlFor="rare-classes-input"
+                  className="text-lg font-medium"
+                >
+                  Rare Classes
+                </Label>
                 <p className="text-sm ">
-                                                ほとんどのTailwindクラスは即使用できますが公表されていても使えないクラスが存在します。ここに記述することで多くの場合解決しますが例外もありますのでその場合は製作者にお伝えください。
+                  ほとんどのTailwindクラスは即使用できますが公表されていても使えないクラスが存在します。ここに記述することで多くの場合解決しますが例外もありますのでその場合は製作者にお伝えください。
                 </p>
               </div>
               <div className="flex flex-1 flex-col space-y-2">
