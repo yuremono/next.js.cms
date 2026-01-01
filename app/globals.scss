@@ -571,6 +571,8 @@ b, strong{
                 transition: .4s;
                 color: var(--gr);
                 font-size: 1.2em;
+                display: inline-block;
+                padding-inline: 0.5em; 
 
                 &:hover {
                         opacity: 0.8;
