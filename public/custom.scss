@@ -83,7 +83,7 @@ main a {
 }
 
 .mindWobble {
-        position: relative;
+        position: relative;z-index: 1;
         font-size: calc(var(--mmFZ)*5);
         @media (max-width: 1200px){
                 font-size: calc(var(--mmFZ)*4);
