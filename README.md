@@ -53,6 +53,16 @@ npm run dev
 
 ブラウザで `http://localhost:3000` にアクセスしてください。
 
+## 主要コマンド
+
+| コマンド | 説明 |
+| :--- | :--- |
+| `npm run dev` | 開発サーバーの起動 |
+| `npm run build` | 本番用のビルド |
+| `npm run sync` | GitHubに現在の変更をプッシュ（自動コミット付き） |
+| `npm run deploy` | GitHubにプッシュしてデプロイを実行 |
+| `npm run lint` | コードの静的解析（Linter） |
+
 **注意**: 一部の機能（AI生成、画像アップロード）はSupabaseとOpenAI APIの設定が必要です。
 
 ## アーキテクチャ

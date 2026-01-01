@@ -562,36 +562,42 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      // セクション詳細の更新（順次実行で整合性を担保）
+      // セクション詳細の更新
+      const detailErrors = [];
       for (const section of toUpdate) {
+        let error;
         if (section.layout === "mainVisual") {
-          const { error } = await supabase.from("main_visual_sections").upsert({
-            section_id: section.id,
-            class: section.class,
-            bg_image: section.bgImage || null,
-            name: section.name,
-            html: section.html,
-            image: section.image ?? null,
-            image_class: section.imageClass ?? null,
-            text_class: section.textClass ?? null,
-            image_aspect_ratio: section.imageAspectRatio ?? "auto",
-            section_width: section.sectionWidth ?? null,
-          });
-          if (error) console.error("main_visual_sections upsert error:", error);
+          const { error: err } = await supabase
+            .from("main_visual_sections")
+            .upsert({
+              section_id: section.id,
+              class: section.class,
+              bg_image: section.bgImage || null,
+              name: section.name,
+              html: section.html,
+              image: section.image ?? null,
+              image_class: section.imageClass ?? null,
+              text_class: section.textClass ?? null,
+              image_aspect_ratio: section.imageAspectRatio ?? "auto",
+              section_width: section.sectionWidth ?? null,
+            });
+          error = err;
         } else if (section.layout === "imgText") {
-          const { error } = await supabase.from("img_text_sections").upsert({
-            section_id: section.id,
-            class: section.class,
-            bg_image: section.bgImage || null,
-            name: section.name,
-            html: section.html,
-            image: section.image ?? null,
-            image_class: section.imageClass ?? null,
-            text_class: section.textClass ?? null,
-            image_aspect_ratio: section.imageAspectRatio ?? "auto",
-            section_width: section.sectionWidth ?? null,
-          });
-          if (error) console.error("img_text_sections upsert error:", error);
+          const { error: err } = await supabase
+            .from("img_text_sections")
+            .upsert({
+              section_id: section.id,
+              class: section.class,
+              bg_image: section.bgImage || null,
+              name: section.name,
+              html: section.html,
+              image: section.image ?? null,
+              image_class: section.imageClass ?? null,
+              text_class: section.textClass ?? null,
+              image_aspect_ratio: section.imageAspectRatio ?? "auto",
+              section_width: section.sectionWidth ?? null,
+            });
+          error = err;
         } else if (section.layout === "cards") {
           const { error: csErr } = await supabase
             .from("cards_sections")
@@ -602,13 +608,24 @@ export async function POST(req: NextRequest) {
               name: section.name,
               section_width: section.sectionWidth ?? null,
             });
-          if (csErr) console.error("cards_sections upsert error:", csErr);
+          if (csErr)
+            detailErrors.push({
+              table: "cards_sections",
+              sectionId: section.id,
+              error: csErr,
+            });
 
           const { error: delErr } = await supabase
             .from("cards")
             .delete()
             .eq("cards_section_id", section.id);
-          if (delErr) console.error("cards delete error:", delErr);
+          if (delErr)
+            detailErrors.push({
+              table: "cards",
+              operation: "delete",
+              sectionId: section.id,
+              error: delErr,
+            });
 
           if (section.cards && section.cards.length > 0) {
             const cardsToInsert = section.cards.map((card, j) => ({
@@ -624,10 +641,10 @@ export async function POST(req: NextRequest) {
             const { error: insErr } = await supabase
               .from("cards")
               .insert(cardsToInsert);
-            if (insErr) console.error("cards insert error:", insErr);
+            error = insErr;
           }
         } else if (section.layout === "form") {
-          const { error } = await supabase.from("form_sections").upsert({
+          const { error: err } = await supabase.from("form_sections").upsert({
             section_id: section.id,
             class: section.class,
             bg_image: section.bgImage || null,
@@ -636,62 +653,78 @@ export async function POST(req: NextRequest) {
             endpoint: section.endpoint,
             section_width: section.sectionWidth ?? null,
           });
-          if (error) console.error("form_sections upsert error:", error);
+          error = err;
         } else if (section.layout === "descList") {
-          const { error } = await supabase.from("desc_list_sections").upsert(
-            {
-              section_id: section.id,
-              class: section.class,
-              bg_image: section.bgImage || null, // 空文字列もnullに変換
-              name: section.name,
-              title: section.title,
-              html: section.html,
-              dt_width: section.dtWidth ?? "20%",
-              section_width: section.sectionWidth ?? null,
-            },
-            { onConflict: "section_id" }
-          );
-          if (error) console.error("desc_list_sections upsert error:", error);
+          const { error: err } = await supabase
+            .from("desc_list_sections")
+            .upsert(
+              {
+                section_id: section.id,
+                class: section.class,
+                bg_image: section.bgImage || null,
+                name: section.name,
+                title: section.title,
+                html: section.html,
+                dt_width: section.dtWidth ?? "20%",
+                section_width: section.sectionWidth ?? null,
+              },
+              { onConflict: "section_id" }
+            );
+          error = err;
         } else if (section.layout === "group-start") {
-          const { error } = await supabase.from("group_start_sections").upsert(
-            {
-              section_id: section.id,
-              class: section.class,
-              bg_image: section.bgImage || null,
-              name: section.name,
-              scope_styles: section.scopeStyles,
-              section_width: section.sectionWidth ?? null,
-            },
-            { onConflict: "section_id" }
-          );
-          if (error) console.error("group_start_sections upsert error:", error);
+          const { error: err } = await supabase
+            .from("group_start_sections")
+            .upsert(
+              {
+                section_id: section.id,
+                class: section.class,
+                bg_image: section.bgImage || null,
+                name: section.name,
+                scope_styles: section.scopeStyles,
+                section_width: section.sectionWidth ?? null,
+              },
+              { onConflict: "section_id" }
+            );
+          error = err;
         } else if (section.layout === "group-end") {
-          const { error } = await supabase.from("group_end_sections").upsert(
-            {
-              section_id: section.id,
-              class: section.class,
-              bg_image: section.bgImage || null,
-              section_width: section.sectionWidth ?? null,
-            },
-            { onConflict: "section_id" }
-          );
-          if (error) console.error("group_end_sections upsert error:", error);
+          const { error: err } = await supabase
+            .from("group_end_sections")
+            .upsert(
+              {
+                section_id: section.id,
+                class: section.class,
+                bg_image: section.bgImage || null,
+                section_width: section.sectionWidth ?? null,
+              },
+              { onConflict: "section_id" }
+            );
+          error = err;
         } else if (section.layout === "htmlContent") {
-          const { error } = await supabase.from("html_content_sections").upsert(
-            {
-              section_id: section.id,
-              class: section.class,
-              bg_image: section.bgImage || null,
-              name: section.name,
-              html: section.html,
-              section_width: section.sectionWidth ?? null,
-              scope_styles: section.scopeStyles ?? null,
-            },
-            { onConflict: "section_id" }
-          );
-          if (error)
-            console.error("html_content_sections upsert error:", error);
+          const { error: err } = await supabase
+            .from("html_content_sections")
+            .upsert(
+              {
+                section_id: section.id,
+                class: section.class,
+                bg_image: section.bgImage || null,
+                name: section.name,
+                html: section.html,
+                section_width: section.sectionWidth ?? null,
+                scope_styles: section.scopeStyles ?? null,
+              },
+              { onConflict: "section_id" }
+            );
+          error = err;
         }
+        if (error)
+          detailErrors.push({
+            sectionId: section.id,
+            layout: section.layout,
+            error,
+          });
+      }
+      if (detailErrors.length > 0) {
+        console.error("セクション詳細更新エラー:", detailErrors);
       }
     }
 
@@ -841,15 +874,22 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      // カードのバルク挿入を追加
-      if (cardsBulkInsert.length > 0) {
-        insertDetailPromises.push(
-          supabase.from("cards").insert(cardsBulkInsert)
-        );
+      // 1. まず各セクションの詳細（cards以外）を一括挿入
+      const insertResults = await Promise.all(insertDetailPromises);
+      const insertErrors = insertResults.filter((r) => r.error);
+      if (insertErrors.length > 0) {
+        console.error("セクション詳細挿入エラー:", insertErrors);
       }
 
-      // 全詳細挿入を並列実行
-      await Promise.all(insertDetailPromises);
+      // 2. 次にカード本体を挿入（cards_sectionsへの外部キー制約がある場合を考慮）
+      if (cardsBulkInsert.length > 0) {
+        const { error: cardsError } = await supabase
+          .from("cards")
+          .insert(cardsBulkInsert);
+        if (cardsError) {
+          console.error("カード挿入エラー:", cardsError);
+        }
+      }
     }
 
     // 7. 全セクションの位置を強制更新（順番を確実に保存）

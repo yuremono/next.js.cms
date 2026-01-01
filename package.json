@@ -16,7 +16,9 @@
     "test:e2e:ui": "playwright test --ui",
     "test:accessibility": "jest --testPathPattern=accessibility",
     "test:performance": "jest --testPathPattern=performance",
-    "test:security": "jest --testPathPattern=security"
+"test:security": "jest --testPathPattern=security",
+"sync": "git add . && git commit -m \"update\" --allow-empty && git push",
+"deploy": "git add . && git commit -m \"deploy\" --allow-empty && git push"
   },
   "dependencies": {
     "@axe-core/react": "4.10.2",
