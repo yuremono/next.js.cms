@@ -62,10 +62,11 @@ export async function uploadAndOptimizeImage(
     // 以下、Supabaseストレージを使用する場合の処理
     let fileToUpload: File | Blob = file;
     const isImage = file.type.startsWith("image/");
-    const fileExt = isImage ? "webp" : file.name.split(".").pop();
+    const isSvg = file.type === "image/svg+xml";
+    const fileExt = (isImage && !isSvg) ? "webp" : file.name.split(".").pop();
     
-    // 画像の場合はWebPに変換
-    if (isImage) {
+    // 画像の場合はWebPに変換（SVGは除外）
+    if (isImage && !isSvg) {
       try {
         const options = {
           maxSizeMB: 2, // 最大2MB（高品質維持）
@@ -88,7 +89,7 @@ export async function uploadAndOptimizeImage(
     const { error } = await supabase.storage
       .from("cms-images") // バケット名（画像・動画共用）
       .upload(filePath, fileToUpload, {
-        contentType: isImage ? "image/webp" : file.type,
+        contentType: (isImage && !isSvg) ? "image/webp" : file.type,
         upsert: true
       });
 
