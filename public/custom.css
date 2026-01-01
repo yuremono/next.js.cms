@@ -190,9 +190,9 @@ main a {
   }
 }
 .creative_bottom {
-  background-color: var(--wh50);
   width: 100%;
-  mix-blend-mode: difference;
+  background-color: var(--muted-foreground);
+  color: var(--foreground);
   padding: 0.25em 1em 0.375em;
 }
 

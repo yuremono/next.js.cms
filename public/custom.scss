@@ -230,11 +230,13 @@ main a {
                 }
         }
         &_bottom {
-                background-color: var(--wh50);
+                // background-color: var(--wh50);
                 // left: 0;
                 // bottom: 0%;
                 width: 100%;
-                mix-blend-mode: difference;
+                // mix-blend-mode: difference;
+                background-color: var(--muted-foreground);
+                color: var(--foreground);
                 padding: 0.25em 1em 0.375em;
         }
 }
