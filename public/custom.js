@@ -28,7 +28,7 @@
     // アイコンの切り替え関数
     function updateThemeIcon(isDark) {
       const buttons = document.querySelectorAll(
-        'button[aria-label="ダークモード切替"]'
+        'button[aria-label="Toggle dark mode"]'
       );
       buttons.forEach((btn) => {
         if (isDark) {
@@ -41,7 +41,7 @@
 
     // クリックイベント
     document.addEventListener("click", (e) => {
-      const btn = e.target.closest('button[aria-label="ダークモード切替"]');
+      const btn = e.target.closest('button[aria-label="Toggle dark mode"]');
       if (!btn) return;
 
       e.preventDefault();

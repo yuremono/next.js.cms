@@ -40,7 +40,7 @@
                 --input: hsl(0, 0%, 90%);
                 --ring: hsl(215, 25%, 35%);
                 --radius: 0.5rem;
- 
+
                 // オリジナルカラー変数
                 --mc: var(--primary);
                 --sc: var(--secondary);
@@ -50,16 +50,16 @@
                 --gr: var(--muted-foreground);
                 --bk: var(--foreground);
                 --wh: var(--background);
-        
+
                 @for $i from 1 through 9 {
-                        --mc#{$i}0: color-mix(in srgb, transparent,var(--mc) #{$i}0%);    
-                        --sc#{$i}0: color-mix(in srgb, transparent,var(--sc) #{$i}0%);    
-                        --ac#{$i}0: color-mix(in srgb, transparent,var(--ac) #{$i}0%);    
-                        --bc#{$i}0: color-mix(in srgb, transparent,var(--bc) #{$i}0%);    
-                        --tc#{$i}0: color-mix(in srgb, transparent,var(--tc) #{$i}0%);    
-                        --gr#{$i}0: color-mix(in srgb, transparent,var(--gr) #{$i}0%);    
-                        --wh#{$i}0: color-mix(in srgb, transparent,var(--wh) #{$i}0%);    
-                        --bk#{$i}0: color-mix(in srgb, transparent,var(--bk) #{$i}0%);    
+                        --mc#{$i}0: color-mix(in srgb, transparent, var(--mc) #{$i}0%);
+                        --sc#{$i}0: color-mix(in srgb, transparent, var(--sc) #{$i}0%);
+                        --ac#{$i}0: color-mix(in srgb, transparent, var(--ac) #{$i}0%);
+                        --bc#{$i}0: color-mix(in srgb, transparent, var(--bc) #{$i}0%);
+                        --tc#{$i}0: color-mix(in srgb, transparent, var(--tc) #{$i}0%);
+                        --gr#{$i}0: color-mix(in srgb, transparent, var(--gr) #{$i}0%);
+                        --wh#{$i}0: color-mix(in srgb, transparent, var(--wh) #{$i}0%);
+                        --bk#{$i}0: color-mix(in srgb, transparent, var(--bk) #{$i}0%);
                 }
         }
 
@@ -751,9 +751,9 @@ strong {
         }
 }
 
-/* 公開サイト用のダークモード切替ボタン（左上固定） */
+/* 公開サイト用のToggle dark modeボタン（左上固定） */
 /* 管理画面（.EditorWorkspace）内では影響しないように除外 */
-body:not(:has(.EditorWorkspace)) button[aria-label="ダークモード切替"] {
+body:not(:has(.EditorWorkspace)) button[aria-label="Toggle dark mode"] {
         position: fixed;
         top: .5rem;
         left: .5rem;
@@ -770,6 +770,7 @@ body:not(:has(.EditorWorkspace)) button[aria-label="ダークモード切替"] {
         &:hover {
                 transform: scale(1.1);
         }
+
         svg {
                 width: 1.5rem;
                 height: 1.5rem;
@@ -777,7 +778,7 @@ body:not(:has(.EditorWorkspace)) button[aria-label="ダークモード切替"] {
 }
 
 /* ダークモード時のボタンの見た目微調整 */
-// .dark body:not(:has(.EditorWorkspace)) button[aria-label="ダークモード切替"] {
+// .dark body:not(:has(.EditorWorkspace)) button[aria-label="Toggle dark mode"] {
 //         background-color: var(--card);
 //         border-color: var(--border);
 //         box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);

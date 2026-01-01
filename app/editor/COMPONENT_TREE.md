@@ -5,7 +5,7 @@
 app/editor/page.tsx (EditorPage)
 ├─ ヘッダー
 │   ├─ /editor タイトル
-│   ├─ ダークモード切替
+│   ├─ Toggle dark mode
 │   ├─ ページを開くボタン
 │   ├─ プレビューボタン
 │   ├─ 分割表示ボタン

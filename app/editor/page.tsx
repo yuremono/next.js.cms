@@ -1208,7 +1208,7 @@ export default function EditorPage() {
           <div className="flex items-center  gap-4">
             <h1 className="fontJost text-3xl font-light">/editor</h1>
             <button
-              aria-label="ダークモード切替"
+              aria-label="Toggle dark mode"
               className="ml-2 border-none bg-transparent p-1 outline-none focus:outline-none"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             >
