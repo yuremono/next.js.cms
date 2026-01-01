@@ -11,16 +11,62 @@
   }
 
   function onReady() {
-    // ここにサイト固有の初期化処理を記述
-          // console.log("custom.js loaded");
-          document.querySelectorAll('.budoux').forEach(e => {
-                const wrapper = document.createElement('budoux-ja'); // 新しい要素作成
-                while (e.firstChild) {
-                  wrapper.appendChild(e.firstChild); // 子要素を移動
-                }
-                e.appendChild(wrapper); // 包み込んだ要素を追加
-        });
+    // ダークモード初期化
+    const themeTarget = document.documentElement;
+    const storageKey = "cms-theme-mode";
+    const savedTheme = localStorage.getItem(storageKey);
 
+    // 初期状態の適用
+    if (savedTheme === "dark") {
+      themeTarget.classList.add("dark");
+      updateThemeIcon(true);
+    } else {
+      themeTarget.classList.remove("dark");
+      updateThemeIcon(false);
+    }
+
+    // アイコンの切り替え関数
+    function updateThemeIcon(isDark) {
+      const buttons = document.querySelectorAll(
+        'button[aria-label="ダークモード切替"]'
+      );
+      buttons.forEach((btn) => {
+        if (isDark) {
+          btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun h-6 w-6 text-yellow-400"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M22 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`;
+        } else {
+          btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon h-6 w-6 text-zinc-700"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>`;
+        }
+      });
+    }
+
+    // クリックイベント
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest('button[aria-label="ダークモード切替"]');
+      if (!btn) return;
+
+      e.preventDefault();
+      const isDark = themeTarget.classList.contains("dark");
+
+      if (isDark) {
+        themeTarget.classList.remove("dark");
+        localStorage.setItem(storageKey, "light");
+        updateThemeIcon(false);
+      } else {
+        themeTarget.classList.add("dark");
+        localStorage.setItem(storageKey, "dark");
+        updateThemeIcon(true);
+      }
+    });
+
+    // ここにサイト固有の初期化処理を記述
+    // console.log("custom.js loaded");
+    document.querySelectorAll(".budoux").forEach((e) => {
+      const wrapper = document.createElement("budoux-ja"); // 新しい要素作成
+      while (e.firstChild) {
+        wrapper.appendChild(e.firstChild); // 子要素を移動
+      }
+      e.appendChild(wrapper); // 包み込んだ要素を追加
+    });
   }
 })();
 
