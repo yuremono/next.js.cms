@@ -65,6 +65,10 @@ npm run dev
 
 **注意**: 一部の機能（AI生成、画像アップロード）はSupabaseとOpenAI APIの設定が必要です。
 
+## Tailwind CSSの動的クラスについて
+
+CMSのエディタで入力したHTMLクラス（例: `text-right`）が反映されない場合は、`lib/tailwind-trigger.tsx` にそのクラスを追記してください。Tailwind CSSのビルドプロセスがこのファイルをスキャンし、本番環境のCSSに必要なスタイルを含めます。
+
 ## アーキテクチャ
 
 ```
