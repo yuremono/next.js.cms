@@ -27,7 +27,8 @@
     --secondary: hsl(215, 32.10%, 89.60%);
     --secondary-foreground: hsl(0, 0%, 10%);
     --muted: hsl(0, 0%, 95%);
-    --muted-foreground: hsl(0, 0%, 70%);
+    --gr: #666666;
+    --muted-foreground: var(--gr);
     --accent: hsl(0, 0%, 95%);
     --accent-foreground: hsl(0, 0%, 10%);
     --destructive: hsl(0, 84%, 60%);
@@ -37,6 +38,59 @@
     --ring: hsl(215, 25%, 35%);
     --radius: 0.5rem;
   }
+
+  /* Prism Highlighting for SimpleHtmlEditor */
+  .token.comment,
+  .token.prolog,
+  .token.doctype,
+  .token.cdata {
+    color: var(--gr) !important;
+  }
+  .token.punctuation {
+    color: #999;
+  }
+  .token.namespace {
+    opacity: 0.7;
+  }
+  .token.property,
+  .token.tag,
+  .token.boolean,
+  .token.number,
+  .token.constant,
+  .token.symbol,
+  .token.deleted {
+    color: #905;
+  }
+  .token.selector,
+  .token.attr-name,
+  .token.string,
+  .token.char,
+  .token.builtin,
+  .token.inserted {
+    color: #690;
+  }
+  .token.operator,
+  .token.entity,
+  .token.url,
+  .language-css .token.string,
+  .style .token.string {
+    color: #9a6e3a;
+  }
+  .token.atrule,
+  .token.attr-value,
+  .token.keyword {
+    color: #07a;
+  }
+  .token.function,
+  .token.class-name {
+    color: #dd4a68;
+  }
+  .token.regex,
+  .token.important,
+  .token.variable {
+    color: #e90;
+  }
+
   .dark {
     --background: hsl(0, 0%, 10%);
     --foreground: hsl(0, 0%, 98%);
@@ -669,7 +723,7 @@ b, strong {
   color: var(--gr);
   font-size: 1.2em;
   display: inline-block;
-  padding-inline: 0.5em;
+  padding-inline: 0.25em;
 }
 .accordion summary:hover {
   opacity: 0.8;

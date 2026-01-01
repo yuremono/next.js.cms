@@ -581,9 +581,9 @@ export default function IDEStyleSectionList({
         startIndex >= 0
           ? getGroupColor(sections[startIndex].id)
           : {
-              border: "#ccc",
+              border: "var(--border)",
               bgWithAlpha: "rgba(204, 204, 204, 0.3)",
-              text: "#666",
+              text: "var(--gr)",
             };
 
       return (

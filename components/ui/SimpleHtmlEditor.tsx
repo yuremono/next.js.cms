@@ -1,8 +1,11 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { Button } from "./button";
 import { Textarea } from "./textarea";
+import Prism from "prismjs";
+import "prismjs/components/prism-markup";
+import "prismjs/components/prism-css";
 
 interface SimpleHtmlEditorProps {
   value: string;
@@ -27,11 +30,7 @@ export function SimpleHtmlEditor({
 }: SimpleHtmlEditorProps) {
   const [previewMode, setPreviewMode] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  // アンドゥ・リドゥ履歴管理
-  const [history, setHistory] = useState<string[]>([value]);
-  const [historyIndex, setHistoryIndex] = useState(0);
-  const [isUndoRedoOperation, setIsUndoRedoOperation] = useState(false);
+  const backdropRef = useRef<HTMLDivElement>(null);
 
   const convertLineBreaksToHtml = useCallback((text: string): string => {
     return text.replace(/\r?\n/g, "<br>");
@@ -40,6 +39,33 @@ export function SimpleHtmlEditor({
   const convertHtmlToLineBreaks = useCallback((html: string): string => {
     return html.replace(/<br\s*\/?>/gi, "\n");
   }, []);
+
+  const getDisplayValue = useCallback((): string => {
+    if (autoConvertLineBreaks) {
+      return convertHtmlToLineBreaks(value);
+    }
+    return value;
+  }, [value, autoConvertLineBreaks, convertHtmlToLineBreaks]);
+
+  // シンタックスハイライト
+  const highlightedCode = useMemo(() => {
+    const code = getDisplayValue(); // textareaに表示されている文字列そのものを使用
+    const lang = commentStyle === "css" ? "css" : "markup";
+    return Prism.highlight(code, Prism.languages[lang], lang);
+  }, [getDisplayValue, commentStyle]);
+
+  // スクロールの同期
+  const handleScroll = useCallback((e: React.UIEvent<HTMLTextAreaElement>) => {
+    if (backdropRef.current) {
+      backdropRef.current.scrollTop = e.currentTarget.scrollTop;
+      backdropRef.current.scrollLeft = e.currentTarget.scrollLeft;
+    }
+  }, []);
+
+  // アンドゥ・リドゥ履歴管理
+  const [history, setHistory] = useState<string[]>([value]);
+  const [historyIndex, setHistoryIndex] = useState(0);
+  const [isUndoRedoOperation, setIsUndoRedoOperation] = useState(false);
 
   // 履歴に新しい値を追加
   const addToHistory = useCallback(
@@ -99,13 +125,6 @@ export function SimpleHtmlEditor({
       addToHistory(value);
     }
   }, [value, history, historyIndex, isUndoRedoOperation, addToHistory]);
-
-  const getDisplayValue = useCallback((): string => {
-    if (autoConvertLineBreaks) {
-      return convertHtmlToLineBreaks(value);
-    }
-    return value;
-  }, [value, autoConvertLineBreaks, convertHtmlToLineBreaks]);
 
   const handleTextareaChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -764,7 +783,7 @@ export function SimpleHtmlEditor({
       </div>
 
       <div
-        className="flex min-h-32 flex-1 flex-col rounded-b-md border"
+        className="relative grid flex-1 overflow-hidden rounded-b-md border"
         style={{ minHeight: "8rem" }}
       >
         {!compact && previewMode ? (
@@ -779,23 +798,40 @@ export function SimpleHtmlEditor({
             }}
           />
         ) : (
-          <Textarea
-            ref={textareaRef}
-            value={getDisplayValue()}
-            onChange={handleTextareaChange}
-            placeholder={placeholder}
-            className="flex-1 resize-none rounded-b-md border-0 focus:ring-0"
-            style={{
-              minHeight: "6rem",
-              fontSize: "16px",
-              lineHeight: "1.5",
-            }}
-            onKeyDown={handleKeyDown}
-            spellCheck={false}
-            autoComplete="off"
-            autoCorrect="off"
-            autoCapitalize="off"
-          />
+          <div className="relative col-start-1 row-start-1 flex-1 overflow-hidden">
+            {/* ハイライト表示用のバックドロップ */}
+            <div
+              ref={backdropRef}
+              className="pointer-events-none absolute inset-0 h-full w-full overflow-auto whitespace-pre-wrap break-words px-3 py-2 font-mono text-base"
+              style={{
+                fontSize: "16px",
+                lineHeight: "1.5",
+                zIndex: 0,
+                color: "inherit",
+              }}
+              dangerouslySetInnerHTML={{ __html: highlightedCode + "\n" }}
+            />
+            {/* 編集用のテキストエリア */}
+            <Textarea
+              ref={textareaRef}
+              value={getDisplayValue()}
+              onChange={handleTextareaChange}
+              onScroll={handleScroll}
+              placeholder={placeholder}
+              className="relative z-10 h-full w-full flex-1 resize-none border-0 bg-transparent px-3 py-2 font-mono text-base caret-foreground selection:bg-primary/30 focus:ring-0"
+              style={{
+                minHeight: "6rem",
+                fontSize: "16px",
+                lineHeight: "1.5",
+                color: "transparent", // テキスト自体は透明にしてバックドロップを見せる
+              }}
+              onKeyDown={handleKeyDown}
+              spellCheck={false}
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+            />
+          </div>
         )}
       </div>
 
