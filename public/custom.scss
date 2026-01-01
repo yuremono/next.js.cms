@@ -253,6 +253,7 @@ main a {
         }
 }
 a{
+        display: inline-block;
         transition: .4s ease-in-out;
         &:hover{
                 scale: 1 1.125; 
