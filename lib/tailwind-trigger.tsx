@@ -12,7 +12,7 @@
 const layoutClasses = "text-left text-center text-right block inline-block flex grid items-center justify-center justify-between";
 
 // テキスト・装飾系
-const textClasses = "font-bold font-light italic underline line-through uppercase lowercase capitalize";
+const textClasses = "leading-[0.75em] font-bold font-light italic underline line-through uppercase lowercase capitalize";
 
 // RTL/LTR関連
 const directionClasses = "ltr rtl text-start text-end";
