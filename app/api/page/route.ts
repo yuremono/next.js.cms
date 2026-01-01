@@ -311,6 +311,7 @@ export async function GET() {
         header: { html: page.header_html },
         footer: { html: page.footer_html },
         customCSS: page.custom_css,
+        tailwindTrigger: page.tailwind_trigger,
         sections: sectionResults,
         sectionsOrder: page.sections_order || null,
       },
@@ -372,6 +373,7 @@ export async function POST(req: NextRequest) {
         header_html: pageData.header.html,
         footer_html: pageData.footer.html,
         custom_css: pageData.customCSS,
+        tailwind_trigger: pageData.tailwindTrigger,
         sections_order: currentSectionsOrder, // 再生成した順序を使用
       })
       .select()

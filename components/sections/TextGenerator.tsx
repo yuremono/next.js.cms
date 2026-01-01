@@ -44,7 +44,11 @@ export function TextGenerator({ onSelect }: TextGeneratorProps) {
 			}
 
 			const data = await response.json();
-			setGeneratedText(data.text);
+			if (data.error) {
+        setError(`${data.error}${data.details ? `: ${data.details}` : ""}`);
+      } else {
+        setGeneratedText(data.text);
+      }
 		} catch (err) {
 			setError(
 				err instanceof Error ? err.message : "エラーが発生しました"

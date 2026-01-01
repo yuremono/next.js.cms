@@ -57,10 +57,13 @@ export async function POST(req: NextRequest) {
 		// サーバーサイドではDOMPurifyが使えないため、クライアントでサニタイズする
 
 		return NextResponse.json({ text: generatedText });
-	} catch (error) {
+	} catch (error: any) {
 		console.error("AI生成エラー:", error);
 		return NextResponse.json(
-			{ error: "テキスト生成に失敗しました" },
+			{ 
+				error: "テキスト生成に失敗しました",
+				details: error?.message || String(error)
+			},
 			{ status: 500 }
 		);
 	}

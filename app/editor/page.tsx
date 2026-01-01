@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 // import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Footer, Header, Page, Section, UserRole } from "@/types";
 import { HeaderEditor } from "@/components/sections/HeaderEditor";
 import { FooterEditor } from "@/components/sections/FooterEditor";
@@ -930,6 +932,33 @@ export default function EditorPage() {
         );
       case "backup":
         return <DatabaseBackup />;
+      case "rare-classes":
+        return (
+          <div className="h-full space-y-6">
+            <div className="space-y-6 rounded-lg border bg-card p-6 shadow-sm">
+              <div className="space-y-2">
+                <Label className="text-lg font-medium">Rare Classes</Label>
+                <p className="text-sm ">
+                                                ほとんどのTailwindクラスは即使用できますが公表されていても使えないクラスが存在します。ここに記述することで多くの場合解決しますが例外もありますのでその場合は製作者にお伝えください。
+                </p>
+              </div>
+              <div className="flex flex-1 flex-col space-y-2">
+                <Textarea
+                  id="rare-classes-input"
+                  value={page.tailwindTrigger || ""}
+                  onChange={(e) =>
+                    setPage((prev) => ({
+                      ...prev,
+                      tailwindTrigger: e.target.value,
+                    }))
+                  }
+                  placeholder="text-left text-center text-right block inline-block flex grid items-center justify-center justify-between"
+                  className="max-h-[60vh] min-h-64 flex-1 resize-none font-mono"
+                />
+              </div>
+            </div>
+          </div>
+        );
       case "dev-notes":
         return (
           <div className="h-full space-y-6 ">
@@ -938,7 +967,7 @@ export default function EditorPage() {
               <div className="space-y-4">
                 <h3>
                   DLリストコンテンツのモード切り替え
-                  <span className="ml-2 inline-block rounded-full bg-muted px-2 py-1  font-medium">
+                  <span className="ml-2 inline-block rounded-full bg-muted px-2   font-medium">
                     検討中
                   </span>
                 </h3>
@@ -950,14 +979,18 @@ export default function EditorPage() {
               <div className="space-y-4">
                 <h3>
                   テーブルコンテンツの実装について
-                  <span className="ml-2 inline-block rounded-full bg-muted px-2 py-1  font-medium">
-                    結論
+                  <span className="ml-2 inline-block rounded-full bg-muted px-2   font-medium">
+                    ブレスト
                   </span>
                 </h3>
                 <p className="mt-1 ">
                   ユーザビリティの観点からCMS環境で制限のあるテーブル編集に慣れてもらうよりも外部サービス（Google
                   Sheets、Notion、Airtable等）を活用し、iframeで埋め込む方が建設的。既存の高機能で再利用可能なツールを選ぶことがより良いユーザー体験になる。
-                  セキュリティの観点から、iframe埋め込み専用のUI導入は実装予定
+                  セキュリティの観点から、iframe埋め込み専用のUI導入は実装予定(2025/07ぐらい)
+                </p>
+                <p className="mt-1 ">
+                  テーブルやQ&Aコンテンツ自体が「情報が整理されている」という意味でAIに評価されるという見解があるのでユーザーが積極的に取り入れたいという風潮になるかもしれない。Notionなどを活用すること自体相互感性を考えれば有益だがiframeまたはオリジナルコンテンツでないという判定が評価に影響することも考慮すべき。
+                  結局「すごく使いやすい表形式エディタ」を実装するに越したことはない...
                 </p>
 
                 <details className="mt-4">
@@ -1298,6 +1331,12 @@ export default function EditorPage() {
                     className=" rounded-none border-none bg-transparent p-2 text-left  "
                   >
                     バックアップ
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="rare-classes"
+                    className=" rounded-none border-none bg-transparent p-2 text-left  "
+                  >
+                    Rare Classes
                   </TabsTrigger>
                   <TabsTrigger
                     value="dev-notes"

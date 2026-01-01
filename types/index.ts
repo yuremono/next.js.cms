@@ -112,6 +112,7 @@ export interface Page {
   footer: Footer;
   sections: Section[];
   customCSS?: string;
+  tailwindTrigger?: string;
   sectionsOrder?: string; // "id1,id2,id3" 形式でセクション順序を管理
 }
 
