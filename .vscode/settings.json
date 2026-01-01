@@ -13,7 +13,6 @@
       "last 2 versions"
     ],
     "liveSassCompile.settings.excludeList": [
-      "**/node_modules/**",
-      "app/**" // Tailwind 管理領域は除外（誤ってSass処理しないため）
+      "**/node_modules/**"
     ]
 }
