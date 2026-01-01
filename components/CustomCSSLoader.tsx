@@ -14,11 +14,14 @@ export function CustomCSSLoader() {
     const loadCustomCSS = async () => {
       try {
         if (shouldLoadCSS) {
-          const response = await fetch("/custom.css", { method: "HEAD" });
+          const timestamp = new Date().getTime();
+          const response = await fetch(`/custom.css?t=${timestamp}`, {
+            method: "HEAD",
+          });
           if (response.ok) {
             // 既存のcustom.cssリンクがあれば削除
             const existingLink = document.querySelector(
-              'link[href="/custom.css"]'
+              'link[href^="/custom.css"]'
             );
             if (existingLink) {
               existingLink.remove();
@@ -27,12 +30,12 @@ export function CustomCSSLoader() {
             // 新しいlinkタグを作成
             const link = document.createElement("link");
             link.rel = "stylesheet";
-            link.href = "/custom.css";
+            link.href = `/custom.css?t=${timestamp}`;
             link.type = "text/css";
 
             // variables.cssの後に挿入するための処理
             const variablesCSSLink = document.querySelector(
-              'link[href="/variables.css"]'
+              'link[href^="/variables.css"]'
             );
             if (variablesCSSLink && variablesCSSLink.nextSibling) {
               // variables.cssが存在する場合は、その直後に挿入
@@ -45,7 +48,7 @@ export function CustomCSSLoader() {
         } else {
           // /editorページでは既存のcustom.cssリンクを削除
           const existingLink = document.querySelector(
-            'link[href="/custom.css"]'
+            'link[href^="/custom.css"]'
           );
           if (existingLink) {
             existingLink.remove();

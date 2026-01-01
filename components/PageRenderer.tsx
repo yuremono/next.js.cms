@@ -479,6 +479,9 @@ export function PageRenderer({ page }: PageRendererProps) {
 
   return (
     <>
+      {page.customCSS && (
+        <style dangerouslySetInnerHTML={{ __html: page.customCSS }} />
+      )}
       <header
         className="header relative"
         dangerouslySetInnerHTML={{ __html: page.header.html }}

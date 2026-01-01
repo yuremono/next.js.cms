@@ -82,7 +82,7 @@ main a {
 }
 
 .mindWobble {
-  font-size: calc(var(--mmFZ) * 3);
+  font-size: calc(var(--mmFZ) * 4);
   line-height: 1;
   --mmWobbleAmp: 15;
   /* 全体振幅(px) */

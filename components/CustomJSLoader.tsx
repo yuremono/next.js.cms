@@ -14,11 +14,14 @@ export function CustomJSLoader() {
     const loadCustomJS = async () => {
       try {
         if (shouldLoadJS) {
-          const response = await fetch("/custom.js", { method: "HEAD" });
+          const timestamp = new Date().getTime();
+          const response = await fetch(`/custom.js?t=${timestamp}`, {
+            method: "HEAD",
+          });
           if (response.ok) {
             // 既存の script があれば削除
             const existingScript = document.querySelector(
-              'script[src="/custom.js"]'
+              'script[src^="/custom.js"]'
             );
             if (existingScript) {
               existingScript.remove();
@@ -26,14 +29,14 @@ export function CustomJSLoader() {
 
             // 新しい script タグを作成
             const script = document.createElement("script");
-            script.src = "/custom.js";
+            script.src = `/custom.js?t=${timestamp}`;
             script.defer = true;
             document.body.appendChild(script);
           }
         } else {
           // /editor ページでは既存の script を削除
           const existingScript = document.querySelector(
-            'script[src="/custom.js"]'
+            'script[src^="/custom.js"]'
           );
           if (existingScript) existingScript.remove();
         }
