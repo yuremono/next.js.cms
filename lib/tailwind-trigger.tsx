@@ -6,7 +6,7 @@
  */
 
 // データベースから取得したクラス
-const rareClasses = "bg-no-repeat bg-contain bg-bottom text-[1.5em] align-super";
+const rareClasses = "bg-no-repeat bg-contain bg-bottom text-[1.5em] align-super align-sub";
 
 // すべてを統合したトリガーストラップ
 export const tailwindTrigger = rareClasses;

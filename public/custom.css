@@ -82,6 +82,7 @@ main a {
 }
 
 .mindWobble {
+  position: relative;
   font-size: calc(var(--mmFZ) * 5);
   line-height: 1;
   --mmWobbleAmp: 15;
