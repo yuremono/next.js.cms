@@ -255,8 +255,9 @@ main a {
 a{
         display: inline-block;
         transition: .4s ease-in-out;
+        will-change: scale;
         &:hover{
-                scale: 1 1.125; 
+                scale: 1 1.25; 
         }
 }
 

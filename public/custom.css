@@ -212,7 +212,8 @@ a {
   display: inline-block;
   -webkit-transition: 0.4s ease-in-out;
   transition: 0.4s ease-in-out;
+  will-change: scale;
 }
 a:hover {
-  scale: 1 1.125;
+  scale: 1 1.25;
 }
