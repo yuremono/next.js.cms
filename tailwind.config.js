@@ -40,6 +40,11 @@ module.exports = {
     "text-[16px]",
     "text-[24px]",
 
+    // 任意単位のテキストサイズを常に有効化 (em, px, rem, vmin, vmax, %)
+    {
+      pattern: /^text-\[[0-9.]+(em|px|rem|vmin|vmax|%)\]/,
+    },
+
     // 1. レイアウト & フレックス (レスポンシブ sm, md, lg 対応)
     {
       pattern:
