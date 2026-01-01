@@ -252,6 +252,12 @@ main a {
                 text-align: right;
         }
 }
+a{
+        transition: .4s ease-in-out;
+        &:hover{
+                scale: 1 1.125; 
+        }
+}
 
 
  

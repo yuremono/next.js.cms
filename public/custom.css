@@ -207,3 +207,11 @@ main a {
 .dl_center dt {
   text-align: right;
 }
+
+a {
+  -webkit-transition: 0.4s ease-in-out;
+  transition: 0.4s ease-in-out;
+}
+a:hover {
+  scale: 1 1.125;
+}
