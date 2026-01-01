@@ -45,6 +45,7 @@ export interface ImgTextSection extends BaseSection {
 }
 
 export interface Card {
+  id?: string; // ユニークID
   cardClass?: string; // カードコンテナのクラス
   image?: string;
   imageClass?: string;

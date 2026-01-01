@@ -39,12 +39,13 @@ interface CardsEditorProps {
 
 // ドラッグ可能なカードアイテムのコンポーネント
 const SortableCardItem = ({
+  card,
   index,
   onSelect,
   onDelete,
   isActive,
 }: {
-  card: CardType; // cardは使用されていませんが、型定義として残しておきます
+  card: CardType;
   index: number;
   onSelect: () => void;
   onDelete: () => void;
@@ -58,7 +59,7 @@ const SortableCardItem = ({
     transition,
     isDragging,
   } = useSortable({
-    id: `card-${index}`,
+    id: card.id || `card-${index}`,
   });
 
   const style = {
@@ -173,6 +174,7 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
     }
 
     const newCard: CardType = {
+      id: `card-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
       cardClass: "",
       image: "",
       imageClass: "",
@@ -200,7 +202,10 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
     }
 
     const source = section.cards[activeCardIndex];
-    const copy: CardType = { ...source };
+    const copy: CardType = {
+      ...source,
+      id: `card-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+    };
     const insertIndex = activeCardIndex + 1;
     const updatedCards = [...section.cards];
     updatedCards.splice(insertIndex, 0, copy);
@@ -228,21 +233,14 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      const oldIndex = section.cards.findIndex(
-        (card, i) => `card-${i}` === active.id
-      );
-      const newIndex = section.cards.findIndex(
-        (card, i) => `card-${i}` === over.id
-      );
+      const oldIndex = section.cards.findIndex((card) => card.id === active.id);
+      const newIndex = section.cards.findIndex((card) => card.id === over.id);
 
       if (oldIndex !== -1 && newIndex !== -1) {
         const updatedCards = arrayMove(section.cards, oldIndex, newIndex);
         onUpdate({ ...section, cards: updatedCards });
         // 並び替え後に選択状態を維持
-        const newActiveIndex = updatedCards.findIndex(
-          (card) => card === section.cards[oldIndex]
-        );
-        setActiveCardIndex(newActiveIndex);
+        setActiveCardIndex(newIndex);
       }
     }
   };
@@ -373,7 +371,7 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
                 // className={"flex-1"}
               >
                 <SortableContext
-                  items={section.cards.map((_, i) => `card-${i}`)}
+                  items={section.cards.map((card, i) => card.id || `card-${i}`)}
                   strategy={verticalListSortingStrategy}
                 >
                   <div className="flex flex-col gap-4 md:flex-row ">
@@ -383,7 +381,7 @@ export function CardsEditor({ section, onUpdate }: CardsEditorProps) {
                       aria-label="カード一覧"
                     >
                       {section.cards.map((card, index) => (
-                        <li key={`card-${index}`}>
+                        <li key={card.id || `card-${index}`}>
                           <SortableCardItem
                             card={card}
                             index={index}

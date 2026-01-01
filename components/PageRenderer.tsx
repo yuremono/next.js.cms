@@ -323,7 +323,7 @@ export function PageRenderer({ page }: PageRendererProps) {
             style={combinedStyle}
           >
             {section.cards.map((card, idx) => (
-              <div key={idx} className={card.cardClass || ""}>
+              <div key={card.id || idx} className={card.cardClass || ""}>
                 {card.image && (
                   <div
                     className={`relative w-full ${card.imageClass || ""}`}

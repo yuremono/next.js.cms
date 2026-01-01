@@ -79,6 +79,7 @@ const createDefaultSection = (type: string): Section => {
         class: "Cards",
         cards: [
           {
+            id: `card-${Date.now()}-1`,
             html: "<h3>カード1</h3><p>カード1の内容</p>",
             image: "",
           },

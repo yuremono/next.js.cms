@@ -218,6 +218,7 @@ export async function GET() {
           name: cs?.name ?? "",
           sectionWidth: cs?.section_width ?? "",
           cards: (cards ?? []).map((c) => ({
+            id: String(c.id),
             cardClass: c.card_class ?? "",
             image: c.image ?? "",
             imageClass: c.image_class ?? "",
