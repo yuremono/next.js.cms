@@ -64,26 +64,24 @@ export default function RootLayout( {
         }
 
         >) {
-        return (<html lang="ja"suppressHydrationWarning> <head> <link rel="stylesheet"
-                href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
-
-                /> </head> <body> {
-                        /* CSS読み込み順序: variables.css → custom.css */
-                }
-
-                <VariablesLoader /> <CustomCSSLoader /> <CustomJSLoader /> {
-                        children
-                }
-
-                <Toaster position="top-right"
-
-                toastOptions= {
-                                {
-                                style: {
-                                        marginTop: "72px"
-                                }
-                        }
-                }
-
-                /> </body> </html>);
+        return (
+          <html lang="ja" suppressHydrationWarning>
+            {" "}
+            <head> </head>{" "}
+            <body>
+              {" "}
+              {/* CSS読み込み順序: variables.css → custom.css */}
+              <VariablesLoader /> <CustomCSSLoader /> <CustomJSLoader />{" "}
+              {children}
+              <Toaster
+                position="top-right"
+                toastOptions={{
+                  style: {
+                    marginTop: "72px",
+                  },
+                }}
+              />{" "}
+            </body>{" "}
+          </html>
+        );
 }
