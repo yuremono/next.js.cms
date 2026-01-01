@@ -194,7 +194,7 @@ main a {
 }
 .creative_bottom {
   width: 100%;
-  background-color: var(--foreground);
+  background-color: var(--muted-foreground);
   color: var(--background);
   padding: 0.25em 1em 0.375em;
 }
