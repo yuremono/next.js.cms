@@ -80,8 +80,20 @@ module.exports = {
       variants: ["hover"],
     },
 
-    // 6. 特殊 (アスペクト比、オブジェクトフィット)
+    // 6. 配置 (top, right, bottom, left, inset)
+    {
+      pattern:
+        /^(top|right|bottom|left|inset)-(-?0|auto|full|1\/2|1\/3|2\/3|1\/4|2\/4|3\/4|[0-9.]+)/,
+      variants: ["sm", "md", "lg"],
+    },
+
+    // 7. 特殊 (アスペクト比、オブジェクトフィット、背景位置)
     { pattern: /^(aspect|object)-(square|video|auto|contain|cover|fill)/ },
+    {
+      pattern:
+        /^(bg)-(cover|contain|center|top|bottom|left|right|no-repeat|repeat|left-top|left-bottom|right-top|right-bottom)/,
+      variants: ["sm", "md", "lg"],
+    },
   ],
   theme: {
     container: {
