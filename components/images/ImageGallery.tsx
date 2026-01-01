@@ -24,6 +24,7 @@ import {
 interface ImageData {
   name: string;
   url: string;
+  folder?: string;
   size: number;
   created: string;
 }
@@ -61,9 +62,9 @@ export function ImageGallery() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // 画像ファイルか確認
-    if (!file.type.startsWith("image/")) {
-      setError("画像ファイルを選択してください");
+    // 画像・動画ファイルか確認
+    if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
+      setError("画像または動画ファイルを選択してください");
       return;
     }
 
@@ -109,7 +110,10 @@ export function ImageGallery() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ filename: image.name }),
+        body: JSON.stringify({
+          filename: image.name,
+          folder: image.folder || "media",
+        }),
       });
 
       const data = await response.json();
@@ -175,7 +179,7 @@ export function ImageGallery() {
                 <Input
                   id="gallery-image-upload"
                   type="file"
-                  accept="image/*"
+                  accept="image/*,video/*"
                   className="hidden"
                   onChange={handleFileUpload}
                   disabled={isUploading}

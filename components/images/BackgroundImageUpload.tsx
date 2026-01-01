@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { ImageIcon, Upload, X } from "lucide-react";
 import { uploadAndOptimizeImage } from "@/lib/imageUtils";
 import { ImageGalleryModal } from "./ImageGalleryModal";
+import { getFileType } from "@/lib/mediaUtils";
 import Image from "next/image";
 
 interface BackgroundImageUploadProps {
@@ -36,9 +37,9 @@ export function BackgroundImageUpload({
 
   // 画像をアップロード
   const handleFileUpload = async (file: File) => {
-    // 画像ファイルか確認
-    if (!file.type.startsWith("image/")) {
-      setError("画像ファイルを選択してください");
+    // 画像・動画ファイルか確認
+    if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
+      setError("画像または動画ファイルを選択してください");
       return;
     }
 
@@ -132,7 +133,7 @@ export function BackgroundImageUpload({
           <Input
             id="bg-image-upload"
             type="file"
-            accept="image/*"
+            accept="image/*,video/*"
             className="hidden"
             onChange={handleFileInputChange}
             disabled={isUploading}
@@ -159,13 +160,24 @@ export function BackgroundImageUpload({
       {imageUrl && (
         <div className="relative h-[200px] w-1/2">
           <div className="relative h-full w-full overflow-hidden ">
-            <Image
-              src={imageUrl}
-              alt="Background image"
-              fill
-              className="object-contain"
-              sizes="(max-width: 768px) 100vw, 768px"
-            />
+            {getFileType(imageUrl) === "video" ? (
+              <video
+                src={imageUrl}
+                controls
+                className="h-full w-full object-contain"
+                preload="metadata"
+              >
+                お使いのブラウザは動画をサポートしていません。
+              </video>
+            ) : (
+              <Image
+                src={imageUrl}
+                alt="Background image"
+                fill
+                className="object-contain"
+                sizes="(max-width: 768px) 100vw, 768px"
+              />
+            )}
             <Button
               variant="destructive"
               size="icon"

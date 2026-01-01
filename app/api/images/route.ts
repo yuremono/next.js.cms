@@ -35,32 +35,42 @@ export async function GET() {
 			);
 		}
 
-		// Supabaseストレージから画像一覧を取得
-		const { data, error } = await supabase.storage
-			.from("cms-images")
-			.list("images");
+		// Supabaseストレージから画像・動画一覧を取得（複数フォルダを検索）
+		const folders = ["images", "media"];
+		let allFiles: any[] = [];
 
-		if (error) {
-			console.error("画像一覧取得エラー:", error);
-			return NextResponse.json(
-				{ error: "画像一覧の取得に失敗しました" },
-				{ status: 500, headers: HEADERS }
-			);
+		for (const folder of folders) {
+			const { data, error } = await supabase.storage
+				.from("cms-images")
+				.list(folder);
+
+			if (error) {
+				console.error(`${folder}一覧取得エラー:`, error);
+				continue;
+			}
+
+			if (data) {
+				const filesWithUrl = data.map((file) => {
+					const { data: urlData } = supabase.storage
+						.from("cms-images")
+						.getPublicUrl(`${folder}/${file.name}`);
+
+					return {
+						name: file.name,
+						folder: folder,
+						size: file.metadata?.size || 0,
+						url: urlData.publicUrl,
+						created: file.created_at,
+					};
+				});
+				allFiles = [...allFiles, ...filesWithUrl];
+			}
 		}
 
-		// 画像のURLを生成
-		const images = data.map((file) => {
-			const { data: urlData } = supabase.storage
-				.from("cms-images")
-				.getPublicUrl(`images/${file.name}`);
-
-			return {
-				name: file.name,
-				size: file.metadata?.size || 0,
-				url: urlData.publicUrl,
-				created: file.created_at,
-			};
-		});
+		// 作成日時順（降順）にソート
+		const images = allFiles.sort((a, b) => 
+			new Date(b.created).getTime() - new Date(a.created).getTime()
+		);
 
 		return NextResponse.json({ images }, { headers: HEADERS });
 	} catch (error) {
@@ -75,7 +85,7 @@ export async function GET() {
 // 画像管理API - 画像を削除
 export async function DELETE(req: NextRequest) {
 	try {
-		const { filename } = await req.json();
+		const { filename, folder = "media" } = await req.json();
 
 		if (!filename) {
 			return NextResponse.json(
@@ -85,7 +95,7 @@ export async function DELETE(req: NextRequest) {
 		}
 
 		// ローカルの画像を削除する場合
-		if (filename.startsWith("local-image-")) {
+		if (filename.startsWith("local-media-")) {
 			const success = deleteLocalImage(filename);
 			if (success) {
 				return NextResponse.json(
@@ -94,7 +104,7 @@ export async function DELETE(req: NextRequest) {
 				);
 			} else {
 				return NextResponse.json(
-					{ error: "ローカル画像の削除に失敗しました" },
+					{ error: "ローカルメディアの削除に失敗しました" },
 					{ status: 500, headers: HEADERS }
 				);
 			}
@@ -108,10 +118,10 @@ export async function DELETE(req: NextRequest) {
 			);
 		}
 
-		// Supabaseストレージから画像を削除
+		// Supabaseストレージからメディアを削除
 		const { error } = await supabase.storage
 			.from("cms-images")
-			.remove([`images/${filename}`]);
+			.remove([`${folder}/${filename}`]);
 
 		if (error) {
 			console.error("画像削除エラー:", error);
