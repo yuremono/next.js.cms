@@ -806,13 +806,6 @@ body:not(:has(.EditorWorkspace)) button[aria-label=ダークモード切替] svg
 }
 
 /* ダークモード時のボタンの見た目微調整 */
-.dark body:not(:has(.EditorWorkspace)) button[aria-label=ダークモード切替] {
-  background-color: var(--card);
-  border-color: var(--border);
-  -webkit-box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
-          box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
-}
-
 /* Prism Highlighting for SimpleHtmlEditor */
 .token.comment,
 .token.prolog,
