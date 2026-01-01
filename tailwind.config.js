@@ -39,6 +39,49 @@ module.exports = {
     "text-[12px]",
     "text-[16px]",
     "text-[24px]",
+
+    // 1. レイアウト & フレックス (レスポンシブ sm, md, lg 対応)
+    {
+      pattern:
+        /^(flex|grid|block|inline|hidden|table|items|justify|content|self|flex-row|flex-col|flex-wrap|grid-cols)/,
+      variants: ["sm", "md", "lg"],
+    },
+
+    // 2. 余白 & サイズ (0〜96までの数値を網羅し、auto, full, px等も追加)
+    {
+      pattern:
+        /^(p|px|py|pt|pb|pl|pr|m|mx|my|mt|mb|ml|mr|gap|gap-x|gap-y|w|h|min-w|min-h|max-w|max-h)-(auto|full|screen|px|[0-9.]+|[1-9]0|1\/2|1\/3|2\/3|1\/4|2\/4|3\/4)/,
+      variants: ["sm", "md", "lg"],
+    },
+
+    // 3. テキスト (サイズ 2xl までに制限)
+    {
+      pattern:
+        /^(text|font)-(xs|sm|base|lg|xl|2xl|thin|light|normal|medium|semibold|bold|extrabold|left|center|right|justify)/,
+      variants: ["sm", "md", "lg", "hover"],
+    },
+
+    // 4. カラー (主要色 + 指定いただいた色、foreground 等の接尾辞対応)
+    {
+      pattern:
+        /^(text|bg|border)-(white|black|transparent|primary|secondary|accent|muted|card|border|input|ring|destructive)(|-foreground)/,
+      variants: ["hover"],
+    },
+    {
+      pattern:
+        /^(text|bg|border)-(slate|gray|zinc|red|blue|green|yellow|orange|lime|teal|cyan|sky|violet|purple|pink)-(50|[1-9]00)/,
+      variants: ["hover"],
+    },
+
+    // 5. 装飾 (角丸、ボーダー、透明度、z-index)
+    {
+      pattern:
+        /^(rounded|border|opacity|z)-(none|sm|md|lg|xl|2xl|3xl|full|[0-9]+)/,
+      variants: ["hover"],
+    },
+
+    // 6. 特殊 (アスペクト比、オブジェクトフィット)
+    { pattern: /^(aspect|object)-(square|video|auto|contain|cover|fill)/ },
   ],
   theme: {
     container: {
