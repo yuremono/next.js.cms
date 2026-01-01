@@ -6,6 +6,7 @@ module.exports = {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./lib/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  important: "body",
   safelist: [
     // CSS変数を使用したTailwindクラス（実際に使用されているもののみ）
     "w-[var(--base)]",
