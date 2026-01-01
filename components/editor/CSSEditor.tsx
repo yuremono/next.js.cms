@@ -164,7 +164,7 @@ export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
     if (variables.baseColor)
       variablesList.push(`  --bc: ${variables.baseColor};`);
     if (variables.textColor)
-      variablesList.push(`  --tx: ${variables.textColor};`);
+      variablesList.push(`  --tc: ${variables.textColor};`);
 
     return `:root {\n${variablesList.join("\n")}\n}`;
   };
@@ -357,7 +357,7 @@ export function CSSEditor({ initialCSS, onUpdate }: CSSEditorProps) {
                   />
                   <VariableColorField
                     id="text-color"
-                    label="文字色　--tx"
+                    label="文字色　--tc"
                     value={cssVariables.textColor}
                     onChange={(value) =>
                       handleVariableChange("textColor", value)

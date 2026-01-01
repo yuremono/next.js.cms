@@ -16,6 +16,14 @@ Next.js 14 + TypeScript + Tailwind CSS で構築されたCMSシステム。
 - Tailwind CSS + CSS Variables のハイブリッド
 - `globals.css` でCMS固有のスタイル定義
 - メディアクエリは最小限に抑制
+- **【重要】CSSファイルの直接編集禁止**:
+  - `globals.css` や `custom.css` などのCSSファイルは、ビルド時に `.scss` から自動生成されます。
+  - スタイルの変更は必ず `app/globals.scss` または `public/custom.scss` に対して行ってください。
+  - CSSファイルを直接編集すると、次回のビルド時に変更が上書きされ消滅します。
+- **【重要】CSSファイルの直接編集禁止**:
+  - `globals.css` や `custom.css` などのCSSファイルは、ビルド時に `.scss` から自動生成されます。
+  - スタイルの変更は必ず `app/globals.scss` または `public/custom.scss` に対して行ってください。
+  - CSSファイルを直接編集すると、次回のビルド時に変更が上書きされ消滅します。
 
 ### コンポーネント設計
 - 単一責任の原則

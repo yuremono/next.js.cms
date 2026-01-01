@@ -31,8 +31,7 @@
                 --secondary: hsl(215, 32.10%, 89.60%);
                 --secondary-foreground: hsl(0, 0%, 10%);
                 --muted: hsl(0, 0%, 95%);
-                --gr: #666666;
-                --muted-foreground: var(--gr);
+                --muted-foreground: #666666;
                 --accent: hsl(0, 0%, 95%);
                 --accent-foreground: hsl(0, 0%, 10%);
                 --destructive: hsl(0, 84%, 60%);
@@ -41,6 +40,27 @@
                 --input: hsl(0, 0%, 90%);
                 --ring: hsl(215, 25%, 35%);
                 --radius: 0.5rem;
+ 
+                // オリジナルカラー変数
+                --mc: var(--primary);
+                --sc: var(--secondary);
+                --ac: var(--accent);
+                --bc: var(--background);
+                --tc: var(--foreground);
+                --gr: var(--muted-foreground);
+                --bk: var(--foreground);
+                --wh: var(--background);
+        
+                @for $i from 1 through 9 {
+                        --mc#{$i}0: color-mix(in srgb, transparent,var(--mc) #{$i}0%);    
+                        --sc#{$i}0: color-mix(in srgb, transparent,var(--sc) #{$i}0%);    
+                        --ac#{$i}0: color-mix(in srgb, transparent,var(--ac) #{$i}0%);    
+                        --bc#{$i}0: color-mix(in srgb, transparent,var(--bc) #{$i}0%);    
+                        --tc#{$i}0: color-mix(in srgb, transparent,var(--tc) #{$i}0%);    
+                        --gr#{$i}0: color-mix(in srgb, transparent,var(--gr) #{$i}0%);    
+                        --wh#{$i}0: color-mix(in srgb, transparent,var(--wh) #{$i}0%);    
+                        --bk#{$i}0: color-mix(in srgb, transparent,var(--bk) #{$i}0%);    
+                }
         }
 
         .dark {
@@ -63,6 +83,8 @@
                 --border: hsl(0, 0%, 24%);
                 --input: hsl(0, 0%, 24%);
                 --ring: hsl(215, 25%, 35%);
+
+
         }
 }
 
@@ -177,86 +199,7 @@
 
         --grad01: linear-gradient(-10deg, #f5e1c4, var(--mcDK), #f5e1c4);
         --grad02: linear-gradient(-10deg, #f5e1c4 15%, var(--mcDK), #f5e1c4 85%);
-        --mc: #209b32;
-        --sc: #f5fff6;
-        --ac: #705a8b;
-        --bc: #fafafa;
-        --tx: #333;
-        --gr: #666666;
-        --bk: #000;
-        --wh: #fff;
-        --mc10: color-mix(in srgb, transparent, var(--mc) 10%);
-        --mc20: color-mix(in srgb, transparent, var(--mc) 20%);
-        --mc30: color-mix(in srgb, transparent, var(--mc) 30%);
-        --mc40: color-mix(in srgb, transparent, var(--mc) 40%);
-        --mc50: color-mix(in srgb, transparent, var(--mc) 50%);
-        --mc60: color-mix(in srgb, transparent, var(--mc) 60%);
-        --mc70: color-mix(in srgb, transparent, var(--mc) 70%);
-        --mc80: color-mix(in srgb, transparent, var(--mc) 80%);
-        --mc90: color-mix(in srgb, transparent, var(--mc) 90%);
-        --sc10: color-mix(in srgb, transparent, var(--sc) 10%);
-        --sc20: color-mix(in srgb, transparent, var(--sc) 20%);
-        --sc30: color-mix(in srgb, transparent, var(--sc) 30%);
-        --sc40: color-mix(in srgb, transparent, var(--sc) 40%);
-        --sc50: color-mix(in srgb, transparent, var(--sc) 50%);
-        --sc60: color-mix(in srgb, transparent, var(--sc) 60%);
-        --sc70: color-mix(in srgb, transparent, var(--sc) 70%);
-        --sc80: color-mix(in srgb, transparent, var(--sc) 80%);
-        --sc90: color-mix(in srgb, transparent, var(--sc) 90%);
-        --ac10: color-mix(in srgb, transparent, var(--ac) 10%);
-        --ac20: color-mix(in srgb, transparent, var(--ac) 20%);
-        --ac30: color-mix(in srgb, transparent, var(--ac) 30%);
-        --ac40: color-mix(in srgb, transparent, var(--ac) 40%);
-        --ac50: color-mix(in srgb, transparent, var(--ac) 50%);
-        --ac60: color-mix(in srgb, transparent, var(--ac) 60%);
-        --ac70: color-mix(in srgb, transparent, var(--ac) 70%);
-        --ac80: color-mix(in srgb, transparent, var(--ac) 80%);
-        --ac90: color-mix(in srgb, transparent, var(--ac) 90%);
-        --bc10: color-mix(in srgb, transparent, var(--bc) 10%);
-        --bc20: color-mix(in srgb, transparent, var(--bc) 20%);
-        --bc30: color-mix(in srgb, transparent, var(--bc) 30%);
-        --bc40: color-mix(in srgb, transparent, var(--bc) 40%);
-        --bc50: color-mix(in srgb, transparent, var(--bc) 50%);
-        --bc60: color-mix(in srgb, transparent, var(--bc) 60%);
-        --bc70: color-mix(in srgb, transparent, var(--bc) 70%);
-        --bc80: color-mix(in srgb, transparent, var(--bc) 80%);
-        --bc90: color-mix(in srgb, transparent, var(--bc) 90%);
-        --tx10: color-mix(in srgb, transparent, var(--tx) 10%);
-        --tx20: color-mix(in srgb, transparent, var(--tx) 20%);
-        --tx30: color-mix(in srgb, transparent, var(--tx) 30%);
-        --tx40: color-mix(in srgb, transparent, var(--tx) 40%);
-        --tx50: color-mix(in srgb, transparent, var(--tx) 50%);
-        --tx60: color-mix(in srgb, transparent, var(--tx) 60%);
-        --tx70: color-mix(in srgb, transparent, var(--tx) 70%);
-        --tx80: color-mix(in srgb, transparent, var(--tx) 80%);
-        --tx90: color-mix(in srgb, transparent, var(--tx) 90%);
-        --gr10: color-mix(in srgb, transparent, var(--gr) 10%);
-        --gr20: color-mix(in srgb, transparent, var(--gr) 20%);
-        --gr30: color-mix(in srgb, transparent, var(--gr) 30%);
-        --gr40: color-mix(in srgb, transparent, var(--gr) 40%);
-        --gr50: color-mix(in srgb, transparent, var(--gr) 50%);
-        --gr60: color-mix(in srgb, transparent, var(--gr) 60%);
-        --gr70: color-mix(in srgb, transparent, var(--gr) 70%);
-        --gr80: color-mix(in srgb, transparent, var(--gr) 80%);
-        --gr90: color-mix(in srgb, transparent, var(--gr) 90%);
-        --bk10: color-mix(in srgb, transparent, var(--bk) 10%);
-        --bk20: color-mix(in srgb, transparent, var(--bk) 20%);
-        --bk30: color-mix(in srgb, transparent, var(--bk) 30%);
-        --bk40: color-mix(in srgb, transparent, var(--bk) 40%);
-        --bk50: color-mix(in srgb, transparent, var(--bk) 50%);
-        --bk60: color-mix(in srgb, transparent, var(--bk) 60%);
-        --bk70: color-mix(in srgb, transparent, var(--bk) 70%);
-        --bk80: color-mix(in srgb, transparent, var(--bk) 80%);
-        --bk90: color-mix(in srgb, transparent, var(--bk) 90%);
-        --wh10: color-mix(in srgb, transparent, var(--wh) 10%);
-        --wh20: color-mix(in srgb, transparent, var(--wh) 20%);
-        --wh30: color-mix(in srgb, transparent, var(--wh) 30%);
-        --wh40: color-mix(in srgb, transparent, var(--wh) 40%);
-        --wh50: color-mix(in srgb, transparent, var(--wh) 50%);
-        --wh60: color-mix(in srgb, transparent, var(--wh) 60%);
-        --wh70: color-mix(in srgb, transparent, var(--wh) 70%);
-        --wh80: color-mix(in srgb, transparent, var(--wh) 80%);
-        --wh90: color-mix(in srgb, transparent, var(--wh) 90%);
+
 }
 
 body>* {
@@ -812,29 +755,24 @@ strong {
 /* 管理画面（.EditorWorkspace）内では影響しないように除外 */
 body:not(:has(.EditorWorkspace)) button[aria-label="ダークモード切替"] {
         position: fixed;
-        top: 10px;
-        left: 10px;
+        top: .5rem;
+        left: .5rem;
         z-index: 9999;
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        background-color: var(--background);
-        border: 1px solid var(--border);
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
         &:hover {
                 transform: scale(1.1);
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
-
         svg {
-                width: 24px;
-                height: 24px;
+                width: 1.5rem;
+                height: 1.5rem;
         }
 }
 

@@ -44,7 +44,7 @@ function extractCSSVariables(customCSS: string): {
           trimmed.includes("--sc:") ||
           trimmed.includes("--ac:") ||
           trimmed.includes("--bc:") ||
-          trimmed.includes("--tx:"))
+          trimmed.includes("--tc:"))
       );
     });
 

@@ -51,7 +51,7 @@ export async function GET() {
   --sc: #64748b;
   --ac: #f59e0b;
   --bc: #ffffff;
-  --tx: #1f2937;
+  --tc: #1f2937;
 }`;
     return NextResponse.json({ css: defaultCSS });
   }
