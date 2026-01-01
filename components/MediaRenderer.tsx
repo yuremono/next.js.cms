@@ -11,6 +11,7 @@ interface MediaRendererProps {
   style?: React.CSSProperties;
   priority?: boolean;
   fill?: boolean;
+  sizes?: string;
 }
 
 export function MediaRenderer({
@@ -20,6 +21,7 @@ export function MediaRenderer({
   style,
   priority = false,
   fill = false,
+  sizes,
 }: MediaRendererProps) {
   const [isMounted, setIsMounted] = useState(false);
   const [isVideo, setIsVideo] = useState(false);
@@ -41,6 +43,7 @@ export function MediaRenderer({
         className={className}
         style={style}
         priority={priority}
+        sizes={sizes || (fill ? "100vw" : undefined)}
         unoptimized={src.includes("_local") || src.startsWith("data:")}
         suppressHydrationWarning
       />
@@ -71,6 +74,7 @@ export function MediaRenderer({
       className={className}
       style={style}
       priority={priority}
+      sizes={sizes || (fill ? "100vw" : undefined)}
       unoptimized={src.includes("_local") || src.startsWith("data:")}
     />
   );

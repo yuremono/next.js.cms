@@ -16,9 +16,9 @@
     "test:e2e:ui": "playwright test --ui",
     "test:accessibility": "jest --testPathPattern=accessibility",
     "test:performance": "jest --testPathPattern=performance",
-"test:security": "jest --testPathPattern=security",
-"sync": "git add . && git commit -m \"update\" --allow-empty && git push",
-"deploy": "git add . && git commit -m \"deploy\" --allow-empty && git push"
+    "test:security": "jest --testPathPattern=security",
+    "sync": "git add . && git commit -m \"update\" --allow-empty && git push",
+    "deploy": "git add . && git commit -m \"deploy\" --allow-empty && git push"
   },
   "dependencies": {
     "@axe-core/react": "4.10.2",
@@ -55,6 +55,7 @@
     "@types/jsdom": "^21.1.7",
     "@types/uuid": "^10.0.0",
     "bcryptjs": "3.0.2",
+    "browser-image-compression": "2.0.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",

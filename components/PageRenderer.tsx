@@ -254,6 +254,7 @@ export function PageRenderer({ page }: PageRendererProps) {
                   fill
                   className="object-cover"
                   priority
+                  sizes="100vw"
                   style={{
                     position: "absolute",
                     height: "100%",
@@ -293,6 +294,7 @@ export function PageRenderer({ page }: PageRendererProps) {
                   alt="Section Image"
                   fill
                   className="rounded-lg object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   style={{
                     position: "absolute",
                     height: "100%",
@@ -337,6 +339,7 @@ export function PageRenderer({ page }: PageRendererProps) {
                       alt={`Card ${idx + 1}`}
                       fill
                       className="object-cover"
+                      sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 400px"
                       style={{
                         position: "absolute",
                         height: "100%",

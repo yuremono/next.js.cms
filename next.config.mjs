@@ -7,7 +7,7 @@ const nextConfig = {
         hostname: "**",
       },
     ],
-    unoptimized: process.env.NODE_ENV === "production",
+    unoptimized: false,
   },
   typescript: {
     // TypeScriptエラーを完全に無視

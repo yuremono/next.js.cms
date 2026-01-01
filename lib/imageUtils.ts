@@ -1,5 +1,6 @@
 import { supabase, isSupabaseConfigured } from "./supabase";
 import { v4 as uuidv4 } from "uuid";
+import imageCompression from "browser-image-compression";
 
 // 内部的にDataURLを保存するためのMap（本番環境用）
 const imageStore = new Map<string, string>();
@@ -59,20 +60,37 @@ export async function uploadAndOptimizeImage(
     }
 
     // 以下、Supabaseストレージを使用する場合の処理
+    let fileToUpload: File | Blob = file;
+    const isImage = file.type.startsWith("image/");
+    const fileExt = isImage ? "webp" : file.name.split(".").pop();
+    
+    // 画像の場合はWebPに変換
+    if (isImage) {
+      try {
+        const options = {
+          maxSizeMB: 2, // 最大2MB（高品質維持）
+          maxWidthOrHeight: undefined, // 元の解像度を維持
+          useWebWorker: true,
+          fileType: "image/webp",
+          initialQuality: 0.85, // 高画質設定
+        };
+        fileToUpload = await imageCompression(file, options);
+      } catch (err) {
+        console.warn("画像圧縮に失敗しました。元のファイルをアップロードします:", err);
+      }
+    }
+
     // ファイル名を一意のものに変更
-    const fileExt = file.name.split(".").pop();
     const fileName = `${uuidv4()}.${fileExt}`;
     const filePath = `${folder}/${fileName}`;
-
-    // メディアファイルの処理
-    // 画像の場合は最適化処理を実装可能（例：サイズ変更、WebP変換など）
-    // 動画の場合はそのままアップロード
-    // 実際のプロジェクトでは画像処理ライブラリを使用する
 
     // Supabaseストレージにアップロード
     const { error } = await supabase.storage
       .from("cms-images") // バケット名（画像・動画共用）
-      .upload(filePath, file);
+      .upload(filePath, fileToUpload, {
+        contentType: isImage ? "image/webp" : file.type,
+        upsert: true
+      });
 
     if (error) {
       console.error("メディアアップロードエラー:", error);
