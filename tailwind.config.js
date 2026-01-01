@@ -39,6 +39,10 @@ module.exports = {
     "text-[12px]",
     "text-[16px]",
     "text-[24px]",
+    "text-[1.25em]",
+    "text-[1.5em]",
+    "text-[2em]",
+    "inline-flex",
 
     // 任意単位のテキストサイズを常に有効化 (em, px, rem, vmin, vmax, %)
     {

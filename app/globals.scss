@@ -1,5 +1,4 @@
 /* @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap'); */
-@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
 @import url("https://fonts.googleapis.com/css2?family=Jost:wght@100..900&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap");
 
 @tailwind base;
@@ -84,21 +83,10 @@
                 --border: hsl(0, 0%, 24%);
                 --input: hsl(0, 0%, 24%);
                 --ring: hsl(215, 25%, 35%);
-
-
         }
 }
 
 @layer base {
-        .material-symbols-outlined {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                vertical-align: middle;
-                // font-size や color は指定しないことで CDN のデフォルトを活かしつつ、
-                // Tailwind の text-xxx クラスが来れば自然に上書きされる状態にします。
-        }
-
         * {
                 @apply border-border;
         }
@@ -142,42 +130,9 @@
 
                 --h2EN: calc(var(--h2FZ)*1.2);
         }
-
-        /* p{
-        font-size: var(--PFZ);
-    }
-    h1,.h1FZ{
-        font-size: var(--h1FZ);
-    }
-    h2,.h2FZ{
-        font-size: var(--h2FZ);
-    }
-    h3,.h3FZ{	
-        font-size: var(--h3FZ);
-    }
-    h5,h4{	
-        font-size: var(--PFZ);
-    } */
 }
 
 :root {
-        /* --bl025: calc(var(--bl) / 4);
-  --bl03: calc(var(--bl) / 3);
-  --bl05: calc(var(--bl) / 2);
-  --bl06: calc(var(--bl) / 3 * 2);
-  --bl075: calc(var(--bl) / 4 * 3);
-  --Nbl15: calc(var(--bl) * -1.5);
-  --Nbl05: calc(var(--bl) * -0.5);
-  --Nbl075: calc(var(--bl) * -0.75);
-  --Nbl2: calc(var(--bl) * -2);
-  --Nbl: calc(var(--bl) * -1);
-  --Nbl1: calc(var(--bl) * -1);
-  --bl: calc(var(--bl) * 1);
-  --bl1: calc(var(--bl) * 1);
-  --bl15: calc(var(--bl) * 1.5);
-  --bl2: calc(var(--bl) * 2);
-  --bl25: calc(var(--bl) * 2.5);
-  --bl3: calc(var(--bl) * 3); */
         --inBase: calc(50vw - clamp(0px, 50vw - var(--spaceX, 20px), (var(--base) / 2)));
         --in1800: calc(50vw - clamp(0px, 50vw - var(--spaceX, 20px), 900px));
         --in1740: calc(50vw - clamp(0px, 50vw - var(--spaceX, 20px), 870px));
@@ -209,7 +164,6 @@
 
         --grad01: linear-gradient(-10deg, #f5e1c4, var(--mcDK), #f5e1c4);
         --grad02: linear-gradient(-10deg, #f5e1c4 15%, var(--mcDK), #f5e1c4 85%);
-
 }
 
 body>* {
@@ -281,8 +235,6 @@ strong {
                 max-width: 100%;
         }
 }
-
-
 
 /* 🆕 ImgText セクションのレイアウトパターン */
 .ImgText {
@@ -391,9 +343,6 @@ strong {
         flex-wrap: wrap;
         overflow: hidden;
         min-height: calc(100vh - 80px);
-        /* @container editor (width >= 960px) {
-    flex-direction: row;
-  } */
 }
 
 /* TabsPanel - タブリスト */
@@ -442,14 +391,12 @@ strong {
 .TabsList button[role="tab"][data-state="active"] {
         background-color: hsl(var(--background));
         color: var(--foreground);
-        /* box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1); */
 }
 
 /* フォーカス状態 */
 .TabsList button[role="tab"]:focus-visible {
         outline: 2px solid transparent;
         outline-offset: 2px;
-        /* box-shadow: 0 0 0 2px hsl(var(--ring)); */
 }
 
 /* 無効状態 */
@@ -531,26 +478,15 @@ strong {
 
 /* 分割モード時の調整（split-modeクラスが付いている場合） */
 @container (width >=960px) {
-        /* .TabsPanel.split-mode {
-    width: 12rem; 
-  }
-  
-  .SectionPanel.split-mode {
-    max-width: 12.5rem; 
-  } */
-
         .EditingPanel.split-mode {
                 border-right: 1px solid hsl(var(--border));
         }
 }
 
-/* IDE風セクションリストのインデント - JavaScriptで制御するためCSS削除 */
-
 /* DescList Section - 定義リスト */
 .DescList dl {
         display: grid;
         grid-template-columns: calc(var(--dtWidth, 20%)) 1fr;
-        /* gap: var(--gap); */
         margin: 0;
 }
 
@@ -568,24 +504,6 @@ strong {
         padding-block: 1em;
         align-self: start;
 }
-
-/* @media (max-width: 640px) {
-  .DescList dl {
-    grid-template-columns: 1fr;
-    gap: 0.25rem;
-  }
-
-  .DescList dt {
-    font-weight: 700;
-    border-bottom: 1px solid #e5e7eb;
-    padding-bottom: 0.25rem;
-  }
-
-  .DescList dd {
-    padding-left: 1rem;
-    margin-bottom: 1rem;
-  }
-} */
 
 /* RTL（Right-to-Left）サポート */
 
@@ -611,9 +529,6 @@ strong {
 }
 
 .accordion {
-
-        // --bc, --wh, --imgW, --Eng, --mc, --rad, --ac
-        // 開閉アニメーション
         &::details-content {
                 transition: height 0.4s ease, content-visibility 0.4s allow-discrete;
                 height: 0;
@@ -629,9 +544,6 @@ strong {
                 outline: none;
                 cursor: pointer;
                 position: relative;
-                // background-color: var(--qBG, var(--bc, #fbf9ef));
-                // padding: 1em;
-                // padding-right: 2.5em; // 矢印用の余白
                 transition: .4s;
                 color: var(--gr);
                 font-size: 1.2em;
@@ -646,21 +558,12 @@ strong {
                         display: none;
                 }
 
-                // 矢印アイコン
                 &:after {
                         content: "+";
-                        // font-weight: 900;
                         font-family: var(--icon, inherit);
-                        // font-size: 1.5em;
                         color: #888;
                         display: inline-block;
                         margin-left: 1em;
-                        // position: absolute;
-                        // right: 1em;
-                        // top: 50%;
-                        // translate: 0 -50%;
-                        // transition: 0.4s;
-                        // rotate: 90deg;
                         transform-origin: 0 0;
                         color: inherit;
                 }
@@ -670,20 +573,16 @@ strong {
                 content: "-";
                 scale: 2 1;
                 translate: 0.125em 0;
-                // rotate: -90deg;
         }
 
         >div {
                 position: relative;
                 font-size: 0.75em;
-                // padding: 1em;
-                // background-color: var(--aBG, var(--wh, #fff)); 
         }
 
-        // 画像レイアウト（.has_img > figure + div の構造に対応）
         .has_img {
                 display: flex;
-                flex-direction: row; // デフォルト（PC）は横並び
+                flex-direction: row;
                 align-items: center;
                 flex-wrap: wrap;
                 gap: 1em;
@@ -725,9 +624,7 @@ strong {
                 }
         }
 
-        // --- モディファイア: is_qa (Q&Aスタイル) ---
         &.is_qa {
-
                 summary,
                 >div {
                         padding-left: 4em;
@@ -762,7 +659,6 @@ strong {
 }
 
 /* 公開サイト用のToggle dark modeボタン（左上固定） */
-/* 管理画面（.EditorWorkspace）内では影響しないように除外 */
 body:not(:has(.EditorWorkspace)) button[aria-label="Toggle dark mode"] {
         position: fixed;
         top: .5rem;
@@ -786,13 +682,6 @@ body:not(:has(.EditorWorkspace)) button[aria-label="Toggle dark mode"] {
                 height: 1.5rem;
         }
 }
-
-/* ダークモード時のボタンの見た目微調整 */
-// .dark body:not(:has(.EditorWorkspace)) button[aria-label="Toggle dark mode"] {
-//         background-color: var(--card);
-//         border-color: var(--border);
-//         box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
-// }
 
 /* Prism Highlighting for SimpleHtmlEditor */
 .token.comment,
