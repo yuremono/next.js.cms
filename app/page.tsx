@@ -108,7 +108,7 @@ const DEFAULT_PAGE_DATA: Page = {
 };
 
 // サーバーコンポーネント
-export const revalidate = 0; // 常に最新データを取得
+export const revalidate = 3600; // 1時間ごとに再生成（ISR）
 
 export default async function Home() {
   // ページデータ取得
@@ -117,13 +117,7 @@ export default async function Home() {
   try {
     // APIエンドポイントからデータを取得
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/page`,
-      {
-        cache: "no-store",
-        headers: {
-          "Cache-Control": "no-cache",
-        },
-      }
+      `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/page`
     );
 
     if (response.ok) {

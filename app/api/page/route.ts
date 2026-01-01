@@ -155,157 +155,176 @@ export async function GET() {
       return NextResponse.json(DEFAULT_PAGE_DATA, { headers });
     }
 
-    // 3. 各セクションの詳細をtypeごとに取得・組み立て
-    const sectionResults = [];
-    for (const section of sections) {
-      if (section.type === "mainVisual") {
-        const { data: mv } = await supabase
-          .from("main_visual_sections")
-          .select("*")
-          .eq("section_id", section.id)
-          .single();
-        sectionResults.push({
-          id: `section-${section.id}`,
-          layout: "mainVisual",
-          class: mv?.class ?? "",
-          bgImage: mv?.bg_image ?? "",
-          name: mv?.name ?? "",
-          image: mv?.image ?? "",
-          imageClass: mv?.image_class ?? "",
-          textClass: mv?.text_class ?? "",
-          html: mv?.html ?? "",
-          imageAspectRatio: mv?.image_aspect_ratio ?? "auto",
-          sectionWidth: mv?.section_width ?? "",
-        });
-      } else if (section.type === "imgText") {
-        const { data: it } = await supabase
-          .from("img_text_sections")
-          .select("*")
-          .eq("section_id", section.id)
-          .single();
-        sectionResults.push({
-          id: `section-${section.id}`,
-          layout: "imgText",
-          class: it?.class ?? "",
-          bgImage: it?.bg_image ?? "",
-          name: it?.name ?? "",
-          image: it?.image ?? "",
-          imageClass: it?.image_class ?? "",
-          textClass: it?.text_class ?? "",
-          html: it?.html ?? "",
-          imageAspectRatio: it?.image_aspect_ratio ?? "auto",
-          sectionWidth: it?.section_width ?? "",
-        });
-      } else if (section.type === "cards") {
-        const { data: cs } = await supabase
-          .from("cards_sections")
-          .select("*")
-          .eq("section_id", section.id)
-          .single();
-        // カードセクションが存在する場合のみカードを取得
-        const { data: cards } = cs
-          ? await supabase
-              .from("cards")
-              .select("*")
-              .eq("cards_section_id", cs.section_id)
-              .order("position", { ascending: true })
-          : { data: null };
-        sectionResults.push({
-          id: `section-${section.id}`,
-          layout: "cards",
-          class: cs?.class ?? "",
-          bgImage: cs?.bg_image ?? "",
-          name: cs?.name ?? "",
-          sectionWidth: cs?.section_width ?? "",
-          cards: (cards ?? []).map((c) => ({
-            id: String(c.id),
-            cardClass: c.card_class ?? "",
-            image: c.image ?? "",
-            imageClass: c.image_class ?? "",
-            textClass: c.text_class ?? "",
-            html: c.html ?? "",
-            imageAspectRatio: c.image_aspect_ratio ?? "auto",
-          })),
-        });
-      } else if (section.type === "form") {
-        const { data: fs } = await supabase
-          .from("form_sections")
-          .select("*")
-          .eq("section_id", section.id)
-          .single();
-        sectionResults.push({
-          id: `section-${section.id}`,
-          layout: "form",
-          class: fs?.class ?? "",
-          bgImage: fs?.bg_image ?? "",
-          name: fs?.name ?? "",
-          html: fs?.html ?? "",
-          endpoint: fs?.endpoint ?? "",
-          sectionWidth: fs?.section_width ?? "",
-        });
-      } else if (section.type === "descList") {
-        const { data: ds } = await supabase
-          .from("desc_list_sections")
-          .select("*")
-          .eq("section_id", section.id)
-          .single();
-        sectionResults.push({
-          id: `section-${section.id}`,
-          layout: "descList",
-          class: ds?.class ?? "",
-          bgImage: ds?.bg_image ?? "",
-          name: ds?.name ?? "",
-          title: ds?.title ?? "",
-          html: ds?.html ?? "",
-          dtWidth: ds?.dt_width ?? "20%",
-          sectionWidth: ds?.section_width ?? "",
-        });
-      } else if (section.type === "group-start") {
-        const { data: gs } = await supabase
-          .from("group_start_sections")
-          .select("*")
-          .eq("section_id", section.id)
-          .single();
-        sectionResults.push({
-          id: `section-${section.id}`,
-          layout: "group-start",
-          class: gs?.class ?? "",
-          bgImage: gs?.bg_image ?? "",
-          name: gs?.name ?? "グループ",
-          scopeStyles: gs?.scope_styles ?? "",
-        });
-      } else if (section.type === "group-end") {
-        const { data: ge } = await supabase
-          .from("group_end_sections")
-          .select("*")
-          .eq("section_id", section.id)
-          .single();
-        sectionResults.push({
-          id: `section-${section.id}`,
-          layout: "group-end",
-          class: ge?.class ?? "",
-          bgImage: ge?.bg_image ?? "",
-        });
-      } else if (section.type === "htmlContent") {
-        const { data: hc } = await supabase
-          .from("html_content_sections")
-          .select("*")
-          .eq("section_id", section.id)
-          .single();
-        sectionResults.push({
-          id: `section-${section.id}`,
-          layout: "htmlContent",
-          class: hc?.class ?? "",
-          bgImage: hc?.bg_image ?? "",
-          name: hc?.name ?? "",
-          html: hc?.html ?? "",
-          sectionWidth: hc?.section_width ?? "",
-          scopeStyles: hc?.scope_styles ?? "",
+    // 3. 各セクションの詳細をタイプごとに一括取得（N+1問題の解決）
+    const typeGroups: Record<string, number[]> = {};
+    sections.forEach((s) => {
+      if (!typeGroups[s.type]) typeGroups[s.type] = [];
+      typeGroups[s.type].push(s.id);
+    });
+
+    const detailPromises: Promise<any>[] = [];
+    const types = Object.keys(typeGroups);
+
+    // 各テーブルから一括取得するクエリを準備
+    types.forEach((type) => {
+      const ids = typeGroups[type];
+      if (type === "mainVisual") {
+        detailPromises.push(
+          supabase.from("main_visual_sections").select("*").in("section_id", ids)
+        );
+      } else if (type === "imgText") {
+        detailPromises.push(
+          supabase.from("img_text_sections").select("*").in("section_id", ids)
+        );
+      } else if (type === "cards") {
+        detailPromises.push(
+          supabase
+            .from("cards_sections")
+            .select("*, cards(*)")
+            .in("section_id", ids)
+        );
+      } else if (type === "form") {
+        detailPromises.push(
+          supabase.from("form_sections").select("*").in("section_id", ids)
+        );
+      } else if (type === "descList") {
+        detailPromises.push(
+          supabase.from("desc_list_sections").select("*").in("section_id", ids)
+        );
+      } else if (type === "group-start") {
+        detailPromises.push(
+          supabase.from("group_start_sections").select("*").in("section_id", ids)
+        );
+      } else if (type === "group-end") {
+        detailPromises.push(
+          supabase.from("group_end_sections").select("*").in("section_id", ids)
+        );
+      } else if (type === "htmlContent") {
+        detailPromises.push(
+          supabase.from("html_content_sections").select("*").in("section_id", ids)
+        );
+      }
+    });
+
+    // 全ての詳細を一括で取得
+    const detailResults = await Promise.all(detailPromises);
+    const detailMap = new Map();
+
+    detailResults.forEach((res, idx) => {
+      if (res.data) {
+        res.data.forEach((item: any) => {
+          detailMap.set(`${types[idx]}-${item.section_id}`, item);
         });
       }
-    }
+    });
 
-    // 4. 組み立てて返す
+    // 4. 元の順番通りに組み立て
+    const sectionResults = sections.map((section) => {
+      const detail = detailMap.get(`${section.type}-${section.id}`);
+
+      if (section.type === "mainVisual") {
+        return {
+          id: `section-${section.id}`,
+          layout: "mainVisual",
+          class: detail?.class ?? "",
+          bgImage: detail?.bg_image ?? "",
+          name: detail?.name ?? "",
+          image: detail?.image ?? "",
+          imageClass: detail?.image_class ?? "",
+          textClass: detail?.text_class ?? "",
+          html: detail?.html ?? "",
+          imageAspectRatio: detail?.image_aspect_ratio ?? "auto",
+          sectionWidth: detail?.section_width ?? "",
+        };
+      } else if (section.type === "imgText") {
+        return {
+          id: `section-${section.id}`,
+          layout: "imgText",
+          class: detail?.class ?? "",
+          bgImage: detail?.bg_image ?? "",
+          name: detail?.name ?? "",
+          image: detail?.image ?? "",
+          imageClass: detail?.image_class ?? "",
+          textClass: detail?.text_class ?? "",
+          html: detail?.html ?? "",
+          imageAspectRatio: detail?.image_aspect_ratio ?? "auto",
+          sectionWidth: detail?.section_width ?? "",
+        };
+      } else if (section.type === "cards") {
+        return {
+          id: `section-${section.id}`,
+          layout: "cards",
+          class: detail?.class ?? "",
+          bgImage: detail?.bg_image ?? "",
+          name: detail?.name ?? "",
+          sectionWidth: detail?.section_width ?? "",
+          cards: (detail?.cards ?? [])
+            .sort((a: any, b: any) => (a.position || 0) - (b.position || 0))
+            .map((c: any) => ({
+              id: String(c.id),
+              cardClass: c.card_class ?? "",
+              image: c.image ?? "",
+              imageClass: c.image_class ?? "",
+              textClass: c.text_class ?? "",
+              html: c.html ?? "",
+              imageAspectRatio: c.image_aspect_ratio ?? "auto",
+            })),
+        };
+      } else if (section.type === "form") {
+        return {
+          id: `section-${section.id}`,
+          layout: "form",
+          class: detail?.class ?? "",
+          bgImage: detail?.bg_image ?? "",
+          name: detail?.name ?? "",
+          html: detail?.html ?? "",
+          endpoint: detail?.endpoint ?? "",
+          sectionWidth: detail?.section_width ?? "",
+        };
+      } else if (section.type === "descList") {
+        return {
+          id: `section-${section.id}`,
+          layout: "descList",
+          class: detail?.class ?? "",
+          bgImage: detail?.bg_image ?? "",
+          name: detail?.name ?? "",
+          title: detail?.title ?? "",
+          html: detail?.html ?? "",
+          dtWidth: detail?.dt_width ?? "20%",
+          sectionWidth: detail?.section_width ?? "",
+        };
+      } else if (section.type === "group-start") {
+        return {
+          id: `section-${section.id}`,
+          layout: "group-start",
+          class: detail?.class ?? "",
+          bgImage: detail?.bg_image ?? "",
+          name: detail?.name ?? "グループ",
+          scopeStyles: detail?.scope_styles ?? "",
+        };
+      } else if (section.type === "group-end") {
+        return {
+          id: `section-${section.id}`,
+          layout: "group-end",
+          class: detail?.class ?? "",
+          bgImage: detail?.bg_image ?? "",
+        };
+      } else if (section.type === "htmlContent") {
+        return {
+          id: `section-${section.id}`,
+          layout: "htmlContent",
+          class: detail?.class ?? "",
+          bgImage: detail?.bg_image ?? "",
+          name: detail?.name ?? "",
+          html: detail?.html ?? "",
+          sectionWidth: detail?.section_width ?? "",
+          scopeStyles: detail?.scope_styles ?? "",
+        };
+      }
+      return { id: `section-${section.id}`, layout: "unknown" };
+    });
+
+    // 5. 組み立てて返す
     return NextResponse.json(
       {
         header: { html: page.header_html },
@@ -565,167 +584,165 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      // セクション詳細の更新
-      const detailErrors = [];
-      for (const section of toUpdate) {
-        let error;
-        if (section.layout === "mainVisual") {
-          const { error: err } = await supabase
-            .from("main_visual_sections")
-            .upsert({
-              section_id: section.id,
-              class: section.class,
-              bg_image: section.bgImage || null,
-              name: section.name,
-              html: section.html,
-              image: section.image ?? null,
-              image_class: section.imageClass ?? null,
-              text_class: section.textClass ?? null,
-              image_aspect_ratio: section.imageAspectRatio ?? "auto",
-              section_width: section.sectionWidth ?? null,
-            });
-          error = err;
-        } else if (section.layout === "imgText") {
-          const { error: err } = await supabase
-            .from("img_text_sections")
-            .upsert({
-              section_id: section.id,
-              class: section.class,
-              bg_image: section.bgImage || null,
-              name: section.name,
-              html: section.html,
-              image: section.image ?? null,
-              image_class: section.imageClass ?? null,
-              text_class: section.textClass ?? null,
-              image_aspect_ratio: section.imageAspectRatio ?? "auto",
-              section_width: section.sectionWidth ?? null,
-            });
-          error = err;
-        } else if (section.layout === "cards") {
-          const { error: csErr } = await supabase
-            .from("cards_sections")
-            .upsert({
-              section_id: section.id,
-              class: section.class,
-              bg_image: section.bgImage || null,
-              name: section.name,
-              section_width: section.sectionWidth ?? null,
-            });
-          if (csErr)
-            detailErrors.push({
-              table: "cards_sections",
-              sectionId: section.id,
-              error: csErr,
-            });
+      // 3. セクション詳細の更新をタイプごとに一括処理（N+1問題の解決）
+      const updateGroups: Record<string, any[]> = {};
+      toUpdate.forEach((s) => {
+        if (!updateGroups[s.layout]) updateGroups[s.layout] = [];
+        updateGroups[s.layout].push(s);
+      });
 
-          const { error: delErr } = await supabase
-            .from("cards")
-            .delete()
-            .eq("cards_section_id", section.id);
-          if (delErr)
-            detailErrors.push({
-              table: "cards",
-              operation: "delete",
-              sectionId: section.id,
-              error: delErr,
-            });
+      const updatePromises: Promise<any>[] = [];
+      const detailErrors: any[] = [];
 
-          if (section.cards && section.cards.length > 0) {
-            const cardsToInsert = section.cards.map((card, j) => ({
-              cards_section_id: section.id,
-              card_class: card.cardClass ?? null,
-              image: card.image ?? null,
-              image_class: card.imageClass ?? null,
-              text_class: card.textClass ?? null,
-              html: card.html,
-              position: j,
-              image_aspect_ratio: card.imageAspectRatio ?? "auto",
-            }));
-            const { error: insErr } = await supabase
-              .from("cards")
-              .insert(cardsToInsert);
-            error = insErr;
+      for (const [layout, sections] of Object.entries(updateGroups)) {
+        if (layout === "mainVisual") {
+          updatePromises.push(
+            supabase.from("main_visual_sections").upsert(
+              sections.map((s) => ({
+                section_id: s.id,
+                class: s.class,
+                bg_image: s.bgImage || null,
+                name: s.name,
+                html: s.html,
+                image: s.image ?? null,
+                image_class: s.imageClass ?? null,
+                text_class: s.textClass ?? null,
+                image_aspect_ratio: s.imageAspectRatio ?? "auto",
+                section_width: s.sectionWidth ?? null,
+              }))
+            )
+          );
+        } else if (layout === "imgText") {
+          updatePromises.push(
+            supabase.from("img_text_sections").upsert(
+              sections.map((s) => ({
+                section_id: s.id,
+                class: s.class,
+                bg_image: s.bgImage || null,
+                name: s.name,
+                html: s.html,
+                image: s.image ?? null,
+                image_class: s.imageClass ?? null,
+                text_class: s.textClass ?? null,
+                image_aspect_ratio: s.imageAspectRatio ?? "auto",
+                section_width: s.sectionWidth ?? null,
+              }))
+            )
+          );
+        } else if (layout === "cards") {
+          // カードセクション本体の更新
+          updatePromises.push(
+            supabase.from("cards_sections").upsert(
+              sections.map((s) => ({
+                section_id: s.id,
+                class: s.class,
+                bg_image: s.bgImage || null,
+                name: s.name,
+                section_width: s.sectionWidth ?? null,
+              }))
+            )
+          );
+
+          // カード子要素の更新（既存を削除して再挿入）
+          for (const s of sections) {
+            updatePromises.push(
+              supabase.from("cards").delete().eq("cards_section_id", s.id).then(async () => {
+                if (s.cards && s.cards.length > 0) {
+                  return supabase.from("cards").insert(
+                    s.cards.map((card: any, j: number) => ({
+                      cards_section_id: s.id,
+                      card_class: card.cardClass ?? null,
+                      image: card.image ?? null,
+                      image_class: card.imageClass ?? null,
+                      text_class: card.textClass ?? null,
+                      html: card.html,
+                      position: j,
+                      image_aspect_ratio: card.imageAspectRatio ?? "auto",
+                    }))
+                  );
+                }
+              })
+            );
           }
-        } else if (section.layout === "form") {
-          const { error: err } = await supabase.from("form_sections").upsert({
-            section_id: section.id,
-            class: section.class,
-            bg_image: section.bgImage || null,
-            name: section.name,
-            html: section.html,
-            endpoint: section.endpoint,
-            section_width: section.sectionWidth ?? null,
-          });
-          error = err;
-        } else if (section.layout === "descList") {
-          const { error: err } = await supabase
-            .from("desc_list_sections")
-            .upsert(
-              {
-                section_id: section.id,
-                class: section.class,
-                bg_image: section.bgImage || null,
-                name: section.name,
-                title: section.title,
-                html: section.html,
-                dt_width: section.dtWidth ?? "20%",
-                section_width: section.sectionWidth ?? null,
-              },
+        } else if (layout === "form") {
+          updatePromises.push(
+            supabase.from("form_sections").upsert(
+              sections.map((s) => ({
+                section_id: s.id,
+                class: s.class,
+                bg_image: s.bgImage || null,
+                name: s.name,
+                html: s.html,
+                endpoint: s.endpoint,
+                section_width: s.sectionWidth ?? null,
+              }))
+            )
+          );
+        } else if (layout === "descList") {
+          updatePromises.push(
+            supabase.from("desc_list_sections").upsert(
+              sections.map((s) => ({
+                section_id: s.id,
+                class: s.class,
+                bg_image: s.bgImage || null,
+                name: s.name,
+                title: s.title,
+                html: s.html,
+                dt_width: s.dtWidth ?? "20%",
+                section_width: s.sectionWidth ?? null,
+              })),
               { onConflict: "section_id" }
-            );
-          error = err;
-        } else if (section.layout === "group-start") {
-          const { error: err } = await supabase
-            .from("group_start_sections")
-            .upsert(
-              {
-                section_id: section.id,
-                class: section.class,
-                bg_image: section.bgImage || null,
-                name: section.name,
-                scope_styles: section.scopeStyles,
-                section_width: section.sectionWidth ?? null,
-              },
+            )
+          );
+        } else if (layout === "group-start") {
+          updatePromises.push(
+            supabase.from("group_start_sections").upsert(
+              sections.map((s) => ({
+                section_id: s.id,
+                class: s.class,
+                bg_image: s.bgImage || null,
+                name: s.name,
+                scope_styles: s.scopeStyles,
+                section_width: s.sectionWidth ?? null,
+              })),
               { onConflict: "section_id" }
-            );
-          error = err;
-        } else if (section.layout === "group-end") {
-          const { error: err } = await supabase
-            .from("group_end_sections")
-            .upsert(
-              {
-                section_id: section.id,
-                class: section.class,
-                bg_image: section.bgImage || null,
-                section_width: section.sectionWidth ?? null,
-              },
+            )
+          );
+        } else if (layout === "group-end") {
+          updatePromises.push(
+            supabase.from("group_end_sections").upsert(
+              sections.map((s) => ({
+                section_id: s.id,
+                class: s.class,
+                bg_image: s.bgImage || null,
+                section_width: s.sectionWidth ?? null,
+              })),
               { onConflict: "section_id" }
-            );
-          error = err;
-        } else if (section.layout === "htmlContent") {
-          const { error: err } = await supabase
-            .from("html_content_sections")
-            .upsert(
-              {
-                section_id: section.id,
-                class: section.class,
-                bg_image: section.bgImage || null,
-                name: section.name,
-                html: section.html,
-                section_width: section.sectionWidth ?? null,
-                scope_styles: section.scopeStyles ?? null,
-              },
+            )
+          );
+        } else if (layout === "htmlContent") {
+          updatePromises.push(
+            supabase.from("html_content_sections").upsert(
+              sections.map((s) => ({
+                section_id: s.id,
+                class: s.class,
+                bg_image: s.bgImage || null,
+                name: s.name,
+                html: s.html,
+                section_width: s.sectionWidth ?? null,
+                scope_styles: s.scopeStyles ?? null,
+              })),
               { onConflict: "section_id" }
-            );
-          error = err;
+            )
+          );
         }
-        if (error)
-          detailErrors.push({
-            sectionId: section.id,
-            layout: section.layout,
-            error,
-          });
       }
+
+      const updateResults = await Promise.all(updatePromises);
+      updateResults.forEach((r, idx) => {
+        if (r?.error) detailErrors.push(r.error);
+      });
+
       if (detailErrors.length > 0) {
         console.error("セクション詳細更新エラー:", detailErrors);
       }
@@ -754,125 +771,145 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      // セクション詳細の並列挿入（バルク処理）
+      // セクション詳細の並列挿入をタイプごとに一括処理（N+1問題の解決）
+      const insertGroups: Record<string, any[]> = {};
+      toInsert.forEach((s) => {
+        if (!insertGroups[s.layout]) insertGroups[s.layout] = [];
+        insertGroups[s.layout].push(s);
+      });
+
       const insertDetailPromises = [];
       const cardsBulkInsert = [];
 
-      for (const [, section] of toInsert.entries()) {
-        const sectionId = section.id; // フロントエンドから送信されたIDを直接使用
+      for (const [layout, sections] of Object.entries(insertGroups)) {
+        if (layout === "mainVisual") {
+          insertDetailPromises.push(
+            supabase.from("main_visual_sections").insert(
+              sections.map((s) => ({
+                section_id: s.id,
+                class: s.class,
+                bg_image: s.bgImage || null,
+                name: s.name,
+                html: s.html,
+                image: s.image ?? null,
+                image_class: s.imageClass ?? null,
+                text_class: s.textClass ?? null,
+                image_aspect_ratio: s.imageAspectRatio ?? "auto",
+                section_width: s.sectionWidth ?? null,
+              }))
+            )
+          );
+        } else if (layout === "imgText") {
+          insertDetailPromises.push(
+            supabase.from("img_text_sections").insert(
+              sections.map((s) => ({
+                section_id: s.id,
+                class: s.class,
+                bg_image: s.bgImage || null,
+                name: s.name,
+                html: s.html,
+                image: s.image ?? null,
+                image_class: s.imageClass ?? null,
+                text_class: s.textClass ?? null,
+                image_aspect_ratio: s.imageAspectRatio ?? "auto",
+                section_width: s.sectionWidth ?? null,
+              }))
+            )
+          );
+        } else if (layout === "cards") {
+          insertDetailPromises.push(
+            supabase.from("cards_sections").insert(
+              sections.map((s) => ({
+                section_id: s.id,
+                class: s.class,
+                bg_image: s.bgImage || null,
+                name: s.name,
+                section_width: s.sectionWidth ?? null,
+              }))
+            )
+          );
 
-        if (section.layout === "mainVisual") {
-          insertDetailPromises.push(
-            supabase.from("main_visual_sections").insert({
-              section_id: sectionId,
-              class: section.class,
-              bg_image: section.bgImage || null,
-              name: section.name,
-              html: section.html,
-              image: section.image ?? null,
-              image_class: section.imageClass ?? null,
-              text_class: section.textClass ?? null,
-              image_aspect_ratio: section.imageAspectRatio ?? "auto",
-              section_width: section.sectionWidth ?? null,
-            })
-          );
-        } else if (section.layout === "imgText") {
-          insertDetailPromises.push(
-            supabase.from("img_text_sections").insert({
-              section_id: sectionId,
-              class: section.class,
-              bg_image: section.bgImage || null,
-              name: section.name,
-              html: section.html,
-              image: section.image ?? null,
-              image_class: section.imageClass ?? null,
-              text_class: section.textClass ?? null,
-              image_aspect_ratio: section.imageAspectRatio ?? "auto",
-              section_width: section.sectionWidth ?? null,
-            })
-          );
-        } else if (section.layout === "cards") {
-          // カードセクション
-          insertDetailPromises.push(
-            supabase.from("cards_sections").insert({
-              section_id: sectionId,
-              class: section.class,
-              bg_image: section.bgImage || null,
-              name: section.name,
-              section_width: section.sectionWidth ?? null,
-            })
-          );
-
-          // カード本体（バルク挿入用に準備）
-          if (section.cards && section.cards.length > 0) {
-            const cardsToInsert = section.cards.map((card, j) => ({
-              cards_section_id: sectionId,
-              card_class: card.cardClass ?? null,
-              image: card.image ?? null,
-              image_class: card.imageClass ?? null,
-              text_class: card.textClass ?? null,
-              html: card.html,
-              position: j,
-              image_aspect_ratio: card.imageAspectRatio ?? "auto",
-            }));
-            cardsBulkInsert.push(...cardsToInsert);
+          for (const s of sections) {
+            if (s.cards && s.cards.length > 0) {
+              const cardsToInsert = s.cards.map((card: any, j: number) => ({
+                cards_section_id: s.id,
+                card_class: card.cardClass ?? null,
+                image: card.image ?? null,
+                image_class: card.imageClass ?? null,
+                text_class: card.textClass ?? null,
+                html: card.html,
+                position: j,
+                image_aspect_ratio: card.imageAspectRatio ?? "auto",
+              }));
+              cardsBulkInsert.push(...cardsToInsert);
+            }
           }
-        } else if (section.layout === "form") {
+        } else if (layout === "form") {
           insertDetailPromises.push(
-            supabase.from("form_sections").insert({
-              section_id: sectionId,
-              class: section.class,
-              bg_image: section.bgImage || null,
-              name: section.name,
-              html: section.html,
-              endpoint: section.endpoint,
-              section_width: section.sectionWidth ?? null,
-            })
+            supabase.from("form_sections").insert(
+              sections.map((s) => ({
+                section_id: s.id,
+                class: s.class,
+                bg_image: s.bgImage || null,
+                name: s.name,
+                html: s.html,
+                endpoint: s.endpoint,
+                section_width: s.sectionWidth ?? null,
+              }))
+            )
           );
-        } else if (section.layout === "descList") {
+        } else if (layout === "descList") {
           insertDetailPromises.push(
-            supabase.from("desc_list_sections").insert({
-              section_id: sectionId,
-              class: section.class,
-              bg_image: section.bgImage || null, // 空文字列もnullに変換
-              name: section.name,
-              title: section.title,
-              html: section.html,
-              dt_width: section.dtWidth ?? "20%",
-              section_width: section.sectionWidth ?? null,
-            })
+            supabase.from("desc_list_sections").insert(
+              sections.map((s) => ({
+                section_id: s.id,
+                class: s.class,
+                bg_image: s.bgImage || null,
+                name: s.name,
+                title: s.title,
+                html: s.html,
+                dt_width: s.dtWidth ?? "20%",
+                section_width: s.sectionWidth ?? null,
+              }))
+            )
           );
-        } else if (section.layout === "group-start") {
+        } else if (layout === "group-start") {
           insertDetailPromises.push(
-            supabase.from("group_start_sections").insert({
-              section_id: sectionId,
-              class: section.class,
-              bg_image: section.bgImage || null,
-              name: section.name,
-              scope_styles: section.scopeStyles,
-              section_width: section.sectionWidth ?? null,
-            })
+            supabase.from("group_start_sections").insert(
+              sections.map((s) => ({
+                section_id: s.id,
+                class: s.class,
+                bg_image: s.bgImage || null,
+                name: s.name,
+                scope_styles: s.scopeStyles,
+                section_width: s.sectionWidth ?? null,
+              }))
+            )
           );
-        } else if (section.layout === "group-end") {
+        } else if (layout === "group-end") {
           insertDetailPromises.push(
-            supabase.from("group_end_sections").insert({
-              section_id: sectionId,
-              class: section.class,
-              bg_image: section.bgImage || null,
-              section_width: section.sectionWidth ?? null,
-            })
+            supabase.from("group_end_sections").insert(
+              sections.map((s) => ({
+                section_id: s.id,
+                class: s.class,
+                bg_image: s.bgImage || null,
+                section_width: s.sectionWidth ?? null,
+              }))
+            )
           );
-        } else if (section.layout === "htmlContent") {
+        } else if (layout === "htmlContent") {
           insertDetailPromises.push(
-            supabase.from("html_content_sections").insert({
-              section_id: sectionId,
-              class: section.class,
-              bg_image: section.bgImage || null,
-              name: section.name,
-              html: section.html,
-              section_width: section.sectionWidth ?? null,
-              scope_styles: section.scopeStyles ?? null,
-            })
+            supabase.from("html_content_sections").insert(
+              sections.map((s) => ({
+                section_id: s.id,
+                class: s.class,
+                bg_image: s.bgImage || null,
+                name: s.name,
+                html: s.html,
+                section_width: s.sectionWidth ?? null,
+                scope_styles: s.scopeStyles ?? null,
+              }))
+            )
           );
         }
       }
