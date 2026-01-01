@@ -140,6 +140,24 @@
   }
 }
 @layer base {
+  .material-symbols-outlined {
+    display: -webkit-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    vertical-align: middle;
+    font-size: inherit;
+    color: inherit;
+    font-weight: inherit;
+    line-height: 1;
+    width: 1em;
+    height: 1em;
+  }
   * {
     @apply border-border;
   }
@@ -863,24 +881,4 @@ body:not(:has(.EditorWorkspace)) button[aria-label="Toggle dark mode"] svg {
 .token.important,
 .token.variable {
   color: #e90;
-}
-
-/* Material Symbols - Tailwind Utility 優先設定 */
-.material-symbols-outlined {
-  display: -webkit-inline-box;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  vertical-align: middle;
-  font-size: inherit;
-  color: inherit;
-  font-weight: inherit;
-  line-height: 1;
-  width: 1em;
-  height: 1em;
 }

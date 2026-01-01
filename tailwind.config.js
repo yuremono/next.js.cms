@@ -109,6 +109,13 @@ module.exports = {
       },
     },
     extend: {
+      fontSize: {
+        "1.25em": "1.25em",
+        "1.5em": "1.5em",
+        "2em": "2em",
+        "2.5em": "2.5em",
+        "3em": "3em",
+      },
       fontFamily: {
         sans: ["var(--font-family-base)"],
       },

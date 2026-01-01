@@ -89,6 +89,19 @@
 }
 
 @layer base {
+        .material-symbols-outlined {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                vertical-align: middle;
+                font-size: inherit;
+                color: inherit;
+                font-weight: inherit;
+                line-height: 1;
+                width: 1em;
+                height: 1em;
+        }
+
         * {
                 @apply border-border;
         }
@@ -842,22 +855,4 @@ body:not(:has(.EditorWorkspace)) button[aria-label="Toggle dark mode"] {
 .token.important,
 .token.variable {
         color: #e90;
-}
-
-/* Material Symbols - Tailwind Utility 優先設定 */
-.material-symbols-outlined { 
-        display: inline-flex ;
-        align-items: center;
-        justify-content: center;
-        vertical-align: middle;
-
-        // 以下のプロパティを inherit にすることで、Tailwind のクラスが効きやすくなります
-        font-size: inherit;
-        color: inherit;
-        font-weight: inherit;
-
-        // アイコンがテキストのベースラインから浮かないように調整
-        line-height: 1;
-        width: 1em;
-        height: 1em;
 }

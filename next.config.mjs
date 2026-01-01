@@ -23,6 +23,8 @@ const nextConfig = {
   serverExternalPackages: ["jsdom", "dompurify"],
   poweredByHeader: false,
   reactStrictMode: false,
+  // 本番環境でもデバッグしやすくするためにソースマップを有効化
+  productionBrowserSourceMaps: true,
   // ESLintとTypeScriptエラーを無視
   onDemandEntries: {
     maxInactiveAge: 25 * 1000,
