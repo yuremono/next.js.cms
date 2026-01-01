@@ -16,9 +16,51 @@ if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
 }
 
 export const metadata: Metadata = {
-  title: "Seiji Yano Works",
+  title: "Seiji Yano Works | オリジナルCMS × モダンフロントエンド",
   description:
-    "Next.JsでCMS管理画面を構築し、編集したページをポートフォリオサイトとして公開しています",
+    "WEB制作会社出身のフロントエンドエンジニア Seiji Yano のポートフォリオ。自作CMSで構築・管理しており、Next.js, TypeScript, Tailwind CSS, Supabaseを活用した制作実績や、RatioKitなどのUIライブラリ、AI活用の取り組みを公開しています。",
+  authors: [{ name: "Seiji Yano" }],
+
+  // Open Graph
+  openGraph: {
+    title: "Seiji Yano Works",
+    description:
+      "Next.jsと自作CMSで構築したポートフォリオサイト。モダンな技術スタック（Next.js, TypeScript, Tailwind CSS, Supabase）を駆使した制作実績や、クリエイティブなデモ集を公開中。",
+    url: "https://cms0505.vercel.app/",
+    siteName: "Seiji Yano Works",
+    images: [
+      {
+        url: "https://cms0505.vercel.app/images/ao.svg",
+        width: 1200,
+        height: 630,
+        alt: "Seiji Yano Works OGP Image",
+      },
+    ],
+    locale: "ja_JP",
+    type: "website",
+  },
+
+  // Twitter Card
+  twitter: {
+    card: "summary_large_image",
+    title: "Seiji Yano Works | フロントエンドエンジニア",
+    description:
+      "Next.js, TypeScript, Tailwind CSS, Supabaseを用いた自作CMSによるポートフォリオサイト。技術と創造性を融合させた制作物を紹介します。",
+    images: ["https://cms0505.vercel.app/images/ao.svg"],
+  },
+
+  // Canonical
+  alternates: {
+    canonical: "https://cms0505.vercel.app/",
+  },
+
+  // アイコン設定 (ファビコン)
+  icons: {
+    icon: "/images/yuru.png",
+    apple: "/images/yuru.png",
+  },
+
+  // その他設定
   viewport: "width=device-width, initial-scale=1",
 };
 
