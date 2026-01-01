@@ -171,6 +171,29 @@ main a {
   padding: 0.25em 1em 0.375em;
 }
 
+.creative_tx {
+  line-height: 2;
+  font-family: "Zen kaku Gothic New";
+  left: 50%;
+  top: 50%;
+  translate: 0 -50%;
+  z-index: 1;
+}
+@media (max-width: 960px) {
+  .creative_tx {
+    padding: 1em;
+    position: relative;
+    inset: unset;
+    translate: unset;
+  }
+}
+.creative_bottom {
+  background-color: var(--wh50);
+  width: 100%;
+  mix-blend-mode: difference;
+  padding: 0.25em 1em 0.375em;
+}
+
 .sectionPY {
   padding-block: var(--sectionPY);
 }

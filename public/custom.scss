@@ -205,6 +205,38 @@ main a {
                 padding: 0.25em 1em 0.375em;
         }
 }
+.creative {
+        &_tx {
+                line-height: 2;
+                font-family: "Zen kaku Gothic New";
+                // width: calc(var(--base)*0.5 );
+                // max-width: 50%;
+                // height: 100%;
+                // right: var(--inBase);
+                left: 50%;
+                top: 50%;
+                translate: 0 -50%;
+                z-index: 1;
+
+                @media (max-width: 960px) {
+                        //         translate: -50% -0%;
+                        //     width: fit-content;
+                        padding: 1em;
+                        position: relative;
+                        inset: unset;
+                        translate: unset;
+                        //     text-align: center;
+                }
+        }
+        &_bottom {
+                background-color: var(--wh50);
+                // left: 0;
+                // bottom: 0%;
+                width: 100%;
+                mix-blend-mode: difference;
+                padding: 0.25em 1em 0.375em;
+        }
+}
 
 .sectionPY {
         padding-block: var(--sectionPY);
