@@ -129,7 +129,7 @@
     --secondary: hsl(0, 0%, 18%);
     --secondary-foreground: hsl(0, 0%, 98%);
     --muted: hsl(0, 0%, 25%);
-    --muted-foreground: hsl(0, 0%, 30%);
+    --muted-foreground: #ccc;
     --accent: hsl(0, 0%, 18%);
     --accent-foreground: hsl(0, 0%, 98%);
     --destructive: hsl(0, 84%, 60%);
@@ -663,7 +663,6 @@ strong {
   outline: none;
   cursor: pointer;
   position: relative;
-  background-color: var(--qBG, var(--bc, #fbf9ef));
   -webkit-transition: 0.4s;
   transition: 0.4s;
   color: var(--gr);

@@ -75,7 +75,7 @@
                 --secondary: hsl(0, 0%, 18%);
                 --secondary-foreground: hsl(0, 0%, 98%);
                 --muted: hsl(0, 0%, 25%);
-                --muted-foreground: hsl(0, 0%, 30%);
+                --muted-foreground: #ccc;
                 --accent: hsl(0, 0%, 18%);
                 --accent-foreground: hsl(0, 0%, 98%);
                 --destructive: hsl(0, 84%, 60%);
@@ -619,7 +619,7 @@ strong {
                 outline: none;
                 cursor: pointer;
                 position: relative;
-                background-color: var(--qBG, var(--bc, #fbf9ef));
+                // background-color: var(--qBG, var(--bc, #fbf9ef));
                 // padding: 1em;
                 // padding-right: 2.5em; // 矢印用の余白
                 transition: .4s;
@@ -667,7 +667,7 @@ strong {
                 position: relative;
                 font-size: 0.75em;
                 // padding: 1em;
-                // background-color: var(--aBG, var(--wh, #fff));
+                // background-color: var(--aBG, var(--wh, #fff)); 
         }
 
         // 画像レイアウト（.has_img > figure + div の構造に対応）
