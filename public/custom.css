@@ -189,6 +189,9 @@ main a {
     translate: unset;
   }
 }
+.creative .mindWobble {
+  pointer-events: none;
+}
 .creative_bottom {
   width: 100%;
   background-color: var(--background);
