@@ -845,7 +845,7 @@ body:not(:has(.EditorWorkspace)) button[aria-label="Toggle dark mode"] {
 }
 
 /* Material Symbols - Tailwind Utility 優先設定 */
-.material-symbols-outlined {
+.material-symbols-outlined { 
         display: inline-flex ;
         align-items: center;
         justify-content: center;
