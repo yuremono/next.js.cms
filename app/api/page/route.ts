@@ -385,6 +385,12 @@ export async function POST(req: NextRequest) {
     const currentSectionsOrder = pageData.sections.map((s) => s.id).join(",");
 
     // 1. ページ本体の保存（並列処理の準備）
+    const { data: currentPage } = await supabase
+      .from("pages")
+      .select("tailwind_trigger")
+      .eq("id", 1)
+      .single();
+
     const pagePromise = supabase
       .from("pages")
       .upsert({
@@ -411,6 +417,38 @@ export async function POST(req: NextRequest) {
 
     if (pageError) {
       return NextResponse.json({ error: "ページ保存失敗" }, { status: 500 });
+    }
+
+    // Rare Classesの変更を検知してVercelデプロイフックを叩く
+    if (currentPage && currentPage.tailwind_trigger !== pageData.tailwindTrigger) {
+      // --- ローカル開発環境向け：ファイルを直接書き換えて即時反映させる ---
+      try {
+        const fs = require("fs");
+        const path = require("path");
+        const filePath = path.join(process.cwd(), "lib/tailwind-trigger.tsx");
+        const content = `/**
+ * Tailwind CSS Trigger (Generated)
+ * 
+ * このファイルは保存時またはビルド時に自動生成されます。
+ */
+const rareClasses = ${JSON.stringify(pageData.tailwindTrigger)};
+export const tailwindTrigger = rareClasses;
+`;
+        fs.writeFileSync(filePath, content);
+        console.log("✅ Local tailwind-trigger.tsx updated for instant refresh.");
+      } catch (err) {
+        // Vercel（読み取り専用）ではエラーになるが、ビルド時に反映されるため無視してOK
+        console.log("Note: File system write skipped (expected on production).");
+      }
+
+      const deployHookUrl = process.env.VERCEL_DEPLOY_HOOK_URL;
+      if (deployHookUrl) {
+        console.log("🚀 Rare Classes changed. Triggering Vercel rebuild...");
+        // 待機せずに実行（バックグラウンド的な扱い）
+        fetch(deployHookUrl, { method: "POST" }).catch((err) => {
+          console.error("Vercel Deploy Hook Error:", err);
+        });
+      }
     }
 
     // 3. 差分更新の実装 - IDベースで処理
