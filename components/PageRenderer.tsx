@@ -18,54 +18,6 @@ interface PageRendererProps {
   showEditorButton?: boolean;
 }
 
-// CSS変数をカスタムCSSから抽出する関数（現在未使用：CSSファイルから読み込むため）
-/*
-function extractCSSVariables(customCSS: string): {
-  variables: string;
-  remainingCSS: string;
-} {
-  if (!customCSS) return { variables: "", remainingCSS: "" };
-
-  // :root { ... } ブロックを検索
-  const rootRegex = /:root\s*\{([^}]*)\}/g;
-  let variables = "";
-  let remainingCSS = customCSS;
-
-  let match;
-  while ((match = rootRegex.exec(customCSS)) !== null) {
-    const rootContent = match[1];
-    // 設定した変数のみを抽出（--base, --head, --sectionMT, etc.）
-    const variableLines = rootContent.split("\n").filter((line) => {
-      const trimmed = line.trim();
-      return (
-        trimmed &&
-        (trimmed.includes("--base:") ||
-          trimmed.includes("--head:") ||
-          trimmed.includes("--sectionMT:") ||
-          trimmed.includes("--titleAfter:") ||
-          trimmed.includes("--sectionPY:") ||
-          trimmed.includes("--spaceX:") ||
-          trimmed.includes("--gap:") ||
-          trimmed.includes("--mc:") ||
-          trimmed.includes("--sc:") ||
-          trimmed.includes("--ac:") ||
-          trimmed.includes("--bc:") ||
-          trimmed.includes("--tx:"))
-      );
-    });
-
-    if (variableLines.length > 0) {
-      variables = `:root {\n${variableLines.join("\n")}\n}`;
-    }
-
-    // :rootブロックを残りのCSSから削除
-    remainingCSS = remainingCSS.replace(match[0], "");
-  }
-
-  return { variables: variables.trim(), remainingCSS: remainingCSS.trim() };
-}
-*/
-
 export function PageRenderer({ page }: PageRendererProps) {
   // CSS変数とカスタムCSSを分離
   // CSS変数を抽出（コメントアウト：CSSファイルから読み込むため不要）

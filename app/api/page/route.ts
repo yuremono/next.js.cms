@@ -609,7 +609,8 @@ export async function POST(req: NextRequest) {
                 text_class: s.textClass ?? null,
                 image_aspect_ratio: s.imageAspectRatio ?? "auto",
                 section_width: s.sectionWidth ?? null,
-              }))
+              })),
+              { onConflict: "section_id" }
             )
           );
         } else if (layout === "imgText") {
@@ -626,7 +627,8 @@ export async function POST(req: NextRequest) {
                 text_class: s.textClass ?? null,
                 image_aspect_ratio: s.imageAspectRatio ?? "auto",
                 section_width: s.sectionWidth ?? null,
-              }))
+              })),
+              { onConflict: "section_id" }
             )
           );
         } else if (layout === "cards") {
@@ -639,7 +641,8 @@ export async function POST(req: NextRequest) {
                 bg_image: s.bgImage || null,
                 name: s.name,
                 section_width: s.sectionWidth ?? null,
-              }))
+              })),
+              { onConflict: "section_id" }
             )
           );
 
@@ -675,7 +678,8 @@ export async function POST(req: NextRequest) {
                 html: s.html,
                 endpoint: s.endpoint,
                 section_width: s.sectionWidth ?? null,
-              }))
+              })),
+              { onConflict: "section_id" }
             )
           );
         } else if (layout === "descList") {
