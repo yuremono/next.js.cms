@@ -46,7 +46,7 @@ main a {
         --mmFZ: 2rem;
 
         @media (max-width: 640px) {
-                --mmFZ: 1rem;
+                --mmFZ: 1.25rem;
         }
 }
 
@@ -83,7 +83,10 @@ main a {
 }
 
 .mindWobble {
-        font-size: calc(var(--mmFZ)*4);
+        font-size: calc(var(--mmFZ)*5);
+        @media (max-width: 1200px){
+                font-size: calc(var(--mmFZ)*4);
+        }
         line-height: 1;
         --mmWobbleAmp: 15;
         /* 全体振幅(px) */

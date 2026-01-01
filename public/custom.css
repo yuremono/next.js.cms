@@ -47,7 +47,7 @@ main a {
 }
 @media (max-width: 640px) {
   :root {
-    --mmFZ: 1rem;
+    --mmFZ: 1.25rem;
   }
 }
 
@@ -82,7 +82,7 @@ main a {
 }
 
 .mindWobble {
-  font-size: calc(var(--mmFZ) * 4);
+  font-size: calc(var(--mmFZ) * 5);
   line-height: 1;
   --mmWobbleAmp: 15;
   /* 全体振幅(px) */
@@ -94,6 +94,11 @@ main a {
   /* 横周波数 */
   --mmWobbleFreqY: 0.0003;
   /* 縦周波数 */
+}
+@media (max-width: 1200px) {
+  .mindWobble {
+    font-size: calc(var(--mmFZ) * 4);
+  }
 }
 
 .mmStatic {
