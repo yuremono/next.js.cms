@@ -108,7 +108,7 @@ const DEFAULT_PAGE_DATA: Page = {
 };
 
 // サーバーコンポーネント
-export const revalidate = 3600; // 1時間ごとに再生成（ISR）
+export const revalidate = 0; // 開発・調整中はキャッシュを無効化（すぐに反映）
 
 export default async function Home() {
   // ページデータ取得
