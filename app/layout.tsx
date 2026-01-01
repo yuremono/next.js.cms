@@ -56,8 +56,13 @@ export const metadata: Metadata = {
 
   // アイコン設定 (ファビコン)
   icons: {
-    icon: "/images/yuru.png",
-    apple: "/images/yuru.png",
+    icon: [
+      { url: "/favicon.png", sizes: "32x32", type: "image/png" },
+      { url: "/icon.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
   },
 
   // その他設定
