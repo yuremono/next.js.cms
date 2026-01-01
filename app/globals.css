@@ -100,7 +100,7 @@
         --hls:0.02em;
         --bigFZ:clamp(36px, 8vw, 64px);
     
-        --h1FZ:clamp(14px, 2.4vw, 20px);
+        --h1FZ:clamp(14px, 2.4vw, 18px); 
         --h2FZ:clamp(24px, 3vw, 32px);
         --h3FZ:clamp(20px, 2.4vw, 24px);
         --PFZ:clamp(20px, 2.4vw, 24px);
