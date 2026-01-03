@@ -18,6 +18,7 @@
     "test:performance": "jest --testPathPattern=performance",
     "test:security": "jest --testPathPattern=security",
     "sync": "git add . && git commit -m \"update\" --allow-empty && git push",
+"push": "git push",
     "deploy": "git add . && git commit -m \"deploy\" --allow-empty && git push"
   },
   "dependencies": {
