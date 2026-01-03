@@ -656,7 +656,7 @@ export default function IDEStyleSectionList({
         {...listeners}
         variant="ghost"
         size="sm"
-        className={`text-sm min-w-[51%] justify-start px-2 py-1 text-left font-normal ${
+        className={` min-w-[51%] justify-start px-2 py-1 text-left font-normal ${
           isFocused ? "ring-2 ring-slate-400 ring-offset-1" : ""
         } ${
           isSelected && focusMode ? "bg-slate-500/20 ring-1 ring-slate-300" : ""
