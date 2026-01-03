@@ -23,6 +23,21 @@ main > * + * {
 
 main a {
   font-size: 1.375em;
+  display: inline-block;
+  -webkit-transition: 0.4s ease-in-out;
+  transition: 0.4s ease-in-out;
+  will-change: scale;
+  scale: 1;
+}
+main a:hover {
+  scale: 1 1.25;
+}
+
+h3 {
+  font-size: 1.375em;
+  font-weight: 500;
+  display: inline-block;
+  margin-bottom: 0.5em;
 }
 
 .fullWidth {
@@ -76,7 +91,6 @@ main a {
 }
 @media (max-width: 834px) {
   :where(.mindMap) > *:not(h1, h2, .about_tx, .about_p, .knowledge_tx) {
-    color: #bbb;
     pointer-events: none;
   }
 }
@@ -111,7 +125,6 @@ main a {
 .mmPin {
   position: absolute;
   font-weight: 200;
-  color: var(--tc);
   font-size: var(--h1FZ);
   background-color: var(--wh50);
   z-index: 1;
@@ -209,15 +222,4 @@ main a {
 
 .dl_center dt {
   text-align: right;
-}
-
-a {
-  display: inline-block;
-  -webkit-transition: 0.4s ease-in-out;
-  transition: 0.4s ease-in-out;
-  will-change: scale;
-  scale: 1;
-}
-a:hover {
-  scale: 1 1.25;
 }

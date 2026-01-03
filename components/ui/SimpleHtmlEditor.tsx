@@ -31,6 +31,7 @@ export function SimpleHtmlEditor({
   const [previewMode, setPreviewMode] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
+  const historyTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const convertLineBreaksToHtml = useCallback((text: string): string => {
     return text.replace(/\r?\n/g, "<br>");
@@ -47,11 +48,19 @@ export function SimpleHtmlEditor({
     return value;
   }, [value, autoConvertLineBreaks, convertHtmlToLineBreaks]);
 
-  // シンタックスハイライト
-  const highlightedCode = useMemo(() => {
-    const code = getDisplayValue(); // textareaに表示されている文字列そのものを使用
+  // シンタックスハイライト (デバウンス実装)
+  const [highlightedCode, setHighlightedCode] = useState("");
+
+  useEffect(() => {
+    const code = getDisplayValue();
     const lang = commentStyle === "css" ? "css" : "markup";
-    return Prism.highlight(code, Prism.languages[lang], lang);
+    
+    // 初回は即座に反映、以降は入力停止後に実行
+    const timer = setTimeout(() => {
+      setHighlightedCode(Prism.highlight(code, Prism.languages[lang], lang));
+    }, code.length > 1000 ? 200 : 0); // 長文の場合は遅延を大きくする
+
+    return () => clearTimeout(timer);
   }, [getDisplayValue, commentStyle]);
 
   // スクロールの同期
@@ -67,24 +76,47 @@ export function SimpleHtmlEditor({
   const [historyIndex, setHistoryIndex] = useState(0);
   const [isUndoRedoOperation, setIsUndoRedoOperation] = useState(false);
 
+  // アンマウント時にタイマーをクリア
+  useEffect(() => {
+    return () => {
+      if (historyTimerRef.current) clearTimeout(historyTimerRef.current);
+    };
+  }, []);
+
   // 履歴に新しい値を追加
   const addToHistory = useCallback(
     (newValue: string) => {
       if (isUndoRedoOperation) return;
 
       setHistory((prev) => {
+        // 現在の最新履歴と同じなら追加しない
+        if (prev[historyIndex] === newValue) return prev;
+
         const newHistory = prev.slice(0, historyIndex + 1);
         newHistory.push(newValue);
-        // 履歴の上限を50に制限
         if (newHistory.length > 50) {
           newHistory.shift();
           return newHistory;
         }
         return newHistory;
       });
-      setHistoryIndex((prev) => prev + 1);
+      setHistoryIndex((prev) => {
+        const nextIndex = historyIndex + 1;
+        return nextIndex > 49 ? 49 : nextIndex;
+      });
     },
     [historyIndex, isUndoRedoOperation]
+  );
+
+  // 履歴に追加 (デバウンス版)
+  const debouncedAddToHistory = useCallback(
+    (newValue: string) => {
+      if (historyTimerRef.current) clearTimeout(historyTimerRef.current);
+      historyTimerRef.current = setTimeout(() => {
+        addToHistory(newValue);
+      }, 1000); // 1秒間入力が止まったら履歴に保存
+    },
+    [addToHistory]
   );
 
   // アンドゥ実行
@@ -121,8 +153,12 @@ export function SimpleHtmlEditor({
 
   // プロパティのvalueが外部から変更された時に履歴を更新
   useEffect(() => {
+    // 初回ロード時や外部からの変更時のみ即時追加
     if (!isUndoRedoOperation && value !== history[historyIndex]) {
-      addToHistory(value);
+      // 入力中（タイマーが動いている間）は外部からの変更とみなさない
+      if (!historyTimerRef.current) {
+        addToHistory(value);
+      }
     }
   }, [value, history, historyIndex, isUndoRedoOperation, addToHistory]);
 
@@ -142,18 +178,20 @@ export function SimpleHtmlEditor({
         finalValue = newValue;
       }
 
-      // 履歴に追加
-      addToHistory(finalValue);
+      // デバウンス履歴追加
+      debouncedAddToHistory(finalValue);
       onChange(finalValue);
 
-      // React再レンダリング後にカーソル位置を復元
-      requestAnimationFrame(() => {
-        if (textarea && document.activeElement === textarea) {
-          textarea.setSelectionRange(cursorStart, cursorEnd);
-        }
-      });
+      // 改行が絡む場合のみカーソル位置を調整（それ以外はReactに任せる）
+      if (autoConvertLineBreaks || newValue.includes("\n")) {
+        requestAnimationFrame(() => {
+          if (textarea && document.activeElement === textarea) {
+            textarea.setSelectionRange(cursorStart, cursorEnd);
+          }
+        });
+      }
     },
-    [autoConvertLineBreaks, convertLineBreaksToHtml, onChange, addToHistory]
+    [autoConvertLineBreaks, convertLineBreaksToHtml, onChange, debouncedAddToHistory]
   );
 
   // カーソル位置を安全に設定するヘルパー関数
@@ -812,25 +850,25 @@ export function SimpleHtmlEditor({
               dangerouslySetInnerHTML={{ __html: highlightedCode + "\n" }}
             />
             {/* 編集用のテキストエリア */}
-            <Textarea
-              ref={textareaRef}
-              value={getDisplayValue()}
-              onChange={handleTextareaChange}
+          <Textarea
+            ref={textareaRef}
+            value={getDisplayValue()}
+            onChange={handleTextareaChange}
               onScroll={handleScroll}
-              placeholder={placeholder}
+            placeholder={placeholder}
               className="relative z-10 h-full w-full flex-1 resize-none border-0 bg-transparent px-3 py-2 font-mono text-base caret-foreground selection:bg-primary/30 focus:ring-0"
-              style={{
-                minHeight: "6rem",
-                fontSize: "16px",
-                lineHeight: "1.5",
+            style={{
+              minHeight: "6rem",
+              fontSize: "16px",
+              lineHeight: "1.5",
                 color: "transparent", // テキスト自体は透明にしてバックドロップを見せる
-              }}
-              onKeyDown={handleKeyDown}
-              spellCheck={false}
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="off"
-            />
+            }}
+            onKeyDown={handleKeyDown}
+            spellCheck={false}
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+          />
           </div>
         )}
       </div>

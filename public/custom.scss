@@ -23,6 +23,19 @@ main>* {
 
 main a {
         font-size: 1.375em;
+        display: inline-block;
+        transition: .4s ease-in-out;
+        will-change: scale;
+        scale: 1;
+        &:hover{
+                scale: 1 1.25; 
+        }
+} 
+h3{
+        font-size: 1.375em;
+      font-weight:500;
+      display:inline-block;
+      margin-bottom:0.5em;
 }
 
 .fullWidth {
@@ -76,7 +89,6 @@ main a {
         }
         >*:not(h1,h2,.about_tx,.about_p,.knowledge_tx){
                 @media (max-width: 834px){
-                    color: #bbb;
                     pointer-events: none;
                 }
         }
@@ -114,7 +126,6 @@ main a {
 .mmPin {
         position: absolute;
         font-weight: 200;
-        color: var(--tc);
         font-size: var(--h1FZ);
         background-color: var(--wh50);
         z-index: 1;
@@ -255,15 +266,7 @@ main a {
                 text-align: right;
         }
 }
-a{
-        display: inline-block;
-        transition: .4s ease-in-out;
-        will-change: scale;
-        scale: 1;
-        &:hover{
-                scale: 1 1.25; 
-        }
-}
+
 
 
  
