@@ -153,6 +153,31 @@
     font-family: var(--font-family-base);
     overflow-x: hidden;
   }
+  /* ページ全体の初期ロード時FOUC防止（エディター以外） */
+  body:not(:has(.EditorWorkspace)) {
+    opacity: 0;
+    -webkit-transition: opacity 600ms ease;
+    transition: opacity 600ms ease;
+  }
+  /* JS実行完了後に付与されるクラス */
+  body.page-ready {
+    opacity: 1;
+  }
+  /* フォールバック: 3秒経ってもJSが走らない場合は強制表示 */
+  body:not(:has(.EditorWorkspace)):not(.page-ready) {
+    -webkit-animation: page-reveal 0.6s ease 3s forwards;
+            animation: page-reveal 0.6s ease 3s forwards;
+  }
+  @-webkit-keyframes page-reveal {
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes page-reveal {
+    to {
+      opacity: 1;
+    }
+  }
   /* label要素のテキスト選択を可能にする */
   label {
     user-select: text;

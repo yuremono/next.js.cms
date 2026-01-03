@@ -67,6 +67,11 @@
       }
       e.appendChild(wrapper); // 包み込んだ要素を追加
     });
+
+    // 初期化完了を通知
+    requestAnimationFrame(() => {
+      document.body.classList.add("page-ready");
+    });
   }
 })();
 
