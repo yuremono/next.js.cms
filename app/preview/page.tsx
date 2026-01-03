@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { Page } from "@/types";
 import { PageRenderer } from "@/components/PageRenderer";
-import "../globals.css"; // Tailwind CSSを確実に読み込み
 import "../top.scss";
 
 export default function PreviewPage() {

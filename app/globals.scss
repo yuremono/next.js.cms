@@ -140,7 +140,7 @@ body:not(:has(.EditorWorkspace)) {
 
 /* JS実行完了後に付与されるクラス */
 body.page-ready {
-        opacity: 1 !important;
+        opacity: 1 ;
 }
 
 /* フォールバック: 3秒経ってもJSが走らない場合は強制表示 */

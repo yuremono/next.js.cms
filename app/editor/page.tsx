@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import "../globals.css"; // Tailwind CSSを確実に読み込み
 import "../top.scss";
 import { Button } from "@/components/ui/button";
 // import { Card } from "@/components/ui/card";
