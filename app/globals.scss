@@ -104,28 +104,6 @@
                 overflow-x: hidden;
         }
 
-        /* ページ全体の初期ロード時FOUC防止（エディター以外） */
-        body:not(:has(.EditorWorkspace)) {
-                opacity: 0;
-                transition: opacity 600ms ease;
-        }
-
-        /* JS実行完了後に付与されるクラス */
-        body.page-ready {
-                opacity: 1;
-        }  
-
-        /* フォールバック: 3秒経ってもJSが走らない場合は強制表示 */
-        body:not(:has(.EditorWorkspace)):not(.page-ready) {
-                animation: page-reveal 0.6s ease 3s forwards;
-        }
-
-        @keyframes page-reveal {
-                to {
-                        opacity: 1;
-                }
-        }
-
         /* label要素のテキスト選択を可能にする */
         label {
                 user-select: text;
@@ -151,6 +129,28 @@
                 --PFZ: clamp(20px, 2.4vw, 24px);
 
                 --h2EN: calc(var(--h2FZ)*1.2);
+        }
+}
+
+/* ページ全体の初期ロード時FOUC防止（エディター以外） - Tailwindのパージを避けるため @layer 外に記述 */
+body:not(:has(.EditorWorkspace)) {
+        opacity: 0;
+        transition: opacity 600ms ease;
+}
+
+/* JS実行完了後に付与されるクラス */
+body.page-ready {
+        opacity: 1 !important;
+}
+
+/* フォールバック: 3秒経ってもJSが走らない場合は強制表示 */
+body:not(:has(.EditorWorkspace)):not(.page-ready) {
+        animation: page-reveal 0.6s ease 3s forwards;
+}
+
+@keyframes page-reveal {
+        to {
+                opacity: 1;
         }
 }
 
