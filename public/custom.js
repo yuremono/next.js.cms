@@ -79,6 +79,23 @@
 (function () {
   // MindMap (force-directed words)
 
+  let isScrolling = false;
+  let scrollTimer = null;
+  let lastResumeTime = 0; // スクロールが止まった時刻
+
+  window.addEventListener(
+    "scroll",
+    () => {
+      isScrolling = true;
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => {
+        isScrolling = false;
+        lastResumeTime = performance.now();
+      }, 60);
+    },
+    { passive: true }
+  );
+
   const MINDMAP_CONTAINER_SELECTOR = ".mindMap";
 
   function loadD3IfNeeded() {
@@ -293,7 +310,7 @@
     if (getComputedStyle(container).position === "static") {
       container.style.position = "relative";
     }
-//     container.style.minHeight = `${Math.round(stageHeight)}px`;
+    //     container.style.minHeight = `${Math.round(stageHeight)}px`;
 
     // 10×10 グリッド（.mmR-C 初期配置用）
     const gridRows = 10;
@@ -666,8 +683,12 @@
         entries.forEach((entry) => {
           isVisible = entry.isIntersecting;
           if (!isVisible) {
-            // 可視外に出たら歪みを戻す
+            // 可視外に出たら歪みを戻し、シミュレーションを一時停止
             animateFilterScale(0, 200);
+            sim.stop();
+          } else {
+            // 可視内に入ったらシミュレーションを再開
+            sim.restart();
           }
         });
       },
@@ -703,9 +724,11 @@
     }
 
     sim.on("tick", () => {
+      if (isScrolling || !isVisible) return; // スクロール中または画面外は完全に停止
       const now = performance.now();
+      const timeSinceResume = now - lastResumeTime;
 
-      // カーソル反発
+      // カーソル反発（可視時のみ）
       if (container._mmPointerEnabled && pointer.active && isVisible) {
         for (let i = 0; i < nodes.length; i++) {
           const n = nodes[i];
@@ -725,9 +748,14 @@
         }
       }
 
-      // 位置更新＋境界クランプ（内側余白考慮）＋視覚スムージング
+      // 1. 物理演算の更新は常に行う（シミュレーションの整合性のため）
       for (let i = 0; i < nodes.length; i++) {
         const n = nodes[i];
+
+        // 【時差再開】インデックスに応じて動き出すタイミングをずらす（1つにつき15ms）
+        const staggerDelay = i * 15;
+        if (timeSinceResume < staggerDelay) continue;
+
         n.x = clamp(
           n.x,
           innerPadding + n.halfW,
@@ -738,15 +766,18 @@
           innerPadding + n.halfH,
           stageHeight - innerPadding - n.halfH
         );
-        // 決定的サイン波ゆらぎを加算（見た目のみ）
-        const sinX =
-          !isVisible || n.static
-            ? 0
-            : Math.sin(now * n.wobbleFreqX + n.wobblePhaseX) * n.wobbleAmp;
-        const sinY =
-          !isVisible || n.static
-            ? 0
-            : Math.sin(now * n.wobbleFreqY + n.wobblePhaseY) * n.wobbleAmp;
+
+        // 2. 描画に関する処理（個別の時計方式）
+        // フェーズを更新（実行された分だけ進める）
+        if (!n.static) {
+          n.wobblePhaseX += n.wobbleFreqX * 16.6;
+          n.wobblePhaseY += n.wobbleFreqY * 16.6;
+        }
+
+        // 決定的サイン波ゆらぎを計算
+        const sinX = n.static ? 0 : Math.sin(n.wobblePhaseX) * n.wobbleAmp;
+        const sinY = n.static ? 0 : Math.sin(n.wobblePhaseY) * n.wobbleAmp;
+
         const targetX = clamp(
           n.x + sinX,
           innerPadding + n.halfW,
@@ -757,8 +788,12 @@
           innerPadding + n.halfH,
           stageHeight - innerPadding - n.halfH
         );
-        // 低域通過フィルタ（指数移動平均）でカクつきを抑える
-        const smooth = prefersReduced ? 1 : 0.06;
+
+        // 低域通過フィルタ（指数移動平均）
+        // 動き出しをさらに優しくするため、再開直後（各要素の開始から300ms間）は数値を小さくする
+        const isJustResumedForNode = timeSinceResume < staggerDelay + 300;
+        const smooth = prefersReduced ? 1 : isJustResumedForNode ? 0.02 : 0.06;
+
         if (n.static) {
           n.dispX = targetX;
           n.dispY = targetY;
@@ -766,8 +801,8 @@
           n.dispX += (targetX - n.dispX) * smooth;
           n.dispY += (targetY - n.dispY) * smooth;
         }
+
         if (n.pin) {
-          // mmPin は transform を上書きしない（CSSレイアウトを保持）
           n.element.style.transform = "none";
         } else {
           n.element.style.transform = `translate3d(${(n.dispX - n.halfW).toFixed(2)}px, ${(n.dispY - n.halfH).toFixed(2)}px, 0)`;
@@ -853,6 +888,8 @@
         ampY,
         freqX,
         freqY,
+        dispX: 0, // 表示位置
+        dispY: 0,
       };
     });
 
@@ -863,12 +900,38 @@
     }
 
     const tick = (now) => {
-      for (const it of items) {
+      if (isScrolling) {
+        // スクロール中は次のフレームを待つだけで何もしない
+        requestAnimationFrame(tick);
+        return;
+      }
+
+      const timeSinceResume = now - lastResumeTime;
+
+      for (let i = 0; i < items.length; i++) {
+        const it = items[i];
         const vis = isVisible.get(it.el) !== false;
-        if (!vis) continue;
-        const dx = Math.sin(now * it.freqX + it.phaseX) * it.ampX;
-        const dy = Math.sin(now * it.freqY + it.phaseY) * it.ampY;
-        it.el.style.transform = `translate3d(${dx.toFixed(2)}px, ${dy.toFixed(2)}px, 0)`;
+        if (!vis) continue; // 画面外は停止
+
+        // 【時差再開】1つにつき10msずらす
+        const staggerDelay = i * 10;
+        if (timeSinceResume < staggerDelay) continue;
+
+        // フェーズを更新（個別の時計）
+        it.phaseX += it.freqX * 16.6;
+        it.phaseY += it.freqY * 16.6;
+
+        const targetX = Math.sin(it.phaseX) * it.ampX;
+        const targetY = Math.sin(it.phaseY) * it.ampY;
+
+        // スムージング
+        const isJustResumedForNode = timeSinceResume < staggerDelay + 300;
+        const smooth = isJustResumedForNode ? 0.02 : 0.08;
+
+        it.dispX += (targetX - it.dispX) * smooth;
+        it.dispY += (targetY - it.dispY) * smooth;
+
+        it.el.style.transform = `translate3d(${it.dispX.toFixed(2)}px, ${it.dispY.toFixed(2)}px, 0)`;
       }
       requestAnimationFrame(tick);
     };
