@@ -66,6 +66,7 @@ npm run dev
 | `npm run dev` | 開発サーバーの起動 |
 | `npm run build` | 本番用のビルド |
 | `npm run sync` | GitHubに現在の変更をプッシュ（自動コミット付き） |
+
 | `npm run deploy` | GitHubにプッシュしてデプロイを実行 |
 | `npm run lint` | コードの静的解析（Linter） |
 
