@@ -7,7 +7,7 @@
 
 @layer base {
         .fontJost {
-                font-family: "Jost", "Zen Kaku Gothic New", "Noto Sans JP", sans-serif;
+                font-family: var(--Jost);
         }
 
         :root {
@@ -15,6 +15,8 @@
                 --main-height: calc(100vh - var(--header-height));
                 /* フォント設定 */
                 --font-family-base: "Zen Kaku Gothic New", "Noto Sans JP", sans-serif;
+                --Jost: "Jost", var(--font-family-base); 
+                // --font-family-base:  ui-monospace, SFMono-Regular, "SF Mono", "Hiragino Sans Mono", "BIZ UD Gothic", "MS Gothic", monospace;
 
                 /* カラー設定 */
                 --cms-indent: 0.5rem;
@@ -222,7 +224,10 @@ body>* {
         }
 
         .fontJost {
-                font-family: 'Jost', sans-serif;
+                font-family: var(--Jost);
+        }
+        .fontZen {
+                font-family: var(--font-family-base);
         }
 
         .txgr,
@@ -570,7 +575,7 @@ strong {
                 color: var(--gr);
                 font-size: 1.2em;
                 display: inline-block;
-                padding-inline: 0.25em;
+                padding-inline: 0.25em 1em;
 
                 &:hover {
                         opacity: 0.8;
@@ -585,16 +590,16 @@ strong {
                         font-family: var(--icon, inherit);
                         color: #888;
                         display: inline-block;
-                        margin-left: 1em;
-                        transform-origin: 0 0;
+                        transform-origin: 100% 50%;
                         color: inherit;
+                        position: absolute;right: 0;
                 }
         }
 
         &[open] summary:after {
                 content: "-";
-                scale: 2 1;
-                translate: 0.125em 0;
+                scale: 2 1; 
+                translate: -0.125em 0;
         }
 
         >div {

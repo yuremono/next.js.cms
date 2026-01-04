@@ -7,7 +7,7 @@
 
 body {
         line-height: 2;
-        font-family: "Jost", "Zen kaku Gothic New";
+        font-family:  var(--font-family-base);
 }
 
 main>* {
@@ -64,6 +64,7 @@ h3{
 }
 
 :where(.mindMap) {
+        font-family: var(--Jost);
         // aspect-ratio: 2/1;
         height: 100vh;
         font-size: var(--mmFZ);
@@ -95,6 +96,8 @@ h3{
 }
 
 .mindWobble {
+        font-family: var(--Jost);
+
         position: relative;z-index: 1;
         font-size: calc(var(--mmFZ)*5);
         @media (max-width: 1200px){
@@ -137,7 +140,7 @@ h3{
         // align-content: center;
         &_tx {
                 line-height: 2;
-                font-family: "Zen kaku Gothic New";
+                // font-family: "Zen kaku Gothic New";
                 // width: calc(var(--base)*0.5 );
                 // max-width: 50%;
                 // height: 100%;
@@ -186,7 +189,7 @@ h3{
 .knowledge {
         &_tx {
                 line-height: 2;
-                font-family: "Zen kaku Gothic New";
+                // font-family: "Zen kaku Gothic New";
                 // width: calc(var(--base)*0.5 );
                 // max-width: 50%;
                 // height: 100%;
@@ -219,7 +222,7 @@ h3{
 .creative {
         &_tx {
                 line-height: 2;
-                font-family: "Zen kaku Gothic New";
+                // font-family: "Zen kaku Gothic New";
                 // width: calc(var(--base)*0.5 );
                 // max-width: 50%;
                 // height: 100%;

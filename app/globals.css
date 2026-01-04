@@ -6,13 +6,14 @@
 @tailwind utilities;
 @layer base {
   .fontJost {
-    font-family: "Jost", "Zen Kaku Gothic New", "Noto Sans JP", sans-serif;
+    font-family: var(--Jost);
   }
   :root {
     --header-height: 4rem;
     --main-height: calc(100vh - var(--header-height));
     /* フォント設定 */
     --font-family-base: "Zen Kaku Gothic New", "Noto Sans JP", sans-serif;
+    --Jost: "Jost", var(--font-family-base);
     /* カラー設定 */
     --cms-indent: 0.5rem;
     /* セクションリストのインデント幅 */
@@ -264,7 +265,10 @@ body > * .fw900 {
   font-weight: 900;
 }
 body > * .fontJost {
-  font-family: "Jost", sans-serif;
+  font-family: var(--Jost);
+}
+body > * .fontZen {
+  font-family: var(--font-family-base);
 }
 body > * .txgr,
 body > * .txgr * {
@@ -634,7 +638,7 @@ strong {
   color: var(--gr);
   font-size: 1.2em;
   display: inline-block;
-  padding-inline: 0.25em;
+  padding-inline: 0.25em 1em;
 }
 .accordion summary:hover {
   opacity: 0.8;
@@ -647,15 +651,16 @@ strong {
   font-family: var(--icon, inherit);
   color: #888;
   display: inline-block;
-  margin-left: 1em;
-  -webkit-transform-origin: 0 0;
-          transform-origin: 0 0;
+  -webkit-transform-origin: 100% 50%;
+          transform-origin: 100% 50%;
   color: inherit;
+  position: absolute;
+  right: 0;
 }
 .accordion[open] summary:after {
   content: "-";
   scale: 2 1;
-  translate: 0.125em 0;
+  translate: -0.125em 0;
 }
 .accordion > div {
   position: relative;
